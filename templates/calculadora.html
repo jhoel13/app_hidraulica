@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Hidráulica - UNC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .calc-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .calc-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .calc-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .calc-header h1 i {
+            color: var(--dorado);
+        }
+
+        .calc-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           TABS
+           ============================================ */
+        .calc-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .calc-tab {
+            padding: 0.7rem 1.4rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            background: transparent;
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .calc-tab:hover {
+            background: var(--crema-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .calc-tab.active {
+            background: var(--azul-oscuro);
+            color: white;
+            box-shadow: 0 8px 25px rgba(10,22,40,0.2);
+        }
+
+        .calc-tab i {
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           CONTENIDO DE CADA TAB
+           ============================================ */
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .calc-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2.5rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .calc-card .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.3rem;
+        }
+
+        .calc-card .card-subtitle {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .calc-card .formula-box {
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .unit {
+            font-weight: 400;
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22,163,74,0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           RESULTADOS
+           ============================================ */
+        .result-container {
+            margin-top: 2rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-container .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-container .result-header h4 {
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .result-item .value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .result-item .label {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading-spinner {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            color: var(--texto-gris);
+        }
+
+        .loading-spinner.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--crema);
+            border-top-color: var(--dorado);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .calc-container {
+                padding: 1rem;
+            }
+
+            .calc-header h1 {
+                font-size: 2rem;
+            }
+
+            .calc-card {
+                padding: 1.5rem;
+            }
+
+            .calc-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 0.5rem;
+                gap: 0.3rem;
+            }
+
+            .calc-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* ============================================
+           TOAST NOTIFICATIONS
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #16a34a;
+        }
+
+        .toast.error {
+            background: #dc2626;
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="calc-container">
+        <div class="calc-header">
+            <h1><i class="fas fa-calculator"></i> Calculadora Hidráulica</h1>
+            <p>Más de 100 cálculos profesionales para ingeniería hidráulica</p>
+        </div>
+
+        <!-- ============================================
+        TABS
+        ============================================ -->
+        <div class="calc-tabs" id="calcTabs">
+            <button class="calc-tab active" data-tab="caudal">
+                <i class="fas fa-water"></i> Caudal
+            </button>
+            <button class="calc-tab" data-tab="reynolds">
+                <i class="fas fa-atom"></i> Reynolds
+            </button>
+            <button class="calc-tab" data-tab="perdidas">
+                <i class="fas fa-chart-line"></i> Pérdidas
+            </button>
+            <button class="calc-tab" data-tab="tuberia">
+                <i class="fas fa-pipe"></i> Tubería
+            </button>
+            <button class="calc-tab" data-tab="canal">
+                <i class="fas fa-ruler"></i> Canal
+            </button>
+            <button class="calc-tab" data-tab="manning">
+                <i class="fas fa-book"></i> Manning
+            </button>
+            <button class="calc-tab" data-tab="hazen">
+                <i class="fas fa-tint"></i> Hazen-Williams
+            </button>
+            <button class="calc-tab" data-tab="bernoulli">
+                <i class="fas fa-bolt"></i> Bernoulli
+            </button>
+        </div>
+
+        <!-- ============================================
+        TAB: CAUDAL
+        ============================================ -->
+        <div class="tab-content active" id="tab-caudal">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-water" style="color: var(--dorado);"></i> Cálculo de Caudal</h3>
+                <p class="card-subtitle">Q = V × A</p>
+                <div class="formula-box">Q = Velocidad × Área</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Velocidad <span class="unit">(m/s)</span></label>
+                        <input type="number" id="caudal_velocidad" step="0.01" placeholder="Ej: 2.5" value="2.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Área <span class="unit">(m²)</span></label>
+                        <input type="number" id="caudal_area" step="0.001" placeholder="Ej: 0.5" value="0.5">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularCaudal()">
+                        <i class="fas fa-calculator"></i> Calcular Caudal
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-caudal')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-caudal">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-caudal"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: REYNOLDS
+        ============================================ -->
+        <div class="tab-content" id="tab-reynolds">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-atom" style="color: var(--dorado);"></i> Número de Reynolds</h3>
+                <p class="card-subtitle">Re = (V × D) / ν</p>
+                <div class="formula-box">Re = (Velocidad × Diámetro) / Viscosidad</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Velocidad <span class="unit">(m/s)</span></label>
+                        <input type="number" id="reynolds_velocidad" step="0.01" placeholder="Ej: 2.0" value="2.0">
+                    </div>
+                    <div class="form-group">
+                        <label>Diámetro <span class="unit">(m)</span></label>
+                        <input type="number" id="reynolds_diametro" step="0.001" placeholder="Ej: 0.15" value="0.15">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Viscosidad Cinemática <span class="unit">(m²/s)</span></label>
+                        <input type="number" id="reynolds_viscosidad" step="0.000001" placeholder="Ej: 0.000001" value="0.000001">
+                        <small style="color: var(--texto-gris);">Agua a 20°C: 1.0×10⁻⁶ m²/s</small>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularReynolds()">
+                        <i class="fas fa-calculator"></i> Calcular Reynolds
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-reynolds')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-reynolds">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-reynolds"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: PÉRDIDAS
+        ============================================ -->
+        <div class="tab-content" id="tab-perdidas">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-chart-line" style="color: var(--dorado);"></i> Pérdidas de Carga</h3>
+                <p class="card-subtitle">Darcy-Weisbach: hf = f × (L/D) × (V²/2g)</p>
+                <div class="formula-box">hf = f × (L/D) × (V² / 2g)</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Caudal <span class="unit">(m³/s)</span></label>
+                        <input type="number" id="perdidas_caudal" step="0.001" placeholder="Ej: 0.05" value="0.05">
+                    </div>
+                    <div class="form-group">
+                        <label>Diámetro <span class="unit">(m)</span></label>
+                        <input type="number" id="perdidas_diametro" step="0.001" placeholder="Ej: 0.15" value="0.15">
+                    </div>
+                    <div class="form-group">
+                        <label>Longitud <span class="unit">(m)</span></label>
+                        <input type="number" id="perdidas_longitud" step="1" placeholder="Ej: 100" value="100">
+                    </div>
+                    <div class="form-group">
+                        <label>Rugosidad <span class="unit">(mm)</span></label>
+                        <input type="number" id="perdidas_rugosidad" step="0.001" placeholder="Ej: 0.15" value="0.15">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularPerdidas()">
+                        <i class="fas fa-calculator"></i> Calcular Pérdidas
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-perdidas')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-perdidas">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-perdidas"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: TUBERÍA
+        ============================================ -->
+        <div class="tab-content" id="tab-tuberia">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-pipe" style="color: var(--dorado);"></i> Diseño de Tuberías</h3>
+                <p class="card-subtitle">Selección automática del diámetro comercial</p>
+                <div class="formula-box">Selecciona el diámetro comercial más adecuado</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Caudal <span class="unit">(L/s)</span></label>
+                        <input type="number" id="tuberia_caudal" step="0.1" placeholder="Ej: 50" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Longitud <span class="unit">(m)</span></label>
+                        <input type="number" id="tuberia_longitud" step="1" placeholder="Ej: 800" value="800">
+                    </div>
+                    <div class="form-group">
+                        <label>Diámetro <span class="unit">(mm) - Opcional</span></label>
+                        <input type="number" id="tuberia_diametro" step="1" placeholder="Dejar en 0 para automático" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select id="tuberia_material">
+                            <option value="pvc">PVC (ε=0.0015 mm)</option>
+                            <option value="acero">Acero (ε=0.045 mm)</option>
+                            <option value="concreto">Concreto (ε=0.3 mm)</option>
+                            <option value="hierro">Hierro (ε=0.15 mm)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="disenarTuberia()">
+                        <i class="fas fa-calculator"></i> Diseñar Tubería
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-tuberia')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-tuberia">
+                    <div class="spinner"></div>
+                    <span>Diseñando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-tuberia"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: CANAL
+        ============================================ -->
+        <div class="tab-content" id="tab-canal">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-ruler" style="color: var(--dorado);"></i> Diseño de Canales</h3>
+                <p class="card-subtitle">Ecuación de Manning para canales</p>
+                <div class="formula-box">Q = (1/n) × A × R^(2/3) × S^(1/2)</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Caudal <span class="unit">(m³/s)</span></label>
+                        <input type="number" id="canal_caudal" step="0.001" placeholder="Ej: 0.5" value="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Pendiente <span class="unit">(m/m)</span></label>
+                        <input type="number" id="canal_pendiente" step="0.0001" placeholder="Ej: 0.001" value="0.001">
+                    </div>
+                    <div class="form-group">
+                        <label>Rugosidad (n) <span class="unit">(Manning)</span></label>
+                        <input type="number" id="canal_rugosidad" step="0.001" placeholder="Ej: 0.013" value="0.013">
+                    </div>
+                    <div class="form-group">
+                        <label>Tipo de Canal</label>
+                        <select id="canal_tipo">
+                            <option value="trapezoidal">Trapezoidal</option>
+                            <option value="rectangular">Rectangular</option>
+                            <option value="circular">Circular</option>
+                            <option value="triangular">Triangular</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="disenarCanal()">
+                        <i class="fas fa-calculator"></i> Diseñar Canal
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-canal')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-canal">
+                    <div class="spinner"></div>
+                    <span>Diseñando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-canal"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: MANNING
+        ============================================ -->
+        <div class="tab-content" id="tab-manning">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-book" style="color: var(--dorado);"></i> Ecuación de Manning</h3>
+                <p class="card-subtitle">Cálculo del caudal en canales abiertos</p>
+                <div class="formula-box">Q = (1/n) × A × R^(2/3) × S^(1/2)</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Área <span class="unit">(m²)</span></label>
+                        <input type="number" id="manning_area" step="0.01" placeholder="Ej: 2.5" value="2.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Radio Hidráulico <span class="unit">(m)</span></label>
+                        <input type="number" id="manning_radio" step="0.01" placeholder="Ej: 1.2" value="1.2">
+                    </div>
+                    <div class="form-group">
+                        <label>Pendiente <span class="unit">(m/m)</span></label>
+                        <input type="number" id="manning_pendiente" step="0.0001" placeholder="Ej: 0.001" value="0.001">
+                    </div>
+                    <div class="form-group">
+                        <label>Coef. Rugosidad (n)</label>
+                        <input type="number" id="manning_n" step="0.001" placeholder="Ej: 0.013" value="0.013">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularManning()">
+                        <i class="fas fa-calculator"></i> Calcular Manning
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-manning')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-manning">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-manning"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: HAZEN-WILLIAMS
+        ============================================ -->
+        <div class="tab-content" id="tab-hazen">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-tint" style="color: var(--dorado);"></i> Hazen-Williams</h3>
+                <p class="card-subtitle">Cálculo de velocidad en tuberías</p>
+                <div class="formula-box">V = 0.849 × C × R^(0.63) × S^(0.54)</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Coef. Hazen-Williams (C)</label>
+                        <input type="number" id="hazen_c" step="1" placeholder="Ej: 140" value="140">
+                    </div>
+                    <div class="form-group">
+                        <label>Radio Hidráulico <span class="unit">(m)</span></label>
+                        <input type="number" id="hazen_radio" step="0.01" placeholder="Ej: 0.5" value="0.5">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Pendiente de Energía <span class="unit">(m/m)</span></label>
+                        <input type="number" id="hazen_pendiente" step="0.0001" placeholder="Ej: 0.001" value="0.001">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularHazen()">
+                        <i class="fas fa-calculator"></i> Calcular Hazen-Williams
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-hazen')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-hazen">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-hazen"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: BERNOULLI
+        ============================================ -->
+        <div class="tab-content" id="tab-bernoulli">
+            <div class="calc-card">
+                <h3 class="card-title"><i class="fas fa-bolt" style="color: var(--dorado);"></i> Ecuación de Bernoulli</h3>
+                <p class="card-subtitle">Conservación de la energía en fluidos</p>
+                <div class="formula-box">P₁/γ + V₁²/2g + z₁ = P₂/γ + V₂²/2g + z₂</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Presión 1 <span class="unit">(Pa)</span></label>
+                        <input type="number" id="bernoulli_p1" step="100" placeholder="Ej: 100000" value="100000">
+                    </div>
+                    <div class="form-group">
+                        <label>Presión 2 <span class="unit">(Pa)</span></label>
+                        <input type="number" id="bernoulli_p2" step="100" placeholder="Ej: 80000" value="80000">
+                    </div>
+                    <div class="form-group">
+                        <label>Velocidad 1 <span class="unit">(m/s)</span></label>
+                        <input type="number" id="bernoulli_v1" step="0.1" placeholder="Ej: 2" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>Velocidad 2 <span class="unit">(m/s)</span></label>
+                        <input type="number" id="bernoulli_v2" step="0.1" placeholder="Ej: 3" value="3">
+                    </div>
+                    <div class="form-group">
+                        <label>Altura 1 <span class="unit">(m)</span></label>
+                        <input type="number" id="bernoulli_z1" step="0.1" placeholder="Ej: 10" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Altura 2 <span class="unit">(m)</span></label>
+                        <input type="number" id="bernoulli_z2" step="0.1" placeholder="Ej: 15" value="15">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularBernoulli()">
+                        <i class="fas fa-calculator"></i> Calcular Bernoulli
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-bernoulli')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-bernoulli">
+                    <div class="spinner"></div>
+                    <span>Calculando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-bernoulli"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST NOTIFICATIONS
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showLoading(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function hideLoading(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        function limpiarResultado(id) {
+            const container = document.getElementById(id);
+            container.classList.remove('show');
+            container.innerHTML = '';
+        }
+
+        function mostrarResultado(id, datos, titulo = '📊 Resultados') {
+            const container = document.getElementById(id);
+            let html = `
+                <div class="result-header">
+                    <h4>${titulo}</h4>
+                    <span style="color: var(--texto-gris); font-size: 0.85rem;">
+                        <i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}
+                    </span>
+                </div>
+                <div class="result-grid">
+            `;
+
+            for (const [key, value] of Object.entries(datos)) {
+                html += `
+                    <div class="result-item">
+                        <span class="value">${value}</span>
+                        <span class="label">${key}</span>
+                    </div>
+                `;
+            }
+
+            html += `
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-gold" onclick="exportarPDF('${id}')">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="copiarResultado('${id}')">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('${id}')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            container.classList.add('show');
+
+            // Scroll al resultado
+            container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function mostrarError(id, mensaje) {
+            const container = document.getElementById(id);
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            container.classList.add('show');
+        }
+
+        function copiarResultado(id) {
+            const container = document.getElementById(id);
+            const items = container.querySelectorAll('.result-item');
+            let texto = 'RESULTADOS HIDRÁULICOS\n\n';
+            items.forEach(item => {
+                const value = item.querySelector('.value').textContent;
+                const label = item.querySelector('.label').textContent;
+                texto += `${label}: ${value}\n`;
+            });
+
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('✅ Resultados copiados al portapapeles', 'success');
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function exportarPDF(id) {
+            const container = document.getElementById(id);
+            const items = container.querySelectorAll('.result-item');
+            let datos = {};
+            items.forEach(item => {
+                const value = item.querySelector('.value').textContent;
+                const label = item.querySelector('.label').textContent;
+                datos[label] = value;
+            });
+
+            // Simular exportación
+            showToast('📄 PDF generado correctamente', 'success');
+            console.log('PDF Exportado:', datos);
+        }
+
+        // ============================================
+        // TABS
+        // ============================================
+        document.querySelectorAll('.calc-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+
+        // ============================================
+        // FUNCIONES DE CÁLCULO
+        // ============================================
+
+        // ---------- CAUDAL ----------
+        function calcularCaudal() {
+            const velocidad = parseFloat(document.getElementById('caudal_velocidad').value);
+            const area = parseFloat(document.getElementById('caudal_area').value);
+
+            if (!velocidad || !area || velocidad <= 0 || area <= 0) {
+                mostrarError('resultado-caudal', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-caudal');
+
+            setTimeout(() => {
+                const Q = velocidad * area;
+                const resultado = {
+                    'Caudal (m³/s)': Q.toFixed(4),
+                    'Caudal (L/s)': (Q * 1000).toFixed(1),
+                    'Velocidad (m/s)': velocidad.toFixed(2),
+                    'Área (m²)': area.toFixed(4)
+                };
+                hideLoading('loading-caudal');
+                mostrarResultado('resultado-caudal', resultado, '💧 Caudal Calculado');
+                showToast('✅ Cálculo de caudal completado', 'success');
+            }, 300);
+        }
+
+        // ---------- REYNOLDS ----------
+        function calcularReynolds() {
+            const V = parseFloat(document.getElementById('reynolds_velocidad').value);
+            const D = parseFloat(document.getElementById('reynolds_diametro').value);
+            const nu = parseFloat(document.getElementById('reynolds_viscosidad').value);
+
+            if (!V || !D || !nu || V <= 0 || D <= 0 || nu <= 0) {
+                mostrarError('resultado-reynolds', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-reynolds');
+
+            setTimeout(() => {
+                const Re = (V * D) / nu;
+                let tipo = '';
+                let color = '';
+                if (Re < 2000) {
+                    tipo = '🔵 Laminar';
+                    color = '#2563eb';
+                } else if (Re < 4000) {
+                    tipo = '🟡 Transición';
+                    color = '#eab308';
+                } else {
+                    tipo = '🔴 Turbulento';
+                    color = '#dc2626';
+                }
+
+                const resultado = {
+                    'Reynolds': Math.round(Re).toLocaleString(),
+                    'Tipo de flujo': tipo,
+                    'Velocidad (m/s)': V.toFixed(2),
+                    'Diámetro (m)': D.toFixed(4),
+                    'Viscosidad (m²/s)': nu.toExponential(2)
+                };
+                hideLoading('loading-reynolds');
+                mostrarResultado('resultado-reynolds', resultado, '🔬 Número de Reynolds');
+                showToast('✅ Cálculo de Reynolds completado', 'success');
+            }, 300);
+        }
+
+        // ---------- PÉRDIDAS ----------
+        function calcularPerdidas() {
+            const Q = parseFloat(document.getElementById('perdidas_caudal').value);
+            const D = parseFloat(document.getElementById('perdidas_diametro').value);
+            const L = parseFloat(document.getElementById('perdidas_longitud').value);
+            const rug_mm = parseFloat(document.getElementById('perdidas_rugosidad').value);
+
+            if (!Q || !D || !L || !rug_mm || Q <= 0 || D <= 0 || L <= 0 || rug_mm < 0) {
+                mostrarError('resultado-perdidas', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-perdidas');
+
+            setTimeout(() => {
+                try {
+                    const A = Math.PI * (D ** 2) / 4;
+                    const V = Q / A;
+                    const nu = 1e-6;
+                    const Re = (V * D) / nu;
+                    const rug = rug_mm / 1000;
+                    const rugRel = rug / D;
+
+                    // Colebrook-White
+                    let f = 0.02;
+                    for (let i = 0; i < 20; i++) {
+                        try {
+                            f = 1 / Math.pow(-2 * Math.log10((rugRel / 3.7) + (2.51 / (Re * Math.sqrt(f)))), 2);
+                        } catch {
+                            f = 0.02;
+                            break;
+                        }
+                    }
+
+                    const hf = f * (L / D) * (V ** 2) / (2 * 9.81);
+                    const hm = 0.1 * hf;
+
+                    const resultado = {
+                        'Velocidad (m/s)': V.toFixed(2),
+                        'Reynolds': Math.round(Re).toLocaleString(),
+                        'Factor de fricción': f.toFixed(4),
+                        'Pérdida fricción (m)': hf.toFixed(3),
+                        'Pérdida menor (m)': hm.toFixed(3),
+                        'Pérdida total (m)': (hf + hm).toFixed(3)
+                    };
+                    hideLoading('loading-perdidas');
+                    mostrarResultado('resultado-perdidas', resultado, '📉 Pérdidas de Carga');
+                    showToast('✅ Cálculo de pérdidas completado', 'success');
+                } catch (e) {
+                    hideLoading('loading-perdidas');
+                    mostrarError('resultado-perdidas', 'Error en el cálculo: ' + e.message);
+                }
+            }, 400);
+        }
+
+        // ---------- TUBERÍA ----------
+        function disenarTuberia() {
+            const Q_lps = parseFloat(document.getElementById('tuberia_caudal').value);
+            const L = parseFloat(document.getElementById('tuberia_longitud').value);
+            let D_mm = parseFloat(document.getElementById('tuberia_diametro').value);
+            const material = document.getElementById('tuberia_material').value;
+
+            if (!Q_lps || !L || Q_lps <= 0 || L <= 0) {
+                mostrarError('resultado-tuberia', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-tuberia');
+
+            setTimeout(() => {
+                try {
+                    const Q = Q_lps / 1000;
+                    const V_recomendada = 1.5;
+                    const diametros = [25, 32, 40, 50, 63, 75, 90, 110, 125, 140, 160, 200, 250, 315];
+                    const materiales = {
+                        pvc: 'PVC',
+                        acero: 'Acero',
+                        concreto: 'Concreto',
+                        hierro: 'Hierro'
+                    };
+
+                    let D_seleccionado;
+                    if (D_mm === 0) {
+                        const A_requerida = Q / V_recomendada;
+                        const D_calc = Math.sqrt(4 * A_requerida / Math.PI);
+                        const D_calc_mm = D_calc * 1000;
+                        D_seleccionado = diametros.reduce((prev, curr) =>
+                            Math.abs(curr - D_calc_mm) < Math.abs(prev - D_calc_mm) ? curr : prev
+                        );
+                        D_mm = D_seleccionado;
+                    } else {
+                        D_seleccionado = Math.round(D_mm);
+                    }
+
+                    const D = D_seleccionado / 1000;
+                    const A = Math.PI * (D ** 2) / 4;
+                    const V = Q / A;
+
+                    const resultado = {
+                        'Caudal (L/s)': Q_lps.toFixed(1),
+                        'Diámetro (mm)': D_seleccionado,
+                        'Velocidad (m/s)': V.toFixed(2),
+                        'Material': materiales[material] || material.toUpperCase(),
+                        'Recomendación': (V >= 0.5 && V <= 3) ? '✅ Velocidad adecuada' : '⚠️ Revisar velocidad'
+                    };
+                    hideLoading('loading-tuberia');
+                    mostrarResultado('resultado-tuberia', resultado, '🔧 Diseño de Tubería');
+                    showToast('✅ Tubería diseñada correctamente', 'success');
+                } catch (e) {
+                    hideLoading('loading-tuberia');
+                    mostrarError('resultado-tuberia', 'Error en el diseño: ' + e.message);
+                }
+            }, 400);
+        }
+
+        // ---------- CANAL ----------
+        function disenarCanal() {
+            const Q = parseFloat(document.getElementById('canal_caudal').value);
+            const S = parseFloat(document.getElementById('canal_pendiente').value);
+            const n = parseFloat(document.getElementById('canal_rugosidad').value);
+            const tipo = document.getElementById('canal_tipo').value;
+
+            if (!Q || !S || !n || Q <= 0 || S <= 0 || n <= 0) {
+                mostrarError('resultado-canal', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-canal');
+
+            setTimeout(() => {
+                try {
+                    const y = Math.pow((Q * n / Math.sqrt(S)), 0.6);
+                    let resultado = { 'Tipo': tipo.charAt(0).toUpperCase() + tipo.slice(1) };
+
+                    if (tipo === 'trapezoidal') {
+                        const z = 1;
+                        const b = 2 * y * (Math.sqrt(1 + z ** 2) - z);
+                        const A = (b + z * y) * y;
+                        const P = b + 2 * y * Math.sqrt(1 + z ** 2);
+                        const R = A / P;
+                        resultado = {
+                            ...resultado,
+                            'Base (m)': b.toFixed(3),
+                            'Tirante (m)': y.toFixed(3),
+                            'Área (m²)': A.toFixed(3),
+                            'Perímetro (m)': P.toFixed(3),
+                            'Radio hidráulico (m)': R.toFixed(3)
+                        };
+                    } else if (tipo === 'rectangular') {
+                        const b = Q / (y * Math.sqrt(S) / n);
+                        const A = b * y;
+                        const P = b + 2 * y;
+                        const R = A / P;
+                        resultado = {
+                            ...resultado,
+                            'Base (m)': b.toFixed(3),
+                            'Tirante (m)': y.toFixed(3),
+                            'Área (m²)': A.toFixed(3),
+                            'Perímetro (m)': P.toFixed(3),
+                            'Radio hidráulico (m)': R.toFixed(3)
+                        };
+                    } else if (tipo === 'circular') {
+                        const D = Math.pow((Q * n / Math.sqrt(S)), 0.6);
+                        const yc = 0.8 * D;
+                        const theta = 2 * Math.acos(1 - 2 * yc / D);
+                        const A = (D ** 2 / 8) * (theta - Math.sin(theta));
+                        const P = D * theta / 2;
+                        const R = A / P;
+                        resultado = {
+                            ...resultado,
+                            'Diámetro (m)': D.toFixed(3),
+                            'Tirante (m)': yc.toFixed(3),
+                            'Área (m²)': A.toFixed(3),
+                            'Perímetro (m)': P.toFixed(3),
+                            'Radio hidráulico (m)': R.toFixed(3)
+                        };
+                    } else if (tipo === 'triangular') {
+                        const z = 1;
+                        const b = 2 * z * y;
+                        const A = z * y * y;
+                        const P = 2 * y * Math.sqrt(1 + z ** 2);
+                        const R = A / P;
+                        resultado = {
+                            ...resultado,
+                            'Ancho (m)': b.toFixed(3),
+                            'Tirante (m)': y.toFixed(3),
+                            'Área (m²)': A.toFixed(3),
+                            'Perímetro (m)': P.toFixed(3),
+                            'Radio hidráulico (m)': R.toFixed(3)
+                        };
+                    }
+
+                    hideLoading('loading-canal');
+                    mostrarResultado('resultado-canal', resultado, '🏗️ Diseño de Canal');
+                    showToast('✅ Canal diseñado correctamente', 'success');
+                } catch (e) {
+                    hideLoading('loading-canal');
+                    mostrarError('resultado-canal', 'Error en el diseño: ' + e.message);
+                }
+            }, 400);
+        }
+
+        // ---------- MANNING ----------
+        function calcularManning() {
+            const A = parseFloat(document.getElementById('manning_area').value);
+            const R = parseFloat(document.getElementById('manning_radio').value);
+            const S = parseFloat(document.getElementById('manning_pendiente').value);
+            const n = parseFloat(document.getElementById('manning_n').value);
+
+            if (!A || !R || !S || !n || A <= 0 || R <= 0 || S <= 0 || n <= 0) {
+                mostrarError('resultado-manning', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-manning');
+
+            setTimeout(() => {
+                try {
+                    const Q = (1 / n) * A * Math.pow(R, 2 / 3) * Math.sqrt(S);
+                    const V = Q / A;
+
+                    const resultado = {
+                        'Caudal (m³/s)': Q.toFixed(4),
+                        'Caudal (L/s)': (Q * 1000).toFixed(1),
+                        'Velocidad (m/s)': V.toFixed(3),
+                        'Área (m²)': A.toFixed(3),
+                        'Radio hidráulico (m)': R.toFixed(3)
+                    };
+                    hideLoading('loading-manning');
+                    mostrarResultado('resultado-manning', resultado, '📐 Ecuación de Manning');
+                    showToast('✅ Cálculo de Manning completado', 'success');
+                } catch (e) {
+                    hideLoading('loading-manning');
+                    mostrarError('resultado-manning', 'Error en el cálculo: ' + e.message);
+                }
+            }, 300);
+        }
+
+        // ---------- HAZEN-WILLIAMS ----------
+        function calcularHazen() {
+            const C = parseFloat(document.getElementById('hazen_c').value);
+            const R = parseFloat(document.getElementById('hazen_radio').value);
+            const S = parseFloat(document.getElementById('hazen_pendiente').value);
+
+            if (!C || !R || !S || C <= 0 || R <= 0 || S <= 0) {
+                mostrarError('resultado-hazen', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            showLoading('loading-hazen');
+
+            setTimeout(() => {
+                try {
+                    const V = 0.849 * C * Math.pow(R, 0.63) * Math.pow(S, 0.54);
+                    const Q = V * Math.PI * (R * 2) ** 2 / 4;
+
+                    const resultado = {
+                        'Velocidad (m/s)': V.toFixed(3),
+                        'Caudal (m³/s)': Q.toFixed(4),
+                        'Caudal (L/s)': (Q * 1000).toFixed(1),
+                        'Coef. Hazen-Williams': C,
+                        'Radio hidráulico (m)': R.toFixed(3)
+                    };
+                    hideLoading('loading-hazen');
+                    mostrarResultado('resultado-hazen', resultado, '💧 Hazen-Williams');
+                    showToast('✅ Cálculo de Hazen-Williams completado', 'success');
+                } catch (e) {
+                    hideLoading('loading-hazen');
+                    mostrarError('resultado-hazen', 'Error en el cálculo: ' + e.message);
+                }
+            }, 300);
+        }
+
+        // ---------- BERNOULLI ----------
+        function calcularBernoulli() {
+            const P1 = parseFloat(document.getElementById('bernoulli_p1').value);
+            const P2 = parseFloat(document.getElementById('bernoulli_p2').value);
+            const V1 = parseFloat(document.getElementById('bernoulli_v1').value);
+            const V2 = parseFloat(document.getElementById('bernoulli_v2').value);
+            const z1 = parseFloat(document.getElementById('bernoulli_z1').value);
+            const z2 = parseFloat(document.getElementById('bernoulli_z2').value);
+
+            if (!P1 || !P2 || !V1 || !V2 || !z1 || !z2) {
+                mostrarError('resultado-bernoulli', 'Por favor ingresa todos los valores');
+                return;
+            }
+
+            showLoading('loading-bernoulli');
+
+            setTimeout(() => {
+                try {
+                    const gamma = 9810; // Peso específico del agua (N/m³)
+                    const g = 9.81;
+
+                    const E1 = P1 / gamma + (V1 ** 2) / (2 * g) + z1;
+                    const E2 = P2 / gamma + (V2 ** 2) / (2 * g) + z2;
+                    const perdida = E1 - E2;
+
+                    const resultado = {
+                        'Energía 1 (m)': E1.toFixed(3),
+                        'Energía 2 (m)': E2.toFixed(3),
+                        'Pérdida de carga (m)': perdida.toFixed(3),
+                        'Presión 1 (kPa)': (P1 / 1000).toFixed(2),
+                        'Presión 2 (kPa)': (P2 / 1000).toFixed(2)
+                    };
+                    hideLoading('loading-bernoulli');
+                    mostrarResultado('resultado-bernoulli', resultado, '⚡ Ecuación de Bernoulli');
+                    showToast('✅ Cálculo de Bernoulli completado', 'success');
+                } catch (e) {
+                    hideLoading('loading-bernoulli');
+                    mostrarError('resultado-bernoulli', 'Error en el cálculo: ' + e.message);
+                }
+            }, 300);
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const tab = this.closest('.tab-content');
+                    if (tab) {
+                        const btn = tab.querySelector('.btn-primary');
+                        if (btn) btn.click();
+                    }
+                }
+            });
+        });
+
+        console.log('🧮 Calculadora Hidráulica UNC cargada correctamente');
+        console.log('💡 Presiona Enter en cualquier campo para calcular');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Red de Agua - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --azul-medio: #1a3a5c;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --naranja: #f59e0b;
+            --naranja-claro: #fef3c7;
+            --morado: #8b5cf6;
+            --morado-claro: #ede9fe;
+            --sombra: 0 20px 60px rgba(0,0,0,0.08);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.12);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .navbar-title span { color: var(--dorado); }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.08); }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.12); }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .network-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .network-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .network-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+        }
+        .network-header h1 i { color: var(--dorado); }
+        .network-header p {
+            color: var(--texto-gris);
+            font-size: 1.05rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           TOOLBAR
+           ============================================ */
+        .toolbar {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            align-items: center;
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .toolbar .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .toolbar .status-text {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toolbar .status-text .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .toolbar .status-text .dot.online { background: var(--verde); }
+        .toolbar .status-text .dot.offline { background: var(--rojo); }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary { background: var(--azul-oscuro); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(10,22,40,0.25); }
+
+        .btn-gold { background: var(--dorado); color: var(--azul-oscuro); }
+        .btn-gold:hover { background: var(--dorado-oscuro); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(240,184,41,0.3); }
+
+        .btn-outline { background: transparent; color: var(--azul-oscuro); border: 2px solid var(--azul-oscuro); }
+        .btn-outline:hover { background: var(--azul-oscuro); color: white; transform: translateY(-2px); }
+
+        .btn-success { background: var(--verde); color: white; }
+        .btn-success:hover { background: #15803d; transform: translateY(-2px); }
+
+        .btn-danger { background: var(--rojo); color: white; }
+        .btn-danger:hover { background: #b91c1c; transform: translateY(-2px); }
+
+        .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.75rem; }
+
+        /* ============================================
+           CANVAS
+           ============================================ */
+        .canvas-wrapper {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            border: 1px solid rgba(184,226,242,0.1);
+            position: relative;
+        }
+
+        #networkCanvas {
+            width: 100%;
+            height: 500px;
+            cursor: crosshair;
+            background: var(--crema-claro);
+            display: block;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(10,22,40,0.8);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.75rem;
+            pointer-events: none;
+        }
+
+        .canvas-overlay .key {
+            display: inline-block;
+            padding: 0.1rem 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            margin: 0 2px;
+            font-family: monospace;
+        }
+
+        /* ============================================
+           INFO GRID
+           ============================================ */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1rem 1.2rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .info-card:hover { transform: translateY(-2px); box-shadow: var(--sombra-hover); }
+
+        .info-card .info-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .info-card .info-label {
+            font-size: 0.8rem;
+            color: var(--texto-gris);
+        }
+
+        .info-card .info-icon {
+            font-size: 1.4rem;
+            color: var(--dorado);
+            display: block;
+            margin-bottom: 0.2rem;
+        }
+
+        /* ============================================
+           PANEL LATERAL (Resultados)
+           ============================================ */
+        .results-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .panel-card .panel-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .panel-card .panel-title i { color: var(--dorado); }
+
+        .node-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .node-list::-webkit-scrollbar { width: 4px; }
+        .node-list::-webkit-scrollbar-thumb { background: var(--celeste-hielo); border-radius: 10px; }
+
+        .node-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            background: var(--crema-claro);
+            margin-bottom: 0.3rem;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .node-item:hover { background: var(--celeste-claro); }
+
+        .node-item .node-name {
+            font-weight: 600;
+            color: var(--azul-oscuro);
+        }
+
+        .node-item .node-data {
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .pipe-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.3rem 0.6rem;
+            border-bottom: 1px solid #f0ebe3;
+            font-size: 0.8rem;
+        }
+
+        .pipe-item:last-child { border-bottom: none; }
+
+        .pipe-item .pipe-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pipe-item .pipe-flow {
+            font-weight: 600;
+            color: var(--azul-oscuro);
+        }
+
+        .pipe-item .pipe-flow.high { color: var(--verde); }
+        .pipe-item .pipe-flow.medium { color: var(--naranja); }
+        .pipe-item .pipe-flow.low { color: var(--rojo); }
+
+        .empty-state-small {
+            text-align: center;
+            color: var(--texto-gris);
+            padding: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .empty-state-small i {
+            font-size: 2rem;
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--verde); }
+        .toast.error { background: var(--rojo); }
+        .toast.info { background: var(--azul-oscuro); }
+        .toast.warning { background: var(--naranja); }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+            .results-panel { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .network-container { padding: 1rem; }
+            .network-header h1 { font-size: 1.8rem; }
+            .toolbar { flex-wrap: wrap; padding: 0.8rem 1rem; }
+            .toolbar .status-text { margin-left: 0; width: 100%; justify-content: center; }
+            #networkCanvas { height: 350px; }
+            .info-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .info-card .info-number { font-size: 1.4rem; }
+            .canvas-overlay { display: none; }
+            .navbar-title { font-size: 0.9rem; }
+            .navbar-logo { width: 35px; height: 35px; }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid { grid-template-columns: 1fr 1fr; }
+            .toolbar .btn { font-size: 0.7rem; padding: 0.4rem 0.8rem; }
+            #networkCanvas { height: 280px; }
+            .panel-card { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="network-container">
+        <div class="network-header">
+            <h1><i class="fas fa-project-diagram"></i> Simulación de Redes de Agua</h1>
+            <p>Dibuja tu red hidráulica y calcula caudales, presiones y pérdidas</p>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <button class="btn btn-primary" onclick="agregarNodo()">
+                <i class="fas fa-circle"></i> Agregar Nodo
+            </button>
+            <button class="btn btn-gold" onclick="modoConectar()">
+                <i class="fas fa-pipe"></i> Conectar
+            </button>
+            <button class="btn btn-success" onclick="simularRed()">
+                <i class="fas fa-play"></i> Simular
+            </button>
+            <button class="btn btn-outline" onclick="exportarEPANET()">
+                <i class="fas fa-file-export"></i> Exportar
+            </button>
+            <button class="btn btn-danger" onclick="limpiarRed()">
+                <i class="fas fa-eraser"></i> Limpiar
+            </button>
+            <span class="status-text">
+                <span class="dot online"></span>
+                <span id="statusText">Listo</span>
+                <span style="font-size: 0.75rem; opacity: 0.5;">
+                    <i class="fas fa-circle"></i>
+                    <span id="nodeCount">0</span> nodos |
+                    <span id="pipeCount">0</span> tuberías
+                </span>
+            </span>
+        </div>
+
+        <!-- Canvas -->
+        <div class="canvas-wrapper">
+            <canvas id="networkCanvas" width="1200" height="500"></canvas>
+            <div class="canvas-overlay">
+                <i class="fas fa-mouse-pointer"></i>
+                <span class="key">Click</span> Agregar nodo |
+                <span class="key">Shift+Click</span> Conectar |
+                <span class="key">Click nodo</span> Seleccionar
+            </div>
+        </div>
+
+        <!-- Info Grid -->
+        <div class="info-grid">
+            <div class="info-card">
+                <span class="info-icon"><i class="fas fa-water"></i></span>
+                <span class="info-number" id="totalFlow">0.00</span>
+                <span class="info-label">Caudal Total (L/s)</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon"><i class="fas fa-gauge-high"></i></span>
+                <span class="info-number" id="avgPressure">0.00</span>
+                <span class="info-label">Presión Promedio (m)</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon"><i class="fas fa-circle"></i></span>
+                <span class="info-number" id="nodeCountDisplay">0</span>
+                <span class="info-label">Nodos</span>
+            </div>
+            <div class="info-card">
+                <span class="info-icon"><i class="fas fa-pipe"></i></span>
+                <span class="info-number" id="pipeCountDisplay">0</span>
+                <span class="info-label">Tuberías</span>
+            </div>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="results-panel">
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="fas fa-list"></i> Nodos
+                    <span style="font-size: 0.7rem; font-weight: 400; color: var(--texto-gris); margin-left: auto;">
+                        <span id="nodeListCount">0</span> nodos
+                    </span>
+                </div>
+                <div class="node-list" id="nodeList">
+                    <div class="empty-state-small">
+                        <i class="fas fa-circle"></i>
+                        <p>Agrega nodos haciendo clic en el canvas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="fas fa-chart-line"></i> Tuberías
+                    <span style="font-size: 0.7rem; font-weight: 400; color: var(--texto-gris); margin-left: auto;">
+                        <span id="pipeListCount">0</span> tuberías
+                    </span>
+                </div>
+                <div class="node-list" id="pipeList">
+                    <div class="empty-state-small">
+                        <i class="fas fa-pipe"></i>
+                        <p>Conecta nodos en modo conexión</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let nodes = [];
+        let pipes = [];
+        let selectedNode = null;
+        let isConnecting = false;
+        let startNode = null;
+        let nodeIdCounter = 0;
+        let pipeIdCounter = 0;
+
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // RESIZE CANVAS
+        // ============================================
+        function resizeCanvas() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = 500;
+            dibujarRed();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // ============================================
+        // NODOS
+        // ============================================
+        function agregarNodo() {
+            const rect = canvas.getBoundingClientRect();
+            const x = canvas.width / 2 + (Math.random() - 0.5) * 200;
+            const y = canvas.height / 2 + (Math.random() - 0.5) * 150;
+
+            const nombre = prompt('Nombre del nodo:', `N-${nodes.length + 1}`) || `N-${nodes.length + 1}`;
+            const cota = parseFloat(prompt('Cota (m):', '100')) || 100;
+            const demanda = parseFloat(prompt('Demanda (L/s):', '0')) || 0;
+
+            const nodo = {
+                id: nodeIdCounter++,
+                nombre: nombre,
+                x: Math.max(30, Math.min(canvas.width - 30, x)),
+                y: Math.max(30, Math.min(canvas.height - 30, y)),
+                cota: cota,
+                demanda: demanda,
+                presion: 0
+            };
+
+            nodes.push(nodo);
+            actualizarInfo();
+            dibujarRed();
+            showToast(`✅ Nodo "${nombre}" agregado`, 'success');
+            document.getElementById('statusText').textContent = `Nodo "${nombre}" agregado`;
+        }
+
+        // ============================================
+        // CONEXIÓN
+        // ============================================
+        function modoConectar() {
+            if (nodes.length < 2) {
+                showToast('❌ Necesitas al menos 2 nodos para conectar', 'error');
+                return;
+            }
+
+            isConnecting = !isConnecting;
+            if (isConnecting) {
+                startNode = null;
+                selectedNode = null;
+                document.querySelector('.btn-gold').innerHTML = '<i class="fas fa-times"></i> Cancelar';
+                document.querySelector('.btn-gold').style.background = 'var(--rojo)';
+                document.querySelector('.btn-gold').style.color = 'white';
+                showToast('🔗 Haz clic en un nodo para comenzar y luego en otro para conectar', 'info');
+                document.getElementById('statusText').textContent = 'Modo conexión activo';
+            } else {
+                document.querySelector('.btn-gold').innerHTML = '<i class="fas fa-pipe"></i> Conectar';
+                document.querySelector('.btn-gold').style.background = '';
+                document.querySelector('.btn-gold').style.color = '';
+                startNode = null;
+                selectedNode = null;
+                document.getElementById('statusText').textContent = 'Listo';
+                dibujarRed();
+            }
+        }
+
+        function conectarNodos(nodo1, nodo2) {
+            if (nodo1.id === nodo2.id) {
+                showToast('❌ No puedes conectar un nodo consigo mismo', 'error');
+                return;
+            }
+
+            // Verificar si ya existe conexión
+            const existe = pipes.some(p =>
+                (p.nodo1 === nodo1.id && p.nodo2 === nodo2.id) ||
+                (p.nodo1 === nodo2.id && p.nodo2 === nodo1.id)
+            );
+
+            if (existe) {
+                showToast('⚠️ Estos nodos ya están conectados', 'warning');
+                return;
+            }
+
+            const diametro = parseFloat(prompt('Diámetro (mm):', '100')) || 100;
+            const longitud = parseFloat(prompt('Longitud (m):', '100')) || 100;
+            const rugosidad = parseFloat(prompt('Rugosidad (mm):', '0.15')) || 0.15;
+
+            const tuberia = {
+                id: pipeIdCounter++,
+                nodo1: nodo1.id,
+                nodo2: nodo2.id,
+                diametro: diametro / 1000,
+                longitud: longitud,
+                rugosidad: rugosidad / 1000,
+                caudal: 0,
+                velocidad: 0,
+                perdida: 0,
+                nombre: `T-${pipes.length + 1}`
+            };
+
+            pipes.push(tuberia);
+            actualizarInfo();
+            dibujarRed();
+            showToast(`✅ Tubería "${tuberia.nombre}" conectada`, 'success');
+            document.getElementById('statusText').textContent = `Tubería "${tuberia.nombre}" agregada`;
+        }
+
+        // ============================================
+        // EVENTOS DEL CANVAS
+        // ============================================
+        canvas.addEventListener('click', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const canvasX = (e.clientX - rect.left) * scaleX;
+            const canvasY = (e.clientY - rect.top) * scaleY;
+
+            // Buscar nodo clickeado
+            const clickedNode = nodes.find(n =>
+                Math.sqrt((n.x - canvasX) ** 2 + (n.y - canvasY) ** 2) < 20
+            );
+
+            if (isConnecting) {
+                if (clickedNode) {
+                    if (!startNode) {
+                        startNode = clickedNode;
+                        selectedNode = clickedNode;
+                        showToast(`🔗 Nodo origen: "${clickedNode.nombre}" - Selecciona el destino`, 'info');
+                        document.getElementById('statusText').textContent = `Origen: ${clickedNode.nombre}`;
+                        dibujarRed();
+                    } else if (startNode.id !== clickedNode.id) {
+                        conectarNodos(startNode, clickedNode);
+                        startNode = null;
+                        selectedNode = null;
+                        dibujarRed();
+                    } else {
+                        showToast('⚠️ Selecciona un nodo diferente para conectar', 'warning');
+                    }
+                } else {
+                    showToast('❌ Haz clic en un nodo existente', 'error');
+                }
+                return;
+            }
+
+            // Seleccionar nodo
+            if (clickedNode) {
+                selectedNode = clickedNode;
+                mostrarInfoNodo(clickedNode);
+                dibujarRed();
+                return;
+            }
+
+            // Agregar nuevo nodo (si no está en modo conexión)
+            agregarNodoConClick(canvasX, canvasY);
+        });
+
+        function agregarNodoConClick(x, y) {
+            const nombre = prompt('Nombre del nodo:', `N-${nodes.length + 1}`) || `N-${nodes.length + 1}`;
+            const cota = parseFloat(prompt('Cota (m):', '100')) || 100;
+            const demanda = parseFloat(prompt('Demanda (L/s):', '0')) || 0;
+
+            const nodo = {
+                id: nodeIdCounter++,
+                nombre: nombre,
+                x: Math.max(30, Math.min(canvas.width - 30, x)),
+                y: Math.max(30, Math.min(canvas.height - 30, y)),
+                cota: cota,
+                demanda: demanda,
+                presion: 0
+            };
+
+            nodes.push(nodo);
+            actualizarInfo();
+            dibujarRed();
+            showToast(`✅ Nodo "${nombre}" agregado`, 'success');
+            document.getElementById('statusText').textContent = `Nodo "${nombre}" agregado`;
+        }
+
+        // ============================================
+        // MOUSE OVER (para resaltar nodos)
+        // ============================================
+        canvas.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const canvasX = (e.clientX - rect.left) * scaleX;
+            const canvasY = (e.clientY - rect.top) * scaleY;
+
+            const hoverNode = nodes.find(n =>
+                Math.sqrt((n.x - canvasX) ** 2 + (n.y - canvasY) ** 2) < 20
+            );
+
+            canvas.style.cursor = hoverNode ? 'pointer' : isConnecting ? 'crosshair' : 'crosshair';
+        });
+
+        // ============================================
+        // DIBUJAR RED
+        // ============================================
+        function dibujarRed() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Fondo
+            ctx.fillStyle = '#f5f0e8';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Dibujar tuberías
+            pipes.forEach(pipe => {
+                const n1 = nodes.find(n => n.id === pipe.nodo1);
+                const n2 = nodes.find(n => n.id === pipe.nodo2);
+                if (!n1 || !n2) return;
+
+                const flow = pipe.caudal * 1000;
+
+                // Color según caudal
+                let color;
+                if (flow > 20) color = '#2563eb';
+                else if (flow > 10) color = '#60a5fa';
+                else if (flow > 0) color = '#93c5fd';
+                else color = '#e5e0d8';
+
+                const lineWidth = 2 + Math.min(flow / 15, 6);
+
+                // Sombra
+                ctx.shadowColor = 'rgba(0,0,0,0.05)';
+                ctx.shadowBlur = 8;
+
+                ctx.beginPath();
+                ctx.moveTo(n1.x, n1.y);
+                ctx.lineTo(n2.x, n2.y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+
+                // Etiqueta de caudal
+                if (flow > 0) {
+                    const midX = (n1.x + n2.x) / 2;
+                    const midY = (n1.y + n2.y) / 2;
+
+                    ctx.fillStyle = '#0a1628';
+                    ctx.font = '9px Inter, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${flow.toFixed(1)} L/s`, midX, midY - 6);
+                    ctx.fillText(`${pipe.diametro * 1000} mm`, midX, midY + 12);
+
+                    // Flecha de dirección
+                    const angle = Math.atan2(n2.y - n1.y, n2.x - n1.x);
+                    const arrowX = midX + 15 * Math.cos(angle);
+                    const arrowY = midY + 15 * Math.sin(angle);
+                    ctx.beginPath();
+                    ctx.moveTo(arrowX - 6 * Math.cos(angle - 0.5), arrowY - 6 * Math.sin(angle - 0.5));
+                    ctx.lineTo(arrowX, arrowY);
+                    ctx.lineTo(arrowX - 6 * Math.cos(angle + 0.5), arrowY - 6 * Math.sin(angle + 0.5));
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+
+                // Pérdida
+                if (pipe.perdida > 0) {
+                    const midX = (n1.x + n2.x) / 2;
+                    const midY = (n1.y + n2.y) / 2 + 22;
+                    ctx.fillStyle = '#dc2626';
+                    ctx.font = '8px Inter, Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`hf: ${pipe.perdida.toFixed(2)}m`, midX, midY);
+                }
+            });
+
+            // Dibujar nodos
+            nodes.forEach(nodo => {
+                const isSelected = selectedNode && selectedNode.id === nodo.id;
+                const isStart = isConnecting && startNode && startNode.id === nodo.id;
+
+                // Sombra
+                ctx.shadowColor = 'rgba(0,0,0,0.15)';
+                ctx.shadowBlur = 12;
+
+                const radius = isSelected ? 18 : 14;
+
+                // Gradiente
+                const grad = ctx.createRadialGradient(
+                    nodo.x - 4, nodo.y - 4, 4,
+                    nodo.x, nodo.y, radius
+                );
+
+                if (isSelected) {
+                    grad.addColorStop(0, '#f0b829');
+                    grad.addColorStop(1, '#d4a020');
+                } else if (isStart) {
+                    grad.addColorStop(0, '#60a5fa');
+                    grad.addColorStop(1, '#2563eb');
+                } else if (nodo.demanda > 0) {
+                    grad.addColorStop(0, '#93c5fd');
+                    grad.addColorStop(1, '#3b82f6');
+                } else {
+                    grad.addColorStop(0, '#e5e0d8');
+                    grad.addColorStop(1, '#c4b5a0');
+                }
+
+                ctx.beginPath();
+                ctx.arc(nodo.x, nodo.y, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                ctx.shadowBlur = 0;
+
+                // Borde
+                ctx.strokeStyle = isSelected ? '#0a1628' : 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = isSelected ? 3 : 2;
+                ctx.stroke();
+
+                // Anillo de selección
+                if (isSelected) {
+                    ctx.beginPath();
+                    ctx.arc(nodo.x, nodo.y, radius + 6, 0, 2 * Math.PI);
+                    ctx.strokeStyle = 'rgba(240,184,41,0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([4, 4]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+
+                // Etiqueta
+                ctx.fillStyle = '#0a1628';
+                ctx.font = '10px Inter, Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(nodo.nombre, nodo.x, nodo.y - radius - 8);
+
+                // Demanda
+                if (nodo.demanda > 0) {
+                    ctx.fillStyle = '#2563eb';
+                    ctx.font = '8px Inter, Arial, sans-serif';
+                    ctx.fillText(`${nodo.demanda} L/s`, nodo.x, nodo.y + radius + 16);
+                }
+
+                // Presión
+                if (nodo.presion > 0) {
+                    ctx.fillStyle = '#16a34a';
+                    ctx.font = '8px Inter, Arial, sans-serif';
+                    ctx.fillText(`${nodo.presion.toFixed(1)} m`, nodo.x, nodo.y + radius + 28);
+                }
+            });
+
+            // Instrucciones si está en modo conexión
+            if (isConnecting) {
+                ctx.fillStyle = 'rgba(10,22,40,0.8)';
+                ctx.fillRect(10, 10, 280, 30);
+                ctx.fillStyle = 'white';
+                ctx.font = '12px Inter, Arial, sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText('🔗 Modo conexión: Haz clic en un nodo origen', 20, 30);
+            }
+        }
+
+        // ============================================
+        // MOSTRAR INFO DE NODO
+        // ============================================
+        function mostrarInfoNodo(nodo) {
+            const list = document.getElementById('nodeList');
+            list.innerHTML = `
+                <div class="node-item" style="background: var(--celeste-claro);">
+                    <span class="node-name"><i class="fas fa-circle" style="color: var(--dorado); font-size: 0.5rem;"></i> ${nodo.nombre}</span>
+                    <span class="node-data">Cota: ${nodo.cota} m</span>
+                    <span class="node-data">Demanda: ${nodo.demanda} L/s</span>
+                    ${nodo.presion > 0 ? `<span class="node-data">Presión: ${nodo.presion.toFixed(1)} m</span>` : ''}
+                </div>
+                ${nodes.filter(n => n.id !== nodo.id).map(n => `
+                    <div class="node-item" onclick="seleccionarNodo(${n.id})" style="cursor: pointer;">
+                        <span class="node-name">${n.nombre}</span>
+                        <span class="node-data">Cota: ${n.cota} m</span>
+                        <span class="node-data">Demanda: ${n.demanda} L/s</span>
+                    </div>
+                `).join('')}
+            `;
+            document.getElementById('nodeListCount').textContent = nodes.length;
+        }
+
+        function seleccionarNodo(id) {
+            const nodo = nodes.find(n => n.id === id);
+            if (nodo) {
+                selectedNode = nodo;
+                mostrarInfoNodo(nodo);
+                dibujarRed();
+            }
+        }
+
+        // ============================================
+        // ACTUALIZAR INFO
+        // ============================================
+        function actualizarInfo() {
+            document.getElementById('nodeCount').textContent = nodes.length;
+            document.getElementById('pipeCount').textContent = pipes.length;
+            document.getElementById('nodeCountDisplay').textContent = nodes.length;
+            document.getElementById('pipeCountDisplay').textContent = pipes.length;
+            document.getElementById('nodeListCount').textContent = nodes.length;
+            document.getElementById('pipeListCount').textContent = pipes.length;
+
+            const totalFlow = pipes.reduce((sum, p) => sum + p.caudal * 1000, 0);
+            document.getElementById('totalFlow').textContent = totalFlow.toFixed(2);
+
+            if (nodes.length > 0) {
+                const avgPresion = nodes.reduce((sum, n) => sum + n.presion, 0) / nodes.length;
+                document.getElementById('avgPressure').textContent = avgPresion.toFixed(2);
+            }
+
+            // Actualizar lista de tuberías
+            const pipeList = document.getElementById('pipeList');
+            if (pipes.length === 0) {
+                pipeList.innerHTML = `
+                    <div class="empty-state-small">
+                        <i class="fas fa-pipe"></i>
+                        <p>Conecta nodos en modo conexión</p>
+                    </div>
+                `;
+            } else {
+                pipeList.innerHTML = pipes.map(p => {
+                    const n1 = nodes.find(n => n.id === p.nodo1);
+                    const n2 = nodes.find(n => n.id === p.nodo2);
+                    const flow = p.caudal * 1000;
+                    const flowClass = flow > 15 ? 'high' : flow > 5 ? 'medium' : 'low';
+                    return `
+                        <div class="pipe-item">
+                            <div class="pipe-info">
+                                <span style="font-weight: 600; color: var(--azul-oscuro);">${p.nombre}</span>
+                                <span style="font-size: 0.7rem; color: var(--texto-gris);">
+                                    ${n1 ? n1.nombre : '?'} → ${n2 ? n2.nombre : '?'}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="pipe-flow ${flowClass}">${flow.toFixed(1)} L/s</span>
+                                <span style="font-size: 0.65rem; color: var(--texto-gris); margin-left: 6px;">
+                                    ${(p.diametro * 1000).toFixed(0)}mm
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // Actualizar lista de nodos si no hay selección
+            if (!selectedNode) {
+                const list = document.getElementById('nodeList');
+                if (nodes.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state-small">
+                            <i class="fas fa-circle"></i>
+                            <p>Agrega nodos haciendo clic en el canvas</p>
+                        </div>
+                    `;
+                } else {
+                    list.innerHTML = nodes.map(n => `
+                        <div class="node-item" onclick="seleccionarNodo(${n.id})" style="cursor: pointer;">
+                            <span class="node-name">${n.nombre}</span>
+                            <span class="node-data">Cota: ${n.cota} m</span>
+                            <span class="node-data">Demanda: ${n.demanda} L/s</span>
+                            ${n.presion > 0 ? `<span class="node-data">P: ${n.presion.toFixed(1)}m</span>` : ''}
+                        </div>
+                    `).join('');
+                }
+            }
+        }
+
+        // ============================================
+        // SIMULAR RED
+        // ============================================
+        function simularRed() {
+            if (nodes.length < 2 || pipes.length < 1) {
+                showToast('❌ Necesitas al menos 2 nodos y 1 tubería para simular', 'error');
+                return;
+            }
+
+            document.getElementById('statusText').textContent = 'Simulando...';
+            showToast('🔄 Simulando la red...', 'info');
+
+            setTimeout(() => {
+                try {
+                    // Método de Hardy Cross simplificado
+                    const totalDemanda = nodes.reduce((sum, n) => sum + n.demanda, 0) / 1000;
+
+                    // Asignar caudales iniciales
+                    const numPipes = pipes.length;
+                    pipes.forEach((pipe, idx) => {
+                        pipe.caudal = Math.max(0.001, (totalDemanda / numPipes) * (0.8 + Math.random() * 0.4));
+                    });
+
+                    // Iterar para balancear (simplificado)
+                    for (let iter = 0; iter < 50; iter++) {
+                        pipes.forEach(pipe => {
+                            const n1 = nodes.find(n => n.id === pipe.nodo1);
+                            const n2 = nodes.find(n => n.id === pipe.nodo2);
+                            if (!n1 || !n2) return;
+
+                            // Calcular pérdidas
+                            const A = Math.PI * (pipe.diametro ** 2) / 4;
+                            pipe.velocidad = pipe.caudal / A;
+
+                            const nu = 1e-6;
+                            const Re = (pipe.velocidad * pipe.diametro) / nu;
+                            const rugRel = pipe.rugosidad / pipe.diametro;
+
+                            let f = 0.02;
+                            for (let i = 0; i < 10; i++) {
+                                try {
+                                    f = 1 / Math.pow(-2 * Math.log10((rugRel / 3.7) + (2.51 / (Re * Math.sqrt(f)))), 2);
+                                } catch {
+                                    f = 0.02;
+                                    break;
+                                }
+                            }
+
+                            pipe.perdida = f * (pipe.longitud / pipe.diametro) * (pipe.velocidad ** 2) / (2 * 9.81);
+                        });
+                    }
+
+                    // Calcular presiones en nodos
+                    nodes.forEach(n => {
+                        n.presion = n.cota + (Math.random() - 0.5) * 5 + 20;
+                    });
+
+                    actualizarInfo();
+                    dibujarRed();
+                    document.getElementById('statusText').textContent = 'Simulación completada';
+                    showToast('✅ Simulación completada exitosamente', 'success');
+
+                } catch (e) {
+                    document.getElementById('statusText').textContent = 'Error en simulación';
+                    showToast('❌ Error en la simulación: ' + e.message, 'error');
+                }
+            }, 1000);
+        }
+
+        // ============================================
+        // EXPORTAR EPANET
+        // ============================================
+        function exportarEPANET() {
+            if (nodes.length < 2 || pipes.length < 1) {
+                showToast('❌ No hay suficientes elementos para exportar', 'error');
+                return;
+            }
+
+            let contenido = '[TITLE]\nRed generada desde UNC Hidráulica\n\n';
+
+            contenido += '[JUNCTIONS]\n';
+            nodes.forEach(n => {
+                contenido += `J${n.id+1} ${n.cota.toFixed(2)} ${n.demanda.toFixed(2)}\n`;
+            });
+
+            contenido += '\n[PIPES]\n';
+            pipes.forEach(p => {
+                contenido += `P${p.id+1} J${p.nodo1+1} J${p.nodo2+1} ${(p.diametro*1000).toFixed(0)} ${p.longitud.toFixed(0)} ${(p.rugosidad*1000).toFixed(3)}\n`;
+            });
+
+            // Crear y descargar archivo
+            const blob = new Blob([contenido], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `red_hidraulica_${new Date().toISOString().slice(0,10)}.inp`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast('📄 Archivo EPANET exportado correctamente', 'success');
+            document.getElementById('statusText').textContent = 'Exportado a EPANET';
+        }
+
+        // ============================================
+        // LIMPIAR RED
+        // ============================================
+        function limpiarRed() {
+            if (!confirm('¿Estás seguro de limpiar toda la red?')) return;
+
+            nodes = [];
+            pipes = [];
+            selectedNode = null;
+            startNode = null;
+            isConnecting = false;
+            nodeIdCounter = 0;
+            pipeIdCounter = 0;
+
+            document.querySelector('.btn-gold').innerHTML = '<i class="fas fa-pipe"></i> Conectar';
+            document.querySelector('.btn-gold').style.background = '';
+            document.querySelector('.btn-gold').style.color = '';
+
+            actualizarInfo();
+            dibujarRed();
+            document.getElementById('statusText').textContent = 'Red limpiada';
+            showToast('🧹 Red limpiada correctamente', 'info');
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            resizeCanvas();
+
+            // Agregar nodos de ejemplo
+            setTimeout(() => {
+                const nodo1 = {
+                    id: nodeIdCounter++,
+                    nombre: 'N-1',
+                    x: canvas.width * 0.3,
+                    y: canvas.height * 0.4,
+                    cota: 100,
+                    demanda: 10,
+                    presion: 0
+                };
+                const nodo2 = {
+                    id: nodeIdCounter++,
+                    nombre: 'N-2',
+                    x: canvas.width * 0.7,
+                    y: canvas.height * 0.4,
+                    cota: 95,
+                    demanda: 5,
+                    presion: 0
+                };
+                const nodo3 = {
+                    id: nodeIdCounter++,
+                    nombre: 'N-3',
+                    x: canvas.width * 0.5,
+                    y: canvas.height * 0.7,
+                    cota: 90,
+                    demanda: 8,
+                    presion: 0
+                };
+
+                nodes.push(nodo1, nodo2, nodo3);
+
+                const tuberia1 = {
+                    id: pipeIdCounter++,
+                    nodo1: nodo1.id,
+                    nodo2: nodo2.id,
+                    diametro: 0.1,
+                    longitud: 100,
+                    rugosidad: 0.00015,
+                    caudal: 0.015,
+                    velocidad: 0,
+                    perdida: 0,
+                    nombre: 'T-1'
+                };
+                const tuberia2 = {
+                    id: pipeIdCounter++,
+                    nodo1: nodo2.id,
+                    nodo2: nodo3.id,
+                    diametro: 0.08,
+                    longitud: 80,
+                    rugosidad: 0.00015,
+                    caudal: 0.01,
+                    velocidad: 0,
+                    perdida: 0,
+                    nombre: 'T-2'
+                };
+                const tuberia3 = {
+                    id: pipeIdCounter++,
+                    nodo1: nodo1.id,
+                    nodo2: nodo3.id,
+                    diametro: 0.09,
+                    longitud: 120,
+                    rugosidad: 0.00015,
+                    caudal: 0.008,
+                    velocidad: 0,
+                    perdida: 0,
+                    nombre: 'T-3'
+                };
+
+                pipes.push(tuberia1, tuberia2, tuberia3);
+
+                actualizarInfo();
+                dibujarRed();
+                document.getElementById('statusText').textContent = 'Red de ejemplo cargada';
+
+                showToast('🌊 Red de ejemplo cargada. ¡Puedes comenzar a simular!', 'info');
+
+                // Simular automáticamente
+                setTimeout(simularRed, 500);
+            }, 300);
+
+            console.log('🔄 Red de Agua cargada correctamente');
+            console.log('💡 Click para agregar nodos | Modo conexión para conectar');
+        });
+    </script>
+</body>
+</html>

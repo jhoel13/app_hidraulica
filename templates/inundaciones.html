@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{% block title %}Detección de Inundaciones - UNC Hidráulica{% endblock %}
+
+{% block extra_css %}
+<style>
+    .flood-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+    .flood-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .flood-header h1 {
+        font-size: 2.5rem;
+        color: var(--azul-oscuro);
+    }
+    .flood-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+    }
+    .flood-card {
+        background: white;
+        border-radius: var(--borde-redondeado);
+        padding: 2rem;
+        box-shadow: var(--sombra);
+        border: 1px solid rgba(184,226,242,0.2);
+    }
+    .flood-card h3 {
+        color: var(--azul-oscuro);
+        margin-bottom: 1rem;
+    }
+    .district-select {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        border: 2px solid #e0d6c8;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+    .district-select:focus {
+        border-color: var(--celeste-hielo);
+        box-shadow: 0 0 0 4px rgba(184,226,242,0.3);
+        outline: none;
+    }
+    .flood-map {
+        height: 300px;
+        border-radius: var(--borde-redondeado);
+        overflow: hidden;
+        margin-bottom: 1rem;
+        background: var(--crema-claro);
+    }
+    .flood-map #floodMap {
+        height: 100%;
+        width: 100%;
+    }
+    .risk-indicator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+    .risk-indicator.risk-bajo { background: #dcfce7; color: #166534; }
+    .risk-indicator.risk-medio { background: #fef3c7; color: #92400e; }
+    .risk-indicator.risk-alto { background: #fee2e2; color: #991b1b; }
+    .risk-indicator .risk-icon { font-size: 2rem; }
+    .risk-indicator .risk-details { flex: 1; }
+    .risk-indicator .risk-details .risk-title { font-weight: 600; font-size: 1.1rem; }
+    .history-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    .history-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0.8rem;
+        background: var(--crema-claro);
+        border-radius: 4px;
+        margin-bottom: 0.3rem;
+        font-size: 0.9rem;
+    }
+    .history-item .date { color: var(--texto-oscuro); opacity: 0.7; }
+    .history-item .event { font-weight: 500; color: var(--azul-oscuro); }
+    .history-item .severity { padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; }
+    .severity.leve { background: #dcfce7; color: #166534; }
+    .severity.moderada { background: #fef3c7; color: #92400e; }
+    .severity.grave { background: #fee2e2; color: #991b1b; }
+    @media (max-width: 968px) {
+        .flood-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="flood-container">
+    <div class="flood-header">
+        <h1><i class="fas fa-water" style="color: var(--dorado);"></i> Detección de Inundaciones</h1>
+        <p style="color: var(--texto-oscuro); opacity: 0.7;">Análisis de riesgo de inundaciones en distritos de Cajamarca</p>
+    </div>
+    
+    <div class="flood-grid">
+        <div class="flood-card">
+            <h3><i class="fas fa-map-marked-alt" style="color: var(--celeste-hielo);"></i> Seleccionar Distrito</h3>
+            <select class="district-select" id="districtSelect" onchange="cambiarDistrito()">
+                <option value="cajamarca">Cajamarca</option>
+                <option value="baños_del_inca">Baños del Inca</option>
+                <option value="san_juan">San Juan</option>
+                <option value="chota">Chota</option>
+                <option value="cutervo">Cutervo</option>
+                <option value="jaen">Jaén</option>
+            </select>
+            
+            <div class="flood-map">
+                <div id="floodMap"></div>
+            </div>
+            
+            <div id="riskIndicator" class="risk-indicator risk-bajo">
+                <div class="risk-icon">🟢</div>
+                <div class="risk-details">
+                    <div class="risk-title">Riesgo Bajo</div>
+                    <div>Condiciones normales. Monitoreo regular.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flood-card">
+            <h3><i class="fas fa-chart-bar" style="color: var(--dorado);"></i> Análisis de Riesgo</h3>
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e0d6c8;">
+                    <span>Pendiente Promedio</span>
+                    <span id="pendienteVal">12.5%</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e0d6c8;">
+                    <span>Zonas Inundables</span>
+                    <span id="zonasVal">Bajo</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid #e0d6c8;">
+                    <span>Historial de Inundaciones</span>
+                    <span id="historialVal">3 eventos</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                    <span>Nivel de Riesgo</span>
+                    <span id="riesgoNivel" style="font-weight: 600; color: #166534;">BAJO</span>
+                </div>
+            </div>
+            
+            <h4 style="margin: 1rem 0 0.5rem; color: var(--azul-oscuro);">📋 Historial de Eventos</h4>
+            <div class="history-list" id="historyList">
+                <div class="history-item">
+                    <span class="event">🌧️ Lluvias intensas</span>
+                    <span class="date">15/03/2026</span>
+                    <span class="severity leve">Leve</span>
+                </div>
+                <div class="history-item">
+                    <span class="event">⚠️ Desborde de río</span>
+                    <span class="date">02/02/2026</span>
+                    <span class="severity moderada">Moderada</span>
+                </div>
+                <div class="history-item">
+                    <span class="event">🌊 Inundación urbana</span>
+                    <span class="date">18/12/2025</span>
+                    <span class="severity grave">Grave</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%; margin-top: 1rem;" onclick="generarReporteInundacion()">
+                <i class="fas fa-file-pdf"></i> Generar Reporte
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let floodMap = null;
+
+// Datos por distrito
+const distritos = {
+    'cajamarca': {
+        pendiente: 8.5,
+        zonas: 'Moderado',
+        historial: 5,
+        riesgo: 'Bajo',
+        color: 'risk-bajo',
+        icon: '🟢',
+        eventos: [
+            { fecha: '15/03/2026', evento: 'Lluvias intensas', severidad: 'leve' },
+            { fecha: '02/02/2026', evento: 'Desborde de río', severidad: 'moderada' }
+        ]
+    },
+    'baños_del_inca': {
+        pendiente: 15.2,
+        zonas: 'Alto',
+        historial: 8,
+        riesgo: 'Medio',
+        color: 'risk-medio',
+        icon: '🟡',
+        eventos: [
+            { fecha: '20/03/2026', evento: 'Inundación parcial', severidad: 'moderada' },
+            { fecha: '05/01/2026', evento: 'Deslizamiento', severidad: 'grave' }
+        ]
+    },
+    'san_juan': {
+        pendiente: 22.8,
+        zonas: 'Muy Alto',
+        historial: 12,
+        riesgo: 'Alto',
+        color: 'risk-alto',
+        icon: '🔴',
+        eventos: [
+            { fecha: '25/03/2026', evento: 'Inundación severa', severidad: 'grave' },
+            { fecha: '10/02/2026', evento: 'Desborde masivo', severidad: 'grave' }
+        ]
+    },
+    'chota': {
+        pendiente: 10.3,
+        zonas: 'Moderado',
+        historial: 4,
+        riesgo: 'Bajo',
+        color: 'risk-bajo',
+        icon: '🟢',
+        eventos: [
+            { fecha: '12/03/2026', evento: 'Lluvias moderadas', severidad: 'leve' }
+        ]
+    },
+    'cutervo': {
+        pendiente: 18.7,
+        zonas: 'Alto',
+        historial: 7,
+        riesgo: 'Medio',
+        color: 'risk-medio',
+        icon: '🟡',
+        eventos: [
+            { fecha: '18/03/2026', evento: 'Deslizamiento de tierra', severidad: 'moderada' },
+            { fecha: '01/12/2025', evento: 'Inundación', severidad: 'moderada' }
+        ]
+    },
+    'jaen': {
+        pendiente: 6.2,
+        zonas: 'Bajo',
+        historial: 2,
+        riesgo: 'Bajo',
+        color: 'risk-bajo',
+        icon: '🟢',
+        eventos: [
+            { fecha: '10/03/2026', evento: 'Lluvias ligeras', severidad: 'leve' }
+        ]
+    }
+};
+
+function inicializarMapaFlood() {
+    if (floodMap) {
+        floodMap.invalidateSize();
+        return;
+    }
+    
+    floodMap = L.map('floodMap').setView([-7.1633, -78.5000], 11);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(floodMap);
+    
+    // Área de inundación simulada
+    const polygon = L.polygon([
+        [-7.1500, -78.5100],
+        [-7.1600, -78.4900],
+        [-7.1800, -78.4950],
+        [-7.1750, -78.5150]
+    ], {
+        color: '#3b82f6',
+        weight: 2,
+        opacity: 0.7,
+        fillOpacity: 0.2
+    }).addTo(floodMap);
+    polygon.bindPopup('Zona de inundación potencial');
+    
+    // Marcador de estación
+    L.marker([-7.1633, -78.5000]).addTo(floodMap)
+        .bindPopup('Estación de monitoreo');
+}
+
+function cambiarDistrito() {
+    const distrito = document.getElementById('districtSelect').value;
+    const data = distritos[distrito];
+    
+    if (!data) return;
+    
+    // Actualizar información
+    document.getElementById('pendienteVal').textContent = `${data.pendiente}%`;
+    document.getElementById('zonasVal').textContent = data.zonas;
+    document.getElementById('historialVal').textContent = `${data.historial} eventos`;
+    
+    const riesgoText = data.riesgo.toUpperCase();
+    document.getElementById('riesgoNivel').textContent = riesgoText;
+    document.getElementById('riesgoNivel').style.color = 
+        data.riesgo === 'Alto' ? '#991b1b' : 
+        data.riesgo === 'Medio' ? '#92400e' : '#166534';
+    
+    // Actualizar indicador de riesgo
+    const indicator = document.getElementById('riskIndicator');
+    indicator.className = `risk-indicator ${data.color}`;
+    indicator.innerHTML = `
+        <div class="risk-icon">${data.icon}</div>
+        <div class="risk-details">
+            <div class="risk-title">Riesgo ${data.riesgo}</div>
+            <div>${data.riesgo === 'Alto' ? 'Se requiere acción inmediata' : 
+                   data.riesgo === 'Medio' ? 'Monitoreo constante recomendado' : 
+                   'Condiciones normales. Monitoreo regular.'}</div>
+        </div>
+    `;
+    
+    // Actualizar historial
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = data.eventos.map(e => `
+        <div class="history-item">
+            <span class="event">${e.evento}</span>
+            <span class="date">${e.fecha}</span>
+            <span class="severity ${e.severidad}">${e.severidad.charAt(0).toUpperCase() + e.severidad.slice(1)}</span>
+        </div>
+    `).join('');
+    
+    // Actualizar mapa
+    if (floodMap) {
+        const coords = getDistritoCoords(distrito);
+        floodMap.setView(coords, 12);
+        
+        // Limpiar capas anteriores (mantener solo el mapa base)
+        floodMap.eachLayer((layer) => {
+            if (layer instanceof L.Polygon || layer instanceof L.Marker) {
+                floodMap.removeLayer(layer);
+            }
+        });
+        
+        // Agregar nueva zona de inundación
+        const floodZone = getFloodZone(distrito);
+        if (floodZone) {
+            const polygon = L.polygon(floodZone, {
+                color: '#3b82f6',
+                weight: 2,
+                opacity: 0.7,
+                fillOpacity: 0.2
+            }).addTo(floodMap);
+            polygon.bindPopup('Zona de inundación potencial');
+        }
+    }
+}
+
+function getDistritoCoords(distrito) {
+    const coords = {
+        'cajamarca': [-7.1633, -78.5000],
+        'baños_del_inca': [-7.1833, -78.4667],
+        'san_juan': [-7.2000, -78.5000],
+        'chota': [-6.5500, -78.6500],
+        'cutervo': [-6.3667, -78.8167],
+        'jaen': [-5.7000, -78.8000]
+    };
+    return coords[distrito] || [-7.1633, -78.5000];
+}
+
+function getFloodZone(distrito) {
+    const zonas = {
+        'cajamarca': [
+            [-7.1500, -78.5100],
+            [-7.1600, -78.4900],
+            [-7.1800, -78.4950],
+            [-7.1750, -78.5150]
+        ],
+        'baños_del_inca': [
+            [-7.1700, -78.4800],
+            [-7.1900, -78.4600],
+            [-7.2000, -78.4700],
+            [-7.1850, -78.4900]
+        ],
+        'san_juan': [
+            [-7.1900, -78.5100],
+            [-7.2100, -78.4900],
+            [-7.2200, -78.5000],
+            [-7.2000, -78.5200]
+        ]
+    };
+    return zonas[distrito] || null;
+}
+
+function generarReporteInundacion() {
+    const distrito = document.getElementById('districtSelect').value;
+    const data = distritos[distrito];
+    const nombreDistrito = document.getElementById('districtSelect').options[
+        document.getElementById('districtSelect').selectedIndex
+    ].text;
+    
+    const reporte = {
+        tipo: 'Reporte de Inundación',
+        distrito: nombreDistrito,
+        fecha: new Date().toLocaleString(),
+        riesgo: data.riesgo,
+        pendiente: `${data.pendiente}%`,
+        zonas_inundables: data.zonas,
+        historial: `${data.historial} eventos`,
+        eventos: data.eventos
+    };
+    
+    exportarPDF(reporte);
+    alert('📄 Reporte de inundación generado correctamente');
+}
+
+// Inicializar
+document.addEventListener('DOMContentLoaded', function() {
+    inicializarMapaFlood();
+    setTimeout(cambiarDistrito, 500);
+});
+</script>
+{% endblock %}

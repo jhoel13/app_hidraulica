@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Tuberías - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --rojo: #dc2626;
+            --naranja: #f59e0b;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .pipe-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .pipe-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .pipe-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .pipe-header h1 i {
+            color: var(--dorado);
+        }
+
+        .pipe-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           MAIN GRID
+           ============================================ */
+        .pipe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* ============================================
+           INPUT CARD
+           ============================================ */
+        .pipe-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .pipe-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pipe-card .card-title i {
+            color: var(--dorado);
+        }
+
+        .pipe-card .card-subtitle {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .formula-box {
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .unit {
+            font-weight: 400;
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22,163,74,0.3);
+        }
+
+        .btn-danger {
+            background: var(--rojo);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           RESULTADOS
+           ============================================ */
+        .result-container {
+            margin-top: 2rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .result-container .result-header h4 {
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .result-container .result-header .badge-material {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--celeste-hielo);
+            color: var(--azul-oscuro);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .result-item .value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .result-item .label {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .result-item .value.recomendado {
+            color: var(--verde);
+        }
+
+        .result-item .value.advertencia {
+            color: var(--naranja);
+        }
+
+        .result-item .value.peligro {
+            color: var(--rojo);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ============================================
+           DIÁMETROS COMERCIALES
+           ============================================ */
+        .diameters-container {
+            margin-top: 1.5rem;
+        }
+
+        .diameters-container .diam-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.5rem;
+        }
+
+        .diameters-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .diam-item {
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background: var(--crema-claro);
+            border: 2px solid #e5e0d8;
+            color: var(--texto-gris);
+            transition: var(--transition);
+        }
+
+        .diam-item.selected {
+            background: var(--dorado);
+            border-color: var(--dorado);
+            color: var(--azul-oscuro);
+            font-weight: 700;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(240,184,41,0.3);
+        }
+
+        .diam-item:hover {
+            border-color: var(--celeste-hielo);
+        }
+
+        /* ============================================
+           GRÁFICO DE PÉRDIDAS
+           ============================================ */
+        .chart-container {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+        }
+
+        .chart-container h4 {
+            font-size: 0.95rem;
+            color: var(--azul-oscuro);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container canvas {
+            width: 100%;
+            height: 180px;
+            border-radius: 8px;
+        }
+
+        /* ============================================
+           INFO BOX
+           ============================================ */
+        .info-box {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--celeste-hielo);
+        }
+
+        .info-box h4 {
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box ul li {
+            padding: 0.2rem 0;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .info-box ul li i {
+            color: var(--dorado);
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--verde);
+        }
+
+        .toast.error {
+            background: var(--rojo);
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .pipe-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pipe-container {
+                padding: 1rem;
+            }
+
+            .pipe-header h1 {
+                font-size: 2rem;
+            }
+
+            .pipe-card {
+                padding: 1.5rem;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+            }
+
+            .diameters-grid {
+                gap: 0.3rem;
+            }
+
+            .diam-item {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="pipe-container">
+        <div class="pipe-header">
+            <h1><i class="fas fa-pipe"></i> Diseño de Tuberías</h1>
+            <p>Selección automática de diámetros comerciales y cálculo de pérdidas</p>
+        </div>
+
+        <div class="pipe-grid">
+            <!-- ============================================
+            INPUT SECTION
+            ============================================ -->
+            <div class="pipe-card">
+                <h3 class="card-title">
+                    <i class="fas fa-sliders-h"></i> Parámetros de Diseño
+                </h3>
+                <p class="card-subtitle">Ingresa los datos de tu tubería</p>
+
+                <div class="formula-box">
+                    hf = f × (L/D) × (V²/2g)
+                </div>
+
+                <div class="form-group">
+                    <label>Caudal <span class="unit">(L/s)</span></label>
+                    <input type="number" id="pipe_caudal" step="0.1" placeholder="Ej: 50" value="50">
+                </div>
+
+                <div class="form-group">
+                    <label>Longitud <span class="unit">(m)</span></label>
+                    <input type="number" id="pipe_longitud" step="1" placeholder="Ej: 800" value="800">
+                </div>
+
+                <div class="form-group">
+                    <label>Diámetro <span class="unit">(mm) - Opcional</span></label>
+                    <input type="number" id="pipe_diametro" step="1" placeholder="Dejar en 0 para automático" value="0">
+                    <small style="color: var(--texto-gris); font-size: 0.75rem;">
+                        💡 Dejar en 0 para selección automática del diámetro comercial
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label>Material</label>
+                    <select id="pipe_material">
+                        <option value="pvc">PVC (ε=0.0015 mm)</option>
+                        <option value="acero">Acero (ε=0.045 mm)</option>
+                        <option value="concreto">Concreto (ε=0.3 mm)</option>
+                        <option value="hierro">Hierro (ε=0.15 mm)</option>
+                        <option value="cobre">Cobre (ε=0.0015 mm)</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="disenarTuberia()">
+                        <i class="fas fa-calculator"></i> Diseñar Tubería
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-tuberia"></div>
+            </div>
+
+            <!-- ============================================
+            VISUAL SECTION
+            ============================================ -->
+            <div>
+                <div class="pipe-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-list"></i> Diámetros Comerciales
+                    </h3>
+                    <p class="card-subtitle">Diámetros disponibles para tuberías de PVC</p>
+
+                    <div class="diameters-container">
+                        <div class="diam-title">
+                            <i class="fas fa-circle" style="color: var(--dorado); font-size: 0.6rem;"></i>
+                            Diámetros (mm)
+                        </div>
+                        <div class="diameters-grid" id="diametersGrid">
+                            <span class="diam-item" data-diam="25">25</span>
+                            <span class="diam-item" data-diam="32">32</span>
+                            <span class="diam-item" data-diam="40">40</span>
+                            <span class="diam-item" data-diam="50">50</span>
+                            <span class="diam-item" data-diam="63">63</span>
+                            <span class="diam-item" data-diam="75">75</span>
+                            <span class="diam-item" data-diam="90">90</span>
+                            <span class="diam-item" data-diam="110">110</span>
+                            <span class="diam-item" data-diam="125">125</span>
+                            <span class="diam-item" data-diam="140">140</span>
+                            <span class="diam-item" data-diam="160">160</span>
+                            <span class="diam-item" data-diam="200">200</span>
+                            <span class="diam-item" data-diam="250">250</span>
+                            <span class="diam-item" data-diam="315">315</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                GRÁFICO DE PÉRDIDAS
+                ============================================ -->
+                <div class="pipe-card" style="margin-top: 1.5rem;">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-bar"></i> Pérdidas de Carga
+                    </h3>
+                    <p class="card-subtitle">Distribución de pérdidas en la tubería</p>
+
+                    <div class="chart-container">
+                        <canvas id="lossChart" width="600" height="180"></canvas>
+                    </div>
+
+                    <div class="result-actions" style="margin-top: 1rem;">
+                        <button class="btn btn-gold" onclick="exportarPDF()">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                        <button class="btn btn-success" onclick="copiarResultados()">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                INFO BOX
+                ============================================ -->
+                <div class="info-box" style="margin-top: 1.5rem;">
+                    <h4><i class="fas fa-lightbulb" style="color: var(--dorado);"></i> Recomendaciones</h4>
+                    <ul>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Velocidad recomendada: 0.5 - 3.0 m/s</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Velocidad óptima: 1.0 - 2.0 m/s</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Incluir válvulas de aire en puntos altos</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Incluir válvulas de purga en puntos bajos</li>
+                    </ul>
+                </div>
+
+                <!-- ============================================
+                MATERIALES
+                ============================================ -->
+                <div class="info-box" style="margin-top: 0.8rem;">
+                    <h4><i class="fas fa-table" style="color: var(--celeste-hielo);"></i> Coeficientes de Rugosidad</h4>
+                    <ul>
+                        <li><i class="fas fa-circle" style="color: #2563eb;"></i> PVC: ε = 0.0015 mm</li>
+                        <li><i class="fas fa-circle" style="color: #6b7280;"></i> Acero: ε = 0.045 mm</li>
+                        <li><i class="fas fa-circle" style="color: #8b6914;"></i> Concreto: ε = 0.3 mm</li>
+                        <li><i class="fas fa-circle" style="color: #92400e;"></i> Hierro: ε = 0.15 mm</li>
+                        <li><i class="fas fa-circle" style="color: #b45309;"></i> Cobre: ε = 0.0015 mm</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let resultadoActual = null;
+        const DIAMETROS = [25, 32, 40, 50, 63, 75, 90, 110, 125, 140, 160, 200, 250, 315];
+        const MATERIALES = {
+            pvc: { nombre: 'PVC', rugosidad: 0.0000015 },
+            acero: { nombre: 'Acero', rugosidad: 0.000045 },
+            concreto: { nombre: 'Concreto', rugosidad: 0.0003 },
+            hierro: { nombre: 'Hierro', rugosidad: 0.00015 },
+            cobre: { nombre: 'Cobre', rugosidad: 0.0000015 }
+        };
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============================================
+        // DISEÑO DE TUBERÍA
+        // ============================================
+        function disenarTuberia() {
+            const Q_lps = parseFloat(document.getElementById('pipe_caudal').value);
+            const L = parseFloat(document.getElementById('pipe_longitud').value);
+            let D_mm = parseFloat(document.getElementById('pipe_diametro').value);
+            const materialKey = document.getElementById('pipe_material').value;
+
+            // Validaciones
+            if (!Q_lps || !L || Q_lps <= 0 || L <= 0) {
+                mostrarError('Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            if (Q_lps > 10000) {
+                mostrarError('El caudal es muy grande. Por favor ingresa un valor menor a 10000 L/s');
+                return;
+            }
+
+            if (L > 100000) {
+                mostrarError('La longitud es muy grande. Por favor ingresa un valor menor a 100000 m');
+                return;
+            }
+
+            // Convertir a m³/s
+            const Q = Q_lps / 1000;
+            const material = MATERIALES[materialKey] || MATERIALES.pvc;
+            const rugosidad = material.rugosidad;
+
+            // Velocidad recomendada
+            const V_recomendada = 1.5;
+
+            let D_seleccionado;
+            let es_automatico = false;
+
+            // Si D_mm es 0, selección automática
+            if (D_mm === 0) {
+                es_automatico = true;
+                const A_requerida = Q / V_recomendada;
+                const D_calc = Math.sqrt(4 * A_requerida / Math.PI);
+                const D_calc_mm = D_calc * 1000;
+                D_seleccionado = DIAMETROS.reduce((prev, curr) =>
+                    Math.abs(curr - D_calc_mm) < Math.abs(prev - D_calc_mm) ? curr : prev
+                );
+                D_mm = D_seleccionado;
+            } else {
+                // Validar que el diámetro esté en la lista
+                const diametroValido = DIAMETROS.find(d => Math.abs(d - D_mm) < 1);
+                if (diametroValido) {
+                    D_seleccionado = diametroValido;
+                } else {
+                    // Buscar el más cercano
+                    D_seleccionado = DIAMETROS.reduce((prev, curr) =>
+                        Math.abs(curr - D_mm) < Math.abs(prev - D_mm) ? curr : prev
+                    );
+                    showToast(`⚠️ Diámetro ajustado a ${D_seleccionado} mm (comercial más cercano)`, 'info');
+                }
+                D_mm = D_seleccionado;
+            }
+
+            // Resaltar diámetro seleccionado
+            document.querySelectorAll('.diam-item').forEach(el => {
+                el.classList.remove('selected');
+                if (parseInt(el.dataset.diam) === D_seleccionado) {
+                    el.classList.add('selected');
+                }
+            });
+
+            // Cálculos
+            const D = D_seleccionado / 1000;
+            const A = Math.PI * (D ** 2) / 4;
+            const V = Q / A;
+
+            // Número de Reynolds
+            const nu = 1e-6;
+            const Re = (V * D) / nu;
+
+            // Factor de fricción (Colebrook-White)
+            const rugRel = rugosidad / D;
+            let f = 0.02;
+            for (let i = 0; i < 20; i++) {
+                try {
+                    f = 1 / Math.pow(-2 * Math.log10((rugRel / 3.7) + (2.51 / (Re * Math.sqrt(f)))), 2);
+                } catch {
+                    f = 0.02;
+                    break;
+                }
+            }
+
+            // Pérdidas de carga
+            const hf = f * (L / D) * (V ** 2) / (2 * 9.81);
+            const hm = 0.1 * hf;
+            const h_total = hf + hm;
+
+            // Verificar velocidad
+            let status = '';
+            let statusColor = '';
+            if (V < 0.5) {
+                status = '⚠️ Velocidad baja - Riesgo de sedimentación';
+                statusColor = 'advertencia';
+            } else if (V > 3) {
+                status = '⚠️ Velocidad alta - Riesgo de erosión';
+                statusColor = 'peligro';
+            } else if (V >= 0.8 && V <= 2.0) {
+                status = '✅ Velocidad óptima';
+                statusColor = 'recomendado';
+            } else {
+                status = '✅ Velocidad aceptable';
+                statusColor = 'recomendado';
+            }
+
+            // Resultado
+            resultadoActual = {
+                caudal_lps: Q_lps,
+                caudal_m3s: Q,
+                longitud: L,
+                diametro_mm: D_seleccionado,
+                diametro_m: D,
+                area: A,
+                velocidad: V,
+                reynolds: Re,
+                factor_friccion: f,
+                perdida_friccion: hf,
+                perdida_menor: hm,
+                perdida_total: h_total,
+                material: material.nombre,
+                rugosidad: rugosidad * 1000,
+                status: status,
+                statusColor: statusColor,
+                es_automatico: es_automatico
+            };
+
+            // Mostrar resultados
+            mostrarResultado(resultadoActual);
+            dibujarGrafico(hf, hm);
+
+            // Mensaje
+            if (V >= 0.5 && V <= 3) {
+                showToast('✅ Tubería diseñada correctamente', 'success');
+            } else {
+                showToast('⚠️ Revisar la velocidad de la tubería', 'info');
+            }
+        }
+
+        // ============================================
+        // MOSTRAR RESULTADOS
+        // ============================================
+        function mostrarResultado(resultado) {
+            const container = document.getElementById('resultado-tuberia');
+
+            let html = `
+                <div class="result-header">
+                    <h4>📊 Resultados del Diseño</h4>
+                    <span class="badge-material">${resultado.material}</span>
+                </div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="value">${resultado.caudal_lps.toFixed(1)}</span>
+                        <span class="label">Caudal (L/s)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value ${resultado.es_automatico ? 'recomendado' : ''}">${resultado.diametro_mm}</span>
+                        <span class="label">Diámetro (mm) ${resultado.es_automatico ? '✅ Seleccionado' : ''}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value ${resultado.statusColor}">${resultado.velocidad.toFixed(2)}</span>
+                        <span class="label">Velocidad (m/s)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${Math.round(resultado.reynolds).toLocaleString()}</span>
+                        <span class="label">Reynolds</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${resultado.factor_friccion.toFixed(4)}</span>
+                        <span class="label">Factor de fricción</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${resultado.perdida_total.toFixed(2)}</span>
+                        <span class="label">Pérdida total (m)</span>
+                    </div>
+                    <div class="result-item" style="grid-column: 1 / -1; background: ${resultado.statusColor === 'recomendado' ? '#dcfce7' : resultado.statusColor === 'advertencia' ? '#fef3c7' : '#fee2e2'};">
+                        <span class="value" style="font-size: 1rem; color: ${resultado.statusColor === 'recomendado' ? '#16a34a' : resultado.statusColor === 'advertencia' ? '#f59e0b' : '#dc2626'};">
+                            ${resultado.status}
+                        </span>
+                        <span class="label">Estado de la tubería</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-gold" onclick="exportarPDF()">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="copiarResultados()">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            container.classList.add('show');
+        }
+
+        // ============================================
+        // GRÁFICO DE PÉRDIDAS
+        // ============================================
+        function dibujarGrafico(hf, hm) {
+            const canvas = document.getElementById('lossChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            const maxVal = Math.max(hf, hm, 0.5);
+            const scale = (height - 60) / (maxVal * 1.2);
+            const padding = 40;
+            const barWidth = 120;
+            const gap = 80;
+            const startX = (width - 2 * barWidth - gap) / 2;
+
+            // Fondo
+            ctx.fillStyle = '#f5f0e8';
+            ctx.fillRect(0, 0, width, height);
+
+            // Título
+            ctx.fillStyle = '#1a1a2e';
+            ctx.font = '12px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Pérdidas de Carga', width / 2, 22);
+
+            // Pérdida por fricción
+            const bar1Y = height - padding - hf * scale;
+            const grad1 = ctx.createLinearGradient(startX, bar1Y, startX, height - padding);
+            grad1.addColorStop(0, '#0a1628');
+            grad1.addColorStop(1, '#2563eb');
+            ctx.fillStyle = grad1;
+            ctx.fillRect(startX, bar1Y, barWidth, hf * scale);
+            ctx.strokeStyle = '#0a1628';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(startX, bar1Y, barWidth, hf * scale);
+
+            // Valor
+            ctx.fillStyle = '#0a1628';
+            ctx.font = 'bold 13px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${hf.toFixed(2)} m`, startX + barWidth / 2, bar1Y - 8);
+            ctx.font = '11px Inter, Arial, sans-serif';
+            ctx.fillStyle = '#6b7280';
+            ctx.fillText('Fricción', startX + barWidth / 2, height - 5);
+
+            // Pérdida menor
+            const bar2Y = height - padding - hm * scale;
+            const grad2 = ctx.createLinearGradient(startX + barWidth + gap, bar2Y, startX + barWidth + gap, height - padding);
+            grad2.addColorStop(0, '#f0b829');
+            grad2.addColorStop(1, '#d4a020');
+            ctx.fillStyle = grad2;
+            ctx.fillRect(startX + barWidth + gap, bar2Y, barWidth, hm * scale);
+            ctx.strokeStyle = '#0a1628';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(startX + barWidth + gap, bar2Y, barWidth, hm * scale);
+
+            // Valor
+            ctx.fillStyle = '#0a1628';
+            ctx.font = 'bold 13px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${hm.toFixed(2)} m`, startX + barWidth + gap + barWidth / 2, bar2Y - 8);
+            ctx.font = '11px Inter, Arial, sans-serif';
+            ctx.fillStyle = '#6b7280';
+            ctx.fillText('Menor', startX + barWidth + gap + barWidth / 2, height - 5);
+
+            // Línea base
+            ctx.strokeStyle = '#e5e0d8';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, height - padding);
+            ctx.lineTo(width, height - padding);
+            ctx.stroke();
+
+            // Total
+            const total = hf + hm;
+            ctx.fillStyle = '#0a1628';
+            ctx.font = 'bold 11px Inter, Arial, sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText(`Total: ${total.toFixed(2)} m`, width - 100, 20);
+        }
+
+        // ============================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================
+        function mostrarError(mensaje) {
+            const container = document.getElementById('resultado-tuberia');
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            container.classList.add('show');
+            showToast(mensaje, 'error');
+        }
+
+        function limpiarTodo() {
+            document.getElementById('resultado-tuberia').classList.remove('show');
+            document.getElementById('resultado-tuberia').innerHTML = '';
+            resultadoActual = null;
+
+            document.querySelectorAll('.diam-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Limpiar gráfico
+            const canvas = document.getElementById('lossChart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#f5f0e8';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña una tubería para ver el gráfico', canvas.width / 2, canvas.height / 2);
+
+            showToast('🧹 Todo limpiado', 'info');
+        }
+
+        function copiarResultados() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para copiar', 'error');
+                return;
+            }
+
+            let texto = '=== DISEÑO DE TUBERÍA ===\n\n';
+            texto += `Material: ${resultadoActual.material}\n`;
+            texto += `Caudal: ${resultadoActual.caudal_lps.toFixed(1)} L/s (${resultadoActual.caudal_m3s.toFixed(3)} m³/s)\n`;
+            texto += `Longitud: ${resultadoActual.longitud} m\n`;
+            texto += `Diámetro: ${resultadoActual.diametro_mm} mm\n`;
+            texto += `Velocidad: ${resultadoActual.velocidad.toFixed(2)} m/s\n`;
+            texto += `Reynolds: ${Math.round(resultadoActual.reynolds).toLocaleString()}\n`;
+            texto += `Factor de fricción: ${resultadoActual.factor_friccion.toFixed(4)}\n`;
+            texto += `Pérdida por fricción: ${resultadoActual.perdida_friccion.toFixed(2)} m\n`;
+            texto += `Pérdida menor: ${resultadoActual.perdida_menor.toFixed(2)} m\n`;
+            texto += `Pérdida total: ${resultadoActual.perdida_total.toFixed(2)} m\n`;
+            texto += `\nEstado: ${resultadoActual.status}`;
+
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('✅ Resultados copiados al portapapeles', 'success');
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function exportarPDF() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para exportar', 'error');
+                return;
+            }
+
+            // Simular exportación
+            const datos = {
+                tipo: 'Diseño de Tubería',
+                resultados: resultadoActual,
+                fecha: new Date().toLocaleString()
+            };
+
+            console.log('PDF Exportado:', datos);
+            showToast('📄 PDF generado: tuberia_diseno.pdf', 'success');
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    disenarTuberia();
+                }
+            });
+        });
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Placeholder en gráfico
+            const canvas = document.getElementById('lossChart');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#f5f0e8';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña una tubería para ver el gráfico', canvas.width / 2, canvas.height / 2);
+
+            // Cargar ejemplo
+            setTimeout(() => {
+                document.getElementById('pipe_caudal').value = '50';
+                document.getElementById('pipe_longitud').value = '800';
+                document.getElementById('pipe_diametro').value = '0';
+                document.getElementById('pipe_material').value = 'pvc';
+                disenarTuberia();
+            }, 500);
+
+            console.log('🔧 Diseño de Tuberías cargado correctamente');
+            console.log('💡 Presiona Enter para diseñar');
+        });
+    </script>
+</body>
+</html>

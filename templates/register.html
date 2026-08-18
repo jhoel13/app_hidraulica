@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           RESET Y VARIABLES
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --azul-medio: #1a3a5c;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --dorado-claro: #fce4a8;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --sombra: 0 20px 60px rgba(0,0,0,0.12);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.18);
+            --borde-redondeado: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--crema);
+            overflow: hidden;
+        }
+
+        /* ============================================
+           BACKGROUND ANIMADO CON BURBUJAS
+           ============================================ */
+        .bg-animated {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-profundo) 50%, var(--azul-medio) 100%);
+            overflow: hidden;
+        }
+
+        .bg-animated .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-animated .orb:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: var(--dorado);
+            top: -200px;
+            right: -200px;
+            animation-delay: 0s;
+        }
+
+        .bg-animated .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: var(--celeste-hielo);
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .bg-animated .orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: var(--azul-medio);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.9); }
+            75% { transform: translate(40px, 30px) scale(1.05); }
+        }
+
+        /* ============================================
+           BURBUJAS FLOTANTES
+           ============================================ */
+        .bubbles-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -100px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: bubbleRise linear infinite;
+            backdrop-filter: blur(2px);
+        }
+
+        .bubble::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 25%;
+            width: 30%;
+            height: 20%;
+            background: radial-gradient(circle, rgba(255,255,255,0.4), transparent);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        .bubble::after {
+            content: '';
+            position: absolute;
+            bottom: 20%;
+            right: 20%;
+            width: 15%;
+            height: 10%;
+            background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+            border-radius: 50%;
+        }
+
+        @keyframes bubbleRise {
+            0% {
+                transform: translateY(0) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-110vh) scale(1.2) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           PARTÍCULAS BRILLANTES
+           ============================================ */
+        .particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+            animation: particleFloat 25s infinite linear;
+        }
+
+        .particle.glow {
+            background: rgba(240,184,41,0.15);
+            box-shadow: 0 0 10px rgba(240,184,41,0.2);
+            width: 6px;
+            height: 6px;
+        }
+
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ============================================
+           ESTRELLAS CENTELLEANTES
+           ============================================ */
+        .stars {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.5); }
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .register-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 520px;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ============================================
+           BOTÓN VOLVER
+           ============================================ */
+        .btn-back {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .btn-back i {
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           REGISTER CARD
+           ============================================ */
+        .register-card {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--borde-redondeado);
+            padding: 2.5rem;
+            padding-top: 4rem;
+            box-shadow: var(--sombra), 0 0 40px rgba(240,184,41,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: var(--transition);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .register-card::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--borde-redondeado);
+            background: linear-gradient(135deg, var(--dorado), transparent, var(--celeste-hielo));
+            z-index: -1;
+            opacity: 0.3;
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .register-card::-webkit-scrollbar { width: 4px; }
+        .register-card::-webkit-scrollbar-thumb { background: var(--celeste-hielo); border-radius: 10px; }
+
+        .register-card:hover {
+            box-shadow: var(--sombra-hover), 0 0 60px rgba(240,184,41,0.1);
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .register-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .register-header .logo-wrapper {
+            display: inline-block;
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        .register-header .logo-wrapper .logo-glow {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240,184,41,0.3), transparent 70%);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .register-header img {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 3px solid var(--dorado);
+            padding: 5px;
+            background: white;
+            position: relative;
+            z-index: 1;
+            object-fit: contain;
+        }
+
+        .register-header h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.2rem;
+        }
+
+        .register-header h1 span {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .register-header p {
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+        }
+
+        .register-header .mascot-hint {
+            font-size: 0.8rem;
+            color: var(--texto-gris);
+            opacity: 0.5;
+            margin-top: 0.3rem;
+            animation: hintPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        /* ============================================
+           FORM
+           ============================================ */
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--texto-gris);
+            opacity: 0.5;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            z-index: 2;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 3rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition);
+            background: var(--crema-claro);
+            color: var(--texto-oscuro);
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--dorado);
+            box-shadow: 0 0 0 4px rgba(240,184,41,0.12), 0 0 30px rgba(240,184,41,0.05);
+            background: white;
+            transform: scale(1.01);
+        }
+
+        .form-group input:focus + .input-icon,
+        .form-group input:focus ~ .input-icon,
+        .form-group select:focus + .input-icon {
+            color: var(--dorado);
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-group select {
+            appearance: none;
+            padding-right: 2.5rem;
+            cursor: pointer;
+        }
+
+        .form-group .select-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--texto-gris);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .form-group .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--texto-gris);
+            opacity: 0.5;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1rem;
+            padding: 0.3rem;
+            z-index: 2;
+        }
+
+        .form-group .toggle-password:hover {
+            opacity: 1;
+            color: var(--azul-oscuro);
+        }
+
+        .form-group .input-hint {
+            font-size: 0.7rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+            opacity: 0.7;
+            transition: var(--transition);
+        }
+
+        .form-group .input-hint i {
+            margin-right: 4px;
+        }
+
+        .form-group .input-hint.valid {
+            color: var(--verde);
+            opacity: 1;
+        }
+
+        .form-group .input-hint.invalid {
+            color: var(--rojo);
+            opacity: 1;
+            animation: shake 0.3s ease;
+        }
+
+        .form-group .input-ripple {
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .form-group .input-ripple .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(240,184,41,0.1);
+            transform: scale(0);
+            animation: rippleAnim 0.6s ease-out;
+        }
+
+        @keyframes rippleAnim {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* ============================================
+           CHECKBOX
+           ============================================ */
+        .form-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+        }
+
+        .form-check input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--dorado);
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 1px;
+            transition: var(--transition);
+        }
+
+        .form-check input[type="checkbox"]:hover {
+            transform: scale(1.1);
+        }
+
+        .form-check a {
+            color: var(--dorado);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .form-check a:hover {
+            color: var(--dorado-oscuro);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           BUTTON
+           ============================================ */
+        .btn-register {
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+            color: var(--azul-oscuro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-register::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--dorado-oscuro), var(--dorado));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .btn-register:hover::before {
+            opacity: 1;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 8px 30px rgba(240,184,41,0.4);
+        }
+
+        .btn-register:active {
+            transform: scale(0.98);
+        }
+
+        .btn-register .btn-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-register .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top-color: var(--azul-oscuro);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-register.loading .spinner {
+            display: inline-block;
+        }
+
+        .btn-register.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           ERROR/SUCCESS MESSAGES
+           ============================================ */
+        .error-message {
+            background: linear-gradient(135deg, var(--rojo), #b91c1c);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: shake 0.5s ease;
+            box-shadow: 0 4px 20px rgba(220,38,38,0.2);
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-6px); }
+            80% { transform: translateX(6px); }
+        }
+
+        .error-message i {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, var(--verde), #15803d);
+            color: white;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            animation: fadeInUp 0.3s ease;
+            box-shadow: 0 4px 20px rgba(22,163,74,0.2);
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message i {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .register-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .register-footer p {
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+        }
+
+        .register-footer a {
+            color: var(--dorado);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .register-footer a:hover {
+            color: var(--dorado-oscuro);
+            text-decoration: underline;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateX(120%);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+            backdrop-filter: blur(10px);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: linear-gradient(135deg, var(--verde), #15803d);
+        }
+
+        .toast.error {
+            background: linear-gradient(135deg, var(--rojo), #b91c1c);
+        }
+
+        .toast.info {
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-profundo));
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 560px) {
+            .register-container { padding: 1rem; }
+            .register-card { padding: 1.5rem; padding-top: 3.5rem; }
+            .form-row { grid-template-columns: 1fr; gap: 0.8rem; }
+            .register-header img { width: 60px; height: 60px; }
+            .register-header h1 { font-size: 1.3rem; }
+            .register-card { max-height: 95vh; }
+            .btn-register { font-size: 0.95rem; padding: 0.8rem; }
+            .btn-back { top: 0.8rem; left: 0.8rem; padding: 0.3rem 0.8rem; font-size: 0.75rem; }
+        }
+
+        @media (max-width: 400px) {
+            .register-card { padding: 1rem; padding-top: 3rem; }
+            .form-group input,
+            .form-group select { padding: 0.6rem 0.8rem 0.6rem 2.5rem; font-size: 0.85rem; }
+            .form-group .input-icon { left: 0.8rem; font-size: 0.8rem; }
+            .register-header h1 { font-size: 1.1rem; }
+            .register-header p { font-size: 0.8rem; }
+            .btn-back { padding: 0.2rem 0.6rem; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    BACKGROUND
+    ============================================ -->
+    <div class="bg-animated">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <!-- ============================================
+    BURBUJAS
+    ============================================ -->
+    <div class="bubbles-container" id="bubblesContainer"></div>
+
+    <!-- ============================================
+    ESTRELLAS
+    ============================================ -->
+    <div class="stars" id="starsContainer"></div>
+
+    <!-- ============================================
+    PARTÍCULAS
+    ============================================ -->
+    <div class="particles" id="particles"></div>
+
+    <!-- ============================================
+    REGISTER CONTAINER
+    ============================================ -->
+    <div class="register-container">
+        <div class="register-card">
+
+            <!-- Botón Volver -->
+            <a href="{{ url_for('index') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+
+            <!-- Header -->
+            <div class="register-header">
+                <div class="logo-wrapper">
+                    <div class="logo-glow"></div>
+                    <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC">
+                </div>
+                <h1>UNC <span>Hidráulica</span></h1>
+                <p>Únete a la comunidad de ingeniería hidráulica</p>
+                <div class="mascot-hint">
+                    <i class="fas fa-graduation-cap"></i> Registro de nuevos miembros
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            {% if error %}
+            <div class="error-message show">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>{{ error }}</span>
+            </div>
+            {% endif %}
+
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText">Error en el registro</span>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i>
+                <span id="successText">Registro exitoso</span>
+            </div>
+
+            <!-- Form -->
+            <form class="register-form" method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="nombre" name="nombre" placeholder="Nombres" required autocomplete="given-name" value="{{ request.form.get('nombre', '') }}">
+                        <i class="fas fa-user input-icon"></i>
+                        <div class="input-ripple"></div>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="apellido" name="apellido" placeholder="Apellidos" required autocomplete="family-name" value="{{ request.form.get('apellido', '') }}">
+                        <i class="fas fa-user input-icon"></i>
+                        <div class="input-ripple"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" id="email" name="email" placeholder="Correo Electrónico" required autocomplete="email" value="{{ request.form.get('email', '') }}">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <span class="input-hint" id="emailHint"><i class="fas fa-info-circle"></i> Usa tu correo institucional</span>
+                    <div class="input-ripple"></div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="codigo" name="codigo" placeholder="Código de Estudiante" required autocomplete="off" value="{{ request.form.get('codigo', '') }}">
+                        <i class="fas fa-id-card input-icon"></i>
+                        <div class="input-ripple"></div>
+                    </div>
+                    <div class="form-group">
+                        <select id="carrera" name="carrera" required>
+                            <option value="">Seleccionar Carrera</option>
+                            <option value="Ingeniería Civil" {% if request.form.get('carrera') == 'Ingeniería Civil' %}selected{% endif %}>Ingeniería Civil</option>
+                            <option value="Ingeniería Hidráulica" {% if request.form.get('carrera') == 'Ingeniería Hidráulica' %}selected{% endif %}>Ingeniería Hidráulica</option>
+                            <option value="Ingeniería Ambiental" {% if request.form.get('carrera') == 'Ingeniería Ambiental' %}selected{% endif %}>Ingeniería Ambiental</option>
+                            <option value="Ingeniería Agrícola" {% if request.form.get('carrera') == 'Ingeniería Agrícola' %}selected{% endif %}>Ingeniería Agrícola</option>
+                            <option value="Ingeniería Sanitaria" {% if request.form.get('carrera') == 'Ingeniería Sanitaria' %}selected{% endif %}>Ingeniería Sanitaria</option>
+                            <option value="Ingeniería Mecánica" {% if request.form.get('carrera') == 'Ingeniería Mecánica' %}selected{% endif %}>Ingeniería Mecánica</option>
+                        </select>
+                        <i class="fas fa-graduation-cap input-icon"></i>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                        <div class="input-ripple"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="password" name="password" placeholder="Contraseña" required autocomplete="new-password" minlength="8">
+                    <i class="fas fa-lock input-icon"></i>
+                    <button type="button" class="toggle-password" onclick="togglePassword('password')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <span class="input-hint" id="passwordHint">
+                        <i class="fas fa-info-circle"></i> Mínimo 8 caracteres, incluye mayúscula y número
+                    </span>
+                    <div class="input-ripple"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" id="password2" name="password2" placeholder="Confirmar Contraseña" required autocomplete="new-password">
+                    <i class="fas fa-check-circle input-icon"></i>
+                    <button type="button" class="toggle-password" onclick="togglePassword('password2')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <span class="input-hint" id="password2Hint"><i class="fas fa-info-circle"></i> Repite tu contraseña</span>
+                    <div class="input-ripple"></div>
+                </div>
+
+                <div class="form-check">
+                    <input type="checkbox" id="terminos" name="terminos" required>
+                    <label for="terminos">
+                        Acepto los <a href="#" onclick="showToast('📜 Términos y condiciones de uso', 'info')">términos y condiciones</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-register" id="registerBtn">
+                    <span class="btn-content">
+                        <span class="spinner"></span>
+                        <span class="btn-text">
+                            <i class="fas fa-user-plus"></i> Crear Cuenta
+                        </span>
+                    </span>
+                </button>
+            </form>
+
+            <!-- Footer -->
+            <div class="register-footer">
+                <p>
+                    ¿Ya tienes cuenta?
+                    <a href="{{ url_for('login') }}">Inicia sesión aquí</a>
+                </p>
+                <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.5;">
+                    <i class="fas fa-shield-alt"></i> Tus datos están seguros
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // BURBUJAS
+        // ============================================
+        (function createBubbles() {
+            const container = document.getElementById('bubblesContainer');
+            const count = 30;
+
+            for (let i = 0; i < count; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 60 + 20;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = (Math.random() * 15 + 10) + 's';
+                bubble.style.animationDelay = (Math.random() * 10) + 's';
+                bubble.style.opacity = Math.random() * 0.5 + 0.1;
+                container.appendChild(bubble);
+            }
+        })();
+
+        // ============================================
+        // ESTRELLAS
+        // ============================================
+        (function createStars() {
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = (Math.random() * 3) + 's';
+                star.style.animationDuration = (Math.random() * 2 + 1) + 's';
+                container.appendChild(star);
+            }
+        })();
+
+        // ============================================
+        // PARTÍCULAS
+        // ============================================
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle' + (i % 3 === 0 ? ' glow' : '');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = (Math.random() * 4 + 2) + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                p.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(p);
+            }
+        })();
+
+        // ============================================
+        // RIPPLE EFFECT EN INPUTS
+        // ============================================
+        document.querySelectorAll('.form-group input, .form-group select').forEach(el => {
+            el.addEventListener('focus', function(e) {
+                const ripple = this.parentElement.querySelector('.ripple-effect');
+                if (!ripple) {
+                    const rect = this.getBoundingClientRect();
+                    const newRipple = document.createElement('div');
+                    newRipple.className = 'ripple-effect';
+                    const size = Math.max(rect.width, rect.height);
+                    newRipple.style.width = size + 'px';
+                    newRipple.style.height = size + 'px';
+                    newRipple.style.left = '50%';
+                    newRipple.style.top = '50%';
+                    newRipple.style.transform = 'translate(-50%, -50%) scale(0)';
+                    const container = this.parentElement.querySelector('.input-ripple');
+                    container.appendChild(newRipple);
+                    setTimeout(() => {
+                        newRipple.style.transform = 'translate(-50%, -50%) scale(1)';
+                    }, 10);
+                    setTimeout(() => {
+                        newRipple.remove();
+                    }, 600);
+                }
+            });
+        });
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // TOGGLE PASSWORD
+        // ============================================
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            const icon = input.parentElement.querySelector('.toggle-password i');
+
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+
+        // ============================================
+        // VALIDACIÓN EN TIEMPO REAL
+        // ============================================
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const password2Input = document.getElementById('password2');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+
+        // Email
+        emailInput.addEventListener('input', function() {
+            const hint = document.getElementById('emailHint');
+            if (this.value && !this.validity.valid) {
+                hint.className = 'input-hint invalid';
+                hint.innerHTML = '<i class="fas fa-exclamation-circle"></i> Ingresa un correo válido';
+            } else if (this.value && this.validity.valid) {
+                hint.className = 'input-hint valid';
+                hint.innerHTML = '<i class="fas fa-check-circle"></i> Correo válido';
+            } else {
+                hint.className = 'input-hint';
+                hint.innerHTML = '<i class="fas fa-info-circle"></i> Usa tu correo institucional';
+            }
+            hideError();
+        });
+
+        // Password
+        passwordInput.addEventListener('input', function() {
+            const hint = document.getElementById('passwordHint');
+            const val = this.value;
+
+            if (val.length === 0) {
+                hint.className = 'input-hint';
+                hint.innerHTML = '<i class="fas fa-info-circle"></i> Mínimo 8 caracteres, incluye mayúscula y número';
+                return;
+            }
+
+            let valid = true;
+            let msgs = [];
+
+            if (val.length < 8) {
+                valid = false;
+                msgs.push('8 caracteres');
+            }
+            if (!/[A-Z]/.test(val)) {
+                valid = false;
+                msgs.push('mayúscula');
+            }
+            if (!/[0-9]/.test(val)) {
+                valid = false;
+                msgs.push('número');
+            }
+
+            if (valid) {
+                hint.className = 'input-hint valid';
+                hint.innerHTML = '<i class="fas fa-check-circle"></i> Contraseña segura';
+            } else {
+                hint.className = 'input-hint invalid';
+                hint.innerHTML = `<i class="fas fa-exclamation-circle"></i> Falta: ${msgs.join(', ')}`;
+            }
+
+            if (password2Input.value) {
+                verificarCoincidencia();
+            }
+            hideError();
+        });
+
+        // Password2
+        password2Input.addEventListener('input', function() {
+            verificarCoincidencia();
+            hideError();
+        });
+
+        function verificarCoincidencia() {
+            const hint = document.getElementById('password2Hint');
+            const p1 = passwordInput.value;
+            const p2 = password2Input.value;
+
+            if (p2.length === 0) {
+                hint.className = 'input-hint';
+                hint.innerHTML = '<i class="fas fa-info-circle"></i> Repite tu contraseña';
+                return;
+            }
+
+            if (p1 === p2) {
+                hint.className = 'input-hint valid';
+                hint.innerHTML = '<i class="fas fa-check-circle"></i> Las contraseñas coinciden';
+            } else {
+                hint.className = 'input-hint invalid';
+                hint.innerHTML = '<i class="fas fa-exclamation-circle"></i> Las contraseñas no coinciden';
+            }
+        }
+
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        function hideError() {
+            errorMessage.classList.remove('show');
+        }
+
+        // ============================================
+        // SUBMIT FORM
+        // ============================================
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            const email = document.getElementById('email').value.trim();
+            const nombre = document.getElementById('nombre').value.trim();
+            const apellido = document.getElementById('apellido').value.trim();
+            const codigo = document.getElementById('codigo').value.trim();
+            const carrera = document.getElementById('carrera').value;
+            const password = document.getElementById('password').value;
+            const password2 = document.getElementById('password2').value;
+            const terminos = document.getElementById('terminos').checked;
+
+            if (!nombre) {
+                e.preventDefault();
+                showError('Por favor ingresa tus nombres');
+                document.getElementById('nombre').focus();
+                return;
+            }
+
+            if (!apellido) {
+                e.preventDefault();
+                showError('Por favor ingresa tus apellidos');
+                document.getElementById('apellido').focus();
+                return;
+            }
+
+            if (!email) {
+                e.preventDefault();
+                showError('Por favor ingresa tu correo electrónico');
+                document.getElementById('email').focus();
+                return;
+            }
+
+            if (!email.validity.valid) {
+                e.preventDefault();
+                showError('Por favor ingresa un correo electrónico válido');
+                document.getElementById('email').focus();
+                return;
+            }
+
+            if (!codigo) {
+                e.preventDefault();
+                showError('Por favor ingresa tu código de estudiante');
+                document.getElementById('codigo').focus();
+                return;
+            }
+
+            if (!carrera) {
+                e.preventDefault();
+                showError('Por favor selecciona tu carrera');
+                document.getElementById('carrera').focus();
+                return;
+            }
+
+            if (!password) {
+                e.preventDefault();
+                showError('Por favor ingresa una contraseña');
+                document.getElementById('password').focus();
+                return;
+            }
+
+            if (password.length < 8) {
+                e.preventDefault();
+                showError('La contraseña debe tener al menos 8 caracteres');
+                document.getElementById('password').focus();
+                return;
+            }
+
+            if (!/[A-Z]/.test(password)) {
+                e.preventDefault();
+                showError('La contraseña debe incluir al menos una mayúscula');
+                document.getElementById('password').focus();
+                return;
+            }
+
+            if (!/[0-9]/.test(password)) {
+                e.preventDefault();
+                showError('La contraseña debe incluir al menos un número');
+                document.getElementById('password').focus();
+                return;
+            }
+
+            if (!password2) {
+                e.preventDefault();
+                showError('Por favor confirma tu contraseña');
+                document.getElementById('password2').focus();
+                return;
+            }
+
+            if (password !== password2) {
+                e.preventDefault();
+                showError('Las contraseñas no coinciden');
+                document.getElementById('password2').focus();
+                return;
+            }
+
+            if (!terminos) {
+                e.preventDefault();
+                showError('Debes aceptar los términos y condiciones');
+                document.getElementById('terminos').focus();
+                return;
+            }
+
+            const btn = document.getElementById('registerBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+        });
+
+        // ============================================
+        // ENTER KEY NAVIGATION
+        // ============================================
+        document.querySelectorAll('input, select').forEach((el, index, arr) => {
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const next = arr[index + 1];
+                    if (next) {
+                        next.focus();
+                    } else {
+                        document.getElementById('registerForm').submit();
+                    }
+                }
+            });
+        });
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        console.log('📝 Registro con Burbujas cargado!');
+        console.log('💡 Formulario con validación en tiempo real');
+        console.log('🔙 Botón "Volver" para regresar al inicio');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNC - Ingeniería Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           INTRO - LOGO ANIMADO (SOLO ESTO SE AGREGA)
+           ============================================ */
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--azul-oscuro);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s ease, transform 1s ease;
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.08);
+        }
+
+        .intro-logo-wrapper {
+            position: relative;
+            animation: introPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes introPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .intro-logo-wrapper .logo-glow {
+            position: absolute;
+            inset: -30px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240,184,41,0.12), transparent 70%);
+            animation: glowPulse 2.5s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .intro-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--dorado);
+            padding: 12px;
+            background: white;
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 0 60px rgba(240,184,41,0.08);
+        }
+
+        .intro-title {
+            margin-top: 2rem;
+            text-align: center;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.5s;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .intro-title h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: white;
+        }
+
+        .intro-title h1 .tocas {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-title .sub {
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 0.2rem;
+        }
+
+        .intro-title .sub span {
+            color: var(--dorado);
+            -webkit-text-fill-color: var(--dorado);
+        }
+
+        .intro-loader {
+            margin-top: 2rem;
+            width: 120px;
+            height: 2px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 10px;
+            overflow: hidden;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 0.8s;
+            opacity: 0;
+        }
+
+        .intro-loader .loader-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--dorado), var(--dorado-claro));
+            border-radius: 10px;
+            animation: loadBar 2s ease-in-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes loadBar {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        .intro-version {
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 2px;
+            animation: fadeInUp 1s ease forwards;
+            animation-delay: 1s;
+            opacity: 0;
+        }
+
+        /* ============================================
+           TOAST PARA INTRO
+           ============================================ */
+        .toast-intro {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 9999;
+            max-width: 360px;
+            background: rgba(10, 22, 40, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(240,184,41,0.04);
+        }
+
+        .toast-intro.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ============================================
+           RESTO DE TU CSS ORIGINAL (COMPLETO)
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --azul-medio: #1a3a5c;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --dorado-claro: #fce4a8;
+            --texto-claro: #ffffff;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --sombra: 0 20px 60px rgba(0,0,0,0.12);
+            --sombra-hover: 0 30px 80px rgba(0,0,0,0.18);
+            --borde-redondeado: 20px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--crema);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--celeste-hielo);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--azul-oscuro);
+        }
+
+        /* ============================================
+           NAVBAR (ORIGINAL)
+           ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0.8rem 2rem;
+            background: rgba(10, 22, 40, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            transition: var(--transition);
+        }
+
+        .navbar.scrolled {
+            background: rgba(10, 22, 40, 0.95);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+            padding: 0.5rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .logo-wrapper {
+            position: relative;
+            width: 48px;
+            height: 48px;
+        }
+
+        .navbar-logo {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            transition: var(--transition);
+            object-fit: contain;
+        }
+
+        .logo-glow {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(240,184,41,0.3), transparent 70%);
+            opacity: 0;
+            transition: var(--transition);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .brand-unc {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--texto-claro);
+            letter-spacing: -0.5px;
+        }
+
+        .brand-unc span {
+            color: var(--dorado);
+        }
+
+        .brand-hidraulica {
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: var(--celeste-hielo);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .nav-links a.active {
+            color: white;
+            background: rgba(240,184,41,0.15);
+        }
+
+        .btn-nav {
+            padding: 0.5rem 1.2rem !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+        }
+
+        .btn-nav-gold {
+            background: var(--dorado) !important;
+            color: var(--azul-oscuro) !important;
+        }
+
+        .btn-nav-gold:hover {
+            background: var(--dorado-oscuro) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .nav-toggle span {
+            width: 28px;
+            height: 2.5px;
+            background: white;
+            border-radius: 10px;
+            transition: var(--transition);
+        }
+
+        .nav-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .nav-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* ============================================
+           HERO (ORIGINAL)
+           ============================================ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, var(--azul-oscuro) 0%, var(--azul-profundo) 50%, var(--azul-medio) 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(184,226,242,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(240,184,41,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease forwards;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(240,184,41,0.15);
+            border: 1px solid rgba(240,184,41,0.2);
+            padding: 0.4rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            color: var(--dorado);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge i {
+            font-size: 0.7rem;
+        }
+
+        .hero h1 {
+            font-size: 3.8rem;
+            font-weight: 900;
+            color: white;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -1.5px;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 500px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+            box-shadow: 0 8px 30px rgba(240,184,41,0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(240,184,41,0.35);
+            background: var(--dorado-oscuro);
+        }
+
+        .btn-outline {
+            background: rgba(255,255,255,0.08);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .stat-item {
+            text-align: left;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: white;
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-number .plus {
+            color: var(--dorado);
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+            font-weight: 400;
+            margin-top: 0.2rem;
+        }
+
+        .hero-visual {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .floating-card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: var(--transition);
+            animation: floatCard 6s ease-in-out infinite;
+            cursor: default;
+        }
+
+        .floating-card:nth-child(2) { animation-delay: 1s; }
+        .floating-card:nth-child(3) { animation-delay: 2s; }
+        .floating-card:nth-child(4) { animation-delay: 3s; }
+
+        @keyframes floatCard {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .floating-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(240,184,41,0.3);
+        }
+
+        .floating-card .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .floating-card .card-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .floating-card .card-desc {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+        }
+
+        /* ============================================
+           FEATURES (ORIGINAL)
+           ============================================ */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .section-header h2 i {
+            color: var(--dorado);
+        }
+
+        .section-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2.5rem;
+            box-shadow: var(--sombra);
+            transition: var(--transition);
+            border: 1px solid rgba(184,226,242,0.1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .feature-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--sombra-hover);
+            border-color: var(--celeste-hielo);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--dorado), var(--celeste-hielo));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+            transition: var(--transition);
+        }
+
+        .feature-icon.gold {
+            background: rgba(240,184,41,0.12);
+            color: var(--dorado);
+        }
+
+        .feature-icon.blue {
+            background: rgba(10,22,40,0.08);
+            color: var(--azul-oscuro);
+        }
+
+        .feature-icon.ice {
+            background: rgba(184,226,242,0.2);
+            color: var(--azul-medio);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--texto-gris);
+            line-height: 1.7;
+            margin-bottom: 1.2rem;
+        }
+
+        .feature-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--azul-oscuro);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .feature-link:hover {
+            color: var(--dorado);
+            gap: 14px;
+        }
+
+        /* ============================================
+           STATS (ORIGINAL)
+           ============================================ */
+        .stats-section {
+            background: var(--azul-oscuro);
+            padding: 4rem 2rem;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stats-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: var(--borde-redondeado);
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            transition: var(--transition);
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .stats-card.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .stats-card:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+
+        .stats-icon {
+            font-size: 2.5rem;
+            color: var(--dorado);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stats-number {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .stats-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.95rem;
+        }
+
+        /* ============================================
+           CTA (ORIGINAL)
+           ============================================ */
+        .cta-section {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, var(--crema), var(--crema-claro));
+        }
+
+        .cta-container {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            background: white;
+            padding: 4rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .cta-container h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.5rem;
+        }
+
+        .cta-container p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline-dark {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline-dark:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        /* ============================================
+           FOOTER (ORIGINAL)
+           ============================================ */
+        .footer {
+            background: var(--azul-oscuro);
+            color: rgba(255,255,255,0.7);
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 3rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h4 {
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section p {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            opacity: 0.7;
+        }
+
+        .footer-section a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            display: block;
+            padding: 0.3rem 0;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .footer-section a:hover {
+            color: var(--dorado);
+            padding-left: 6px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            padding: 0;
+        }
+
+        .social-links a:hover {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+            transform: translateY(-3px);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            opacity: 0.5;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           ANIMACIONES (ORIGINALES)
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ============================================
+           RESPONSIVE (ORIGINAL)
+           ============================================ */
+        @media (max-width: 1024px) {
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .hero-visual {
+                order: -1;
+            }
+            .hero-cards {
+                max-width: 100%;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 22, 40, 0.98);
+                backdrop-filter: blur(20px);
+                padding: 1.5rem;
+                border-bottom: 1px solid rgba(255,255,255,0.06);
+                gap: 0.3rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 0.8rem;
+            }
+
+            .hero {
+                padding: 5rem 1rem 3rem;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+                flex-wrap: wrap;
+            }
+
+            .stat-number {
+                font-size: 1.6rem;
+            }
+
+            .hero-cards {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .floating-card {
+                padding: 1rem;
+            }
+
+            .floating-card .card-icon {
+                font-size: 1.8rem;
+            }
+
+            .floating-card .card-title {
+                font-size: 0.85rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header h2 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+
+            .stats-number {
+                font-size: 2rem;
+            }
+
+            .cta-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .cta-container h2 {
+                font-size: 1.8rem;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-section h4 {
+                margin-bottom: 0.5rem;
+            }
+
+            .intro-logo {
+                width: 80px;
+                height: 80px;
+                padding: 8px;
+            }
+
+            .intro-title h1 {
+                font-size: 1.8rem;
+            }
+
+            .intro-title .sub {
+                font-size: 0.8rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-cards {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.6rem;
+            }
+
+            .floating-card {
+                padding: 0.8rem;
+            }
+
+            .floating-card .card-icon {
+                font-size: 1.5rem;
+            }
+
+            .floating-card .card-title {
+                font-size: 0.75rem;
+            }
+
+            .floating-card .card-desc {
+                font-size: 0.65rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-actions .btn {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stats-card {
+                padding: 1rem;
+            }
+
+            .intro-logo {
+                width: 60px;
+                height: 60px;
+                padding: 6px;
+            }
+
+            .intro-title h1 {
+                font-size: 1.4rem;
+            }
+
+            .intro-title .sub {
+                font-size: 0.65rem;
+                letter-spacing: 1px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    INTRO - LOGO ANIMADO (SOLO ESTO SE AGREGA)
+    ============================================ -->
+    <div class="intro-overlay" id="introOverlay">
+        <div class="intro-logo-wrapper">
+            <div class="logo-glow"></div>
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="intro-logo">
+        </div>
+        <div class="intro-title">
+            <h1><span class="tocas">TOCAS</span> Hidráulica</h1>
+            <div class="sub">Universidad Nacional de <span>Cajamarca</span></div>
+        </div>
+        <div class="intro-loader">
+            <div class="loader-bar"></div>
+        </div>
+        <div class="intro-version">v2.0 · Ingeniería Hidráulica</div>
+    </div>
+
+    <!-- ============================================
+    TOAST PARA INTRO
+    ============================================ -->
+    <div class="toast-intro" id="toastIntro">🚀 Bienvenido a TOCAS Hidráulica</div>
+
+    <!-- ============================================
+    NAVBAR (ORIGINAL)
+    ============================================ -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="navbar-brand">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-unc">UNC <span>Hidráulica</span></span>
+                    <span class="brand-hidraulica">Ingeniería</span>
+                </div>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-links" id="navLinks">
+                <a href="#" class="active">Inicio</a>
+                <a href="#features">Funcionalidades</a>
+                <a href="#stats">Estadísticas</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('logout') }}">Cerrar Sesión</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-nav">Iniciar Sesión</a>
+                    <a href="{{ url_for('register') }}" class="btn-nav btn-nav-gold">Registrarse</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    HERO SECTION (ORIGINAL)
+    ============================================ -->
+    <section class="hero" id="hero">
+        <div class="hero-particles" id="particles"></div>
+        
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-graduation-cap"></i>
+                    UNC - Ingeniería Hidráulica
+                </div>
+                
+                <h1>
+                    Plataforma Inteligente de<br>
+                    <span class="highlight">Ingeniería Hidráulica</span>
+                </h1>
+                
+                <p>
+                    Diseño, cálculo y simulación de sistemas hidráulicos con inteligencia artificial
+                </p>
+                
+                <div class="hero-actions">
+                    <a href="{{ url_for('calculadora') if current_user.is_authenticated else url_for('login') }}" class="btn btn-primary">
+                        <i class="fas fa-calculator"></i> Comenzar Ahora
+                    </a>
+                    <a href="{{ url_for('ia_asistente') if current_user.is_authenticated else url_for('login') }}" class="btn btn-outline">
+                        <i class="fas fa-robot"></i> IA Asistente
+                    </a>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat1">100<span class="plus">+</span></span>
+                        <span class="stat-label">Calculadoras</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat2">50<span class="plus">+</span></span>
+                        <span class="stat-label">Proyectos</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat3">1000<span class="plus">+</span></span>
+                        <span class="stat-label">Usuarios</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <div class="hero-cards">
+                    <div class="floating-card">
+                        <span class="card-icon">💧</span>
+                        <div class="card-title">Caudal</div>
+                        <div class="card-desc">Cálculo preciso</div>
+                    </div>
+                    <div class="floating-card">
+                        <span class="card-icon">🏗️</span>
+                        <div class="card-title">Canales</div>
+                        <div class="card-desc">Diseño automático</div>
+                    </div>
+                    <div class="floating-card">
+                        <span class="card-icon">🔧</span>
+                        <div class="card-title">Tuberías</div>
+                        <div class="card-desc">Diámetros comerciales</div>
+                    </div>
+                    <div class="floating-card">
+                        <span class="card-icon">🤖</span>
+                        <div class="card-title">IA</div>
+                        <div class="card-desc">Asistente inteligente</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    FEATURES SECTION (ORIGINAL)
+    ============================================ -->
+    <section class="features" id="features">
+        <div class="section-header">
+            <h2><i class="fas fa-star"></i> Funcionalidades Principales</h2>
+            <p>Herramientas profesionales para el diseño hidráulico</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon gold">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <h3>Calculadora Universal</h3>
+                <p>Más de 100 calculadoras hidráulicas: Manning, Hazen-Williams, Darcy-Weisbach, Bernoulli, Reynolds y más</p>
+                <a href="{{ url_for('calculadora') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Explorar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon blue">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>Asistente IA</h3>
+                <p>ChatGPT especializado en hidráulica que resuelve problemas, explica fórmulas y genera gráficos</p>
+                <a href="{{ url_for('ia_asistente') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Consultar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon ice">
+                    <i class="fas fa-ruler-combined"></i>
+                </div>
+                <h3>Diseño de Canales</h3>
+                <p>Diseño automático de canales trapezoidales, rectangulares, circulares y triangulares con planos y perfiles</p>
+                <a href="{{ url_for('canales') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Diseñar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon gold">
+                    <i class="fas fa-pipe-valve"></i>
+                </div>
+                <h3>Diseño de Tuberías</h3>
+                <p>Selección automática del diámetro comercial, cálculos de pérdidas de carga y factor de fricción</p>
+                <a href="{{ url_for('tuberias') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Diseñar <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon blue">
+                    <i class="fas fa-map-marked-alt"></i>
+                </div>
+                <h3>Monitoreo de Ríos</h3>
+                <p>Mapas interactivos con datos en tiempo real: nivel, caudal, temperatura y riesgo de inundación</p>
+                <a href="{{ url_for('rios') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Ver Mapa <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon ice">
+                    <i class="fas fa-cloud-rain"></i>
+                </div>
+                <h3>Hidrología Avanzada</h3>
+                <p>Hidrogramas, tiempo de concentración, método racional y curvas IDF para proyectos hidrológicos</p>
+                <a href="{{ url_for('hidrologia') if current_user.is_authenticated else url_for('login') }}" class="feature-link">
+                    Calcular <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    STATS SECTION (ORIGINAL)
+    ============================================ -->
+    <section class="stats-section" id="stats">
+        <div class="stats-container">
+            <div class="stats-grid">
+                <div class="stats-card">
+                    <span class="stats-icon">📄</span>
+                    <span class="stats-number" data-count="500">0</span>
+                    <span class="stats-label">Informes Generados</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-icon">👨‍🎓</span>
+                    <span class="stats-number" data-count="1200">0</span>
+                    <span class="stats-label">Estudiantes Activos</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-icon">🏗️</span>
+                    <span class="stats-number" data-count="350">0</span>
+                    <span class="stats-label">Proyectos Realizados</span>
+                </div>
+                <div class="stats-card">
+                    <span class="stats-icon">⭐</span>
+                    <span class="stats-number" data-count="98">0</span>
+                    <span class="stats-label">% Satisfacción</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    CTA SECTION (ORIGINAL)
+    ============================================ -->
+    <section class="cta-section">
+        <div class="cta-container">
+            <h2>¿Listo para comenzar tu proyecto hidráulico?</h2>
+            <p>Regístrate y accede a todas las herramientas profesionales</p>
+            <div class="cta-buttons">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-gold">
+                        <i class="fas fa-chart-pie"></i> Ir al Dashboard
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('register') }}" class="btn btn-gold">
+                        <i class="fas fa-user-plus"></i> Registrarse Gratis
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-dark">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+    FOOTER (ORIGINAL)
+    ============================================ -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-university"></i> Universidad Nacional de Cajamarca</h4>
+                <p>Facultad de Ingeniería</p>
+                <p>Ingeniería Hidráulica</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+                    <i class="fas fa-envelope"></i> hidraulica@unc.edu.pe
+                </p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <a href="{{ url_for('calculadora') if current_user.is_authenticated else url_for('login') }}"><i class="fas fa-calculator"></i> Calculadora</a>
+                <a href="{{ url_for('ia_asistente') if current_user.is_authenticated else url_for('login') }}"><i class="fas fa-robot"></i> IA Asistente</a>
+                <a href="{{ url_for('portafolio') if current_user.is_authenticated else url_for('login') }}"><i class="fas fa-folder-open"></i> Portafolio</a>
+                <a href="#features"><i class="fas fa-star"></i> Funcionalidades</a>
+            </div>
+            <div class="footer-section">
+                <h4>Conéctate</h4>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.85rem;">
+                    <i class="fas fa-phone"></i> 919134132
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 UNC - Todos los derechos reservados - TOCAS CERCADO,JHOEL</p>
+            <p>Desarrollado para la ingeniería hidráulica</p>
+        </div>
+    </footer>
+
+    <!-- ============================================
+    SCRIPTS (ORIGINALES + INTRO)
+    ============================================ -->
+    <script>
+        // ============================================
+        // INTRO - OCULTAR DESPUÉS DE ANIMACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const intro = document.getElementById('introOverlay');
+            const toast = document.getElementById('toastIntro');
+
+            // Ocultar intro después de la animación
+            setTimeout(function() {
+                intro.classList.add('hidden');
+                setTimeout(function() {
+                    intro.style.display = 'none';
+                }, 1000);
+            }, 2800);
+
+            // Mostrar toast de bienvenida
+            setTimeout(function() {
+                toast.classList.add('show');
+                setTimeout(function() {
+                    toast.classList.remove('show');
+                }, 3500);
+            }, 3500);
+        });
+
+        // ============================================
+        // NAVBAR SCROLL (ORIGINAL)
+        // ============================================
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // ============================================
+        // NAVBAR TOGGLE (ORIGINAL)
+        // ============================================
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        navToggle.addEventListener('click', function() {
+            this.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // ============================================
+        // PARTICLES (ORIGINAL)
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = 30;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 3 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                particle.style.animationDelay = (Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // ============================================
+        // SCROLL ANIMATIONS (ORIGINAL)
+        // ============================================
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        document.querySelectorAll('.feature-card, .stats-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // ============================================
+        // COUNTER ANIMATION (ORIGINAL)
+        // ============================================
+        const counterObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const target = entry.target;
+                    const count = parseInt(target.getAttribute('data-count'));
+                    animateCounter(target, count);
+                    counterObserver.unobserve(target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.stats-number[data-count]').forEach(el => {
+            counterObserver.observe(el);
+        });
+
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 50;
+            const duration = 2000;
+            const stepTime = duration / 50;
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target + (target > 100 ? '+' : '');
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.floor(current);
+                }
+            }, stepTime);
+        }
+
+        // ============================================
+        // SMOOTH SCROLL (ORIGINAL)
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // ============================================
+        // ESTADÍSTICAS DE HERO (ORIGINAL)
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const stat1 = document.getElementById('stat1');
+            const stat2 = document.getElementById('stat2');
+            const stat3 = document.getElementById('stat3');
+
+            setTimeout(() => {
+                stat1.innerHTML = '100<span class="plus">+</span>';
+                stat2.innerHTML = '50<span class="plus">+</span>';
+                stat3.innerHTML = '1000<span class="plus">+</span>';
+            }, 500);
+        });
+
+        // ============================================
+        // EFECTO PARALLAX (ORIGINAL)
+        // ============================================
+        window.addEventListener('scroll', function() {
+            const hero = document.querySelector('.hero');
+            const scrollPos = window.scrollY;
+            if (scrollPos < window.innerHeight) {
+                hero.style.backgroundPositionY = scrollPos * 0.5 + 'px';
+            }
+        });
+
+        console.log('🚀 Plataforma Hidráulica UNC cargada correctamente');
+        console.log('📧 admin@unc.edu.pe / 🔑 admin123');
+        console.log('📧 demo@unc.edu.pe / 🔑 demo123');
+        console.log('✨ Intro con logo animado agregada');
+    </script>
+</body>
+</html>

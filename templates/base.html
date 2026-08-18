@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}UNC - Ingeniería Hidráulica{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- Navbar Mejorada -->
+    <nav class="navbar" id="mainNav">
+        <div class="nav-container">
+            <a href="{{ url_for('index') }}" class="navbar-brand">
+                <div class="logo-wrapper">
+                    <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+                    <div class="logo-glow"></div>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-unc">UNC</span>
+                    <span class="brand-hidraulica">Hidráulica</span>
+                </div>
+            </a>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="nav-links" id="navLinks">
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">
+                        <i class="fas fa-chart-pie"></i> Dashboard
+                    </a>
+                    <a href="{{ url_for('calculadora') }}" class="{% if request.endpoint == 'calculadora' %}active{% endif %}">
+                        <i class="fas fa-calculator"></i> Calculadora
+                    </a>
+                    <a href="{{ url_for('ia_asistente') }}" class="{% if request.endpoint == 'ia_asistente' %}active{% endif %}">
+                        <i class="fas fa-robot"></i> IA Asistente
+                    </a>
+                    <a href="{{ url_for('portafolio') }}" class="{% if request.endpoint == 'portafolio' %}active{% endif %}">
+                        <i class="fas fa-folder-open"></i> Portafolio
+                    </a>
+                    <div class="nav-dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="fas fa-water"></i> Hidráulica <i class="fas fa-chevron-down"></i>
+                        </a>
+                        <div class="dropdown-menu">
+                            <a href="{{ url_for('canales') }}"><i class="fas fa-ruler"></i> Canales</a>
+                            <a href="{{ url_for('tuberias') }}"><i class="fas fa-pipe"></i> Tuberías</a>
+                            <a href="{{ url_for('rios') }}"><i class="fas fa-river"></i> Ríos</a>
+                            <a href="{{ url_for('hidrologia') }}"><i class="fas fa-cloud-rain"></i> Hidrología</a>
+                            <a href="{{ url_for('presas') }}"><i class="fas fa-dam"></i> Presas</a>
+                        </div>
+                    </div>
+                    <div class="user-profile">
+                        <img src="https://ui-avatars.com/api/?name={{ current_user.nombre }}+{{ current_user.apellido }}&background=0a1628&color=f0b829&size=40" alt="User" class="user-avatar">
+                        <span class="user-name">{{ current_user.nombre }}</span>
+                        <a href="{{ url_for('logout') }}" class="logout-btn">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="{% if request.endpoint == 'login' %}active{% endif %}">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn btn-gold {% if request.endpoint == 'register' %}active{% endif %}">
+                        <i class="fas fa-user-plus"></i> Registrarse
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }} animate-slideIn">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                        <button class="flash-close">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer Mejorado -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4><i class="fas fa-university"></i> Universidad Nacional de Cajamarca</h4>
+                <p>Facultad de Ingeniería</p>
+                <p>Ingeniería Hidráulica</p>
+            </div>
+            <div class="footer-section">
+                <h4>Enlaces Rápidos</h4>
+                <a href="{{ url_for('calculadora') }}"><i class="fas fa-calculator"></i> Calculadora</a>
+                <a href="{{ url_for('ia_asistente') }}"><i class="fas fa-robot"></i> IA Asistente</a>
+                <a href="{{ url_for('portafolio') }}"><i class="fas fa-folder-open"></i> Portafolio</a>
+            </div>
+            <div class="footer-section">
+                <h4>Contacto</h4>
+                <p><i class="fas fa-envelope"></i> hidraulica@unc.edu.pe</p>
+                <p><i class="fas fa-phone"></i> (076) 123-456</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 UNC - Todos los derechos reservados</p>
+            <p>Desarrollado con ❤️ para la ingeniería hidráulica</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // Toggle móvil
+        document.getElementById('navToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // Cerrar mensajes flash
+        document.querySelectorAll('.flash-close').forEach(btn => {
+            btn.addEventListener('click', function() {
+                this.parentElement.remove();
+            });
+        });
+
+        // Dropdown
+        document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                this.parentElement.classList.toggle('open');
+            });
+        });
+
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.nav-dropdown')) {
+                document.querySelectorAll('.nav-dropdown.open').forEach(d => d.classList.remove('open'));
+            }
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('mainNav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

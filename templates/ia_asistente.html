@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOCASAI - Asistente IA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* ============================================
+           VARIABLES - MODO OSCURO (DEFAULT)
+           ============================================ */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #0d1b2a;
+            --bg-card: rgba(255,255,255,0.03);
+            --bg-card-hover: rgba(255,255,255,0.06);
+            --bg-input: rgba(255,255,255,0.03);
+            --bg-bubble-user: linear-gradient(135deg, #0066cc, #004d99);
+            --bg-bubble-assistant: rgba(255,255,255,0.05);
+            --border-color: rgba(255,255,255,0.06);
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.3);
+            --shadow: 0 8px 32px rgba(0,0,0,0.3);
+            --shadow-glow: 0 0 40px rgba(0,102,204,0.05);
+            --agua: #0066cc;
+            --agua-claro: #4d9fff;
+            --agua-oscuro: #003d80;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --dorado-claro: #fce4a8;
+            --azul-neon: #00d4ff;
+            --morado-neon: #7b2ffc;
+            --verde-neon: #00ff88;
+            --rojo-neon: #ff0044;
+            --naranja: #f59e0b;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --borde-redondeado: 16px;
+        }
+
+        /* ============================================
+           MODO CLARO
+           ============================================ */
+        [data-theme="light"] {
+            --bg-primary: #f0f5fa;
+            --bg-secondary: #e0e8f0;
+            --bg-card: rgba(255,255,255,0.6);
+            --bg-card-hover: rgba(255,255,255,0.8);
+            --bg-input: rgba(255,255,255,0.6);
+            --bg-bubble-user: linear-gradient(135deg, #0066cc, #004d99);
+            --bg-bubble-assistant: rgba(255,255,255,0.8);
+            --border-color: rgba(0,0,0,0.06);
+            --text-primary: #0a1628;
+            --text-secondary: rgba(0,0,0,0.7);
+            --text-muted: rgba(0,0,0,0.3);
+            --shadow: 0 8px 32px rgba(0,0,0,0.08);
+            --shadow-glow: 0 0 40px rgba(0,102,204,0.08);
+        }
+
+        /* ============================================
+           RESET
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            transition: var(--transition);
+        }
+
+        /* ============================================
+           FONDO CON BURBUJAS DE AGUA
+           ============================================ */
+        .bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at 30% 40%, var(--bg-secondary), var(--bg-primary));
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .bg-container .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(0,102,204,0.04), transparent);
+            border: 1px solid rgba(0,102,204,0.03);
+            animation: bubbleFloat 30s linear infinite;
+            pointer-events: none;
+            transition: var(--transition);
+        }
+
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(100vh) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+            5% { opacity: 0.4; }
+            95% { opacity: 0.4; }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.7rem 2rem;
+            background: rgba(10, 14, 26, 0.75);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .navbar {
+            background: rgba(240, 245, 250, 0.85);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--agua);
+            padding: 3px;
+            background: white;
+            object-fit: contain;
+            transition: var(--transition);
+        }
+
+        .navbar-title {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            transition: var(--transition);
+        }
+
+        .navbar-title .tocas {
+            color: var(--agua);
+            -webkit-text-fill-color: var(--agua);
+        }
+
+        .navbar-title .ai {
+            color: var(--dorado);
+            -webkit-text-fill-color: var(--dorado);
+            font-weight: 300;
+            font-size: 0.7rem;
+        }
+
+        .navbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.8rem;
+        }
+
+        .btn-back:hover {
+            background: rgba(0,102,204,0.06);
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           TOGGLE MODO CLARO/OSCURO
+           ============================================ */
+        .theme-toggle {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 50px;
+            padding: 0.3rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--agua);
+            color: var(--text-primary);
+        }
+
+        .theme-toggle .toggle-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            background: var(--bg-card);
+        }
+
+        .theme-toggle .toggle-icon i {
+            font-size: 0.9rem;
+        }
+
+        .theme-toggle .toggle-label {
+            padding: 0 0.3rem;
+            font-weight: 500;
+            font-size: 0.7rem;
+        }
+
+        /* ============================================
+           MAIN CONTAINER
+           ============================================ */
+        .ia-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .ia-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .ia-header h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .ia-header h1 .tocas-title {
+            color: var(--agua);
+            -webkit-text-fill-color: var(--agua);
+        }
+
+        .ia-header h1 .ai-title {
+            color: var(--dorado);
+            -webkit-text-fill-color: var(--dorado);
+        }
+
+        .ia-header .badge-ia {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--agua), var(--agua-claro));
+            color: white;
+            padding: 0.2rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+            box-shadow: 0 0 30px rgba(0,102,204,0.15);
+        }
+
+        .ia-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-top: 0.3rem;
+            transition: var(--transition);
+        }
+
+        /* ============================================
+           CHAT WINDOW
+           ============================================ */
+        .chat-window {
+            background: var(--bg-card);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: var(--borde-redondeado);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            box-shadow: var(--shadow-glow);
+            transition: var(--transition);
+        }
+
+        .chat-messages {
+            height: 420px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .chat-messages {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--agua);
+            border-radius: 10px;
+        }
+
+        .chat-messages .message {
+            margin-bottom: 1rem;
+            max-width: 85%;
+            animation: messageIn 0.3s ease forwards;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .chat-messages .message.user {
+            margin-left: auto;
+        }
+
+        .chat-messages .message.assistant {
+            margin-right: auto;
+        }
+
+        .chat-messages .message .bubble {
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .chat-messages .message.user .bubble {
+            background: var(--bg-bubble-user);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-messages .message.assistant .bubble {
+            background: var(--bg-bubble-assistant);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .chat-messages .message .bubble .sender {
+            font-size: 0.65rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            opacity: 0.5;
+            transition: var(--transition);
+        }
+
+        .chat-messages .message .bubble h3 {
+            color: var(--agua);
+            margin: 0.5rem 0 0.3rem 0;
+            font-size: 1.05rem;
+            transition: var(--transition);
+        }
+
+        .chat-messages .message .bubble h4 {
+            color: var(--agua-claro);
+            margin: 0.4rem 0 0.2rem 0;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .chat-messages .message .bubble h4 {
+            color: #004d99;
+        }
+
+        .chat-messages .message .bubble ul {
+            margin: 0.3rem 0;
+            padding-left: 1.2rem;
+        }
+
+        .chat-messages .message .bubble ul li {
+            padding: 0.1rem 0;
+        }
+
+        .chat-messages .message .bubble .formula-box {
+            background: rgba(0,102,204,0.06);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--agua);
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .chat-messages .message .bubble .formula-box {
+            background: rgba(0,0,0,0.04);
+        }
+
+        .chat-messages .message .bubble .result-box {
+            background: rgba(0,102,204,0.06);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            margin: 0.5rem 0;
+            border: 1px solid rgba(0,102,204,0.08);
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .chat-messages .message .bubble .result-box {
+            background: rgba(0,0,0,0.04);
+        }
+
+        .chat-messages .message .bubble .result-box .label {
+            color: var(--text-secondary);
+        }
+
+        .chat-messages .message .bubble .result-box .value {
+            color: var(--agua);
+            font-weight: 700;
+        }
+
+        .chat-messages .message .bubble .highlight-agua {
+            color: var(--agua);
+            font-weight: 700;
+        }
+
+        .chat-messages .message .bubble .highlight-gold {
+            color: var(--dorado);
+            font-weight: 700;
+        }
+
+        .chat-messages .message .bubble .math-step {
+            background: rgba(0,0,0,0.2);
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        [data-theme="light"] .chat-messages .message .bubble .math-step {
+            background: rgba(0,0,0,0.05);
+        }
+
+        /* ============================================
+           TYPING INDICATOR
+           ============================================ */
+        .typing-indicator {
+            display: flex;
+            gap: 6px;
+            padding: 0.3rem 0;
+            align-items: center;
+        }
+
+        .typing-indicator .dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-indicator .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--agua);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite both;
+        }
+
+        .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .typing-indicator .text {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+            transition: var(--transition);
+        }
+
+        /* ============================================
+           CHAT INPUT
+           ============================================ */
+        .chat-input-area {
+            display: flex;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-input);
+            color: var(--text-primary);
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: var(--agua);
+            box-shadow: 0 0 30px rgba(0,102,204,0.05);
+        }
+
+        .chat-input-area input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-input-area input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-send {
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--agua), var(--agua-oscuro));
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,102,204,0.2);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           QUICK QUESTIONS
+           ============================================ */
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .quick-btn {
+            padding: 0.3rem 0.9rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--agua);
+            background: rgba(0,102,204,0.06);
+            color: var(--text-primary);
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow);
+            transform: translateY(80px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 360px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .ia-container {
+                padding: 1rem;
+            }
+
+            .ia-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .chat-messages {
+                height: 320px;
+                padding: 1rem;
+            }
+
+            .chat-messages .message {
+                max-width: 95%;
+            }
+
+            .chat-input-area {
+                flex-direction: column;
+                padding: 0.8rem 1rem;
+            }
+
+            .btn-send {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .quick-questions {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 0.5rem 1rem;
+            }
+
+            .quick-btn {
+                font-size: 0.65rem;
+                white-space: nowrap;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 32px;
+                height: 32px;
+            }
+
+            .theme-toggle .toggle-label {
+                display: none;
+            }
+
+            .navbar-actions {
+                gap: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ia-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .chat-messages {
+                height: 280px;
+            }
+
+            .chat-messages .message .bubble {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.8rem;
+            }
+
+            .navbar {
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    FONDO CON BURBUJAS DE AGUA
+    ============================================ -->
+    <div class="bg-container" id="bgContainer"></div>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar" id="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="TOCASAI" class="navbar-logo">
+            <span class="navbar-title"><span class="tocas">TOCAS</span><span class="ai">AI</span></span>
+        </a>
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                <span class="toggle-icon" id="themeIcon">
+                    <i class="fas fa-moon"></i>
+                </span>
+                <span class="toggle-label" id="themeLabel">Oscuro</span>
+            </button>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="ia-container">
+
+        <!-- Header -->
+        <div class="ia-header">
+            <h1><span class="tocas-title">TOCAS</span><span class="ai-title">AI</span></h1>
+            <span class="badge-ia"><i class="fas fa-brain"></i> Inteligencia Artificial para Ingeniería Hidráulica</span>
+            <p>Resuelve problemas, diseña estructuras y aprende con IA</p>
+        </div>
+
+        <!-- Chat Window -->
+        <div class="chat-window">
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                    <div class="bubble">
+                        <div class="sender"><i class="fas fa-robot"></i> TOCASAI</div>
+                        <h3>🌊 Bienvenido a TOCASAI</h3>
+                        <p>Soy tu asistente inteligente especializado en:</p>
+                        <ul>
+                            <li>✅ <strong>Hidráulica</strong> - Tuberías, canales, presas, bombeo</li>
+                            <li>✅ <strong>Hidrología</strong> - Ciclo del agua, precipitación, escorrentía</li>
+                            <li>✅ <strong>Mecánica de Fluidos</strong> - Bernoulli, Reynolds, Darcy-Weisbach</li>
+                            <li>✅ <strong>Recursos Hídricos</strong> - Gestión, aprovechamiento, conservación</li>
+                        </ul>
+                        <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.3rem;">
+                            💡 <strong>Ejemplos:</strong><br>
+                            📐 "Deriva f(x)=3x²+2x-5"<br>
+                            💧 "Calcula el caudal con velocidad 2.5 m/s y área 0.5 m²"<br>
+                            🔧 "Diseña una tubería de PVC para 50 L/s en 800 metros"<br>
+                            🏗️ "Diseña un canal trapezoidal para 0.5 m³/s"<br>
+                            📚 "Explica la ecuación de Bernoulli"
+                        </p>
+                        <p style="font-size: 0.7rem; opacity: 0.3; margin-top: 0.3rem;">
+                            🌙 Modo oscuro · Haz clic en el botón para cambiar
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Questions -->
+            <div class="quick-questions">
+                <button class="quick-btn" onclick="preguntaRapida('Deriva f(x)=3x²+2x-5')">
+                    📐 Derivar
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Calcula el caudal con velocidad 2.5 m/s y área 0.5 m²')">
+                    💧 Caudal
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Diseña una tubería de PVC para 50 L/s en 800 metros')">
+                    🔧 Tubería
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Diseña un canal trapezoidal para 0.5 m³/s con pendiente 0.001')">
+                    🏗️ Canal
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Calcula el número de Reynolds con V=2 m/s y D=0.15m')">
+                    🔬 Reynolds
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Explica la ecuación de Bernoulli')">
+                    ⚡ Bernoulli
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Qué es el flujo laminar y turbulento')">
+                    🌊 Flujo
+                </button>
+                <button class="quick-btn" onclick="preguntaRapida('Diseña una presa de concreto de 25 metros de altura')">
+                    🏗️ Presa
+                </button>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu pregunta (matemáticas o hidráulica)..." 
+                       onkeypress="if(event.key==='Enter') enviarConsulta()">
+                <button class="btn-send" id="sendBtn" onclick="enviarConsulta()">
+                    <i class="fas fa-paper-plane"></i> Enviar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // MODO CLARO/OSCURO
+        // ============================================
+        let currentTheme = 'dark';
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            const label = document.getElementById('themeLabel');
+
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'light');
+                icon.innerHTML = '<i class="fas fa-sun"></i>';
+                label.textContent = 'Claro';
+                currentTheme = 'light';
+                showToast('☀️ Modo claro activado', 'info');
+            } else {
+                html.removeAttribute('data-theme');
+                icon.innerHTML = '<i class="fas fa-moon"></i>';
+                label.textContent = 'Oscuro';
+                currentTheme = 'dark';
+                showToast('🌙 Modo oscuro activado', 'info');
+            }
+
+            localStorage.setItem('tocasai-theme', currentTheme);
+        }
+
+        // ============================================
+        // BURBUJAS
+        // ============================================
+        (function createBubbles() {
+            const container = document.getElementById('bgContainer');
+            for (let i = 0; i < 20; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                const size = Math.random() * 60 + 20;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                bubble.style.animationDelay = (Math.random() * 15) + 's';
+                container.appendChild(bubble);
+            }
+        })();
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // ENVIAR CONSULTA
+        // ============================================
+        function enviarConsulta() {
+            const input = document.getElementById('chatInput');
+            const mensaje = input.value.trim();
+
+            if (!mensaje) {
+                showToast('Por favor escribe una pregunta', 'error');
+                return;
+            }
+
+            agregarMensaje(mensaje, 'user');
+            input.value = '';
+            input.disabled = true;
+            document.getElementById('sendBtn').disabled = true;
+
+            mostrarTyping();
+
+            setTimeout(() => {
+                ocultarTyping();
+                const respuesta = procesarConsulta(mensaje);
+
+                if (respuesta) {
+                    const htmlRespuesta = formatearRespuesta(respuesta);
+                    agregarMensajeHTML(htmlRespuesta, 'assistant');
+                    showToast('✅ Consulta procesada correctamente', 'success');
+                } else {
+                    agregarMensajeHTML(`
+                        <div style="display: flex; align-items: center; gap: 10px; color: var(--rojo-neon);">
+                            <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                            <span>No pude procesar tu consulta. Por favor, reformula tu pregunta.</span>
+                        </div>
+                        <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">
+                            💡 Ejemplos de preguntas válidas:
+                            <br>
+                            📐 "Deriva f(x)=3x²+2x-5"
+                            <br>
+                            💧 "Calcula el caudal con velocidad 2.5 m/s y área 0.5 m²"
+                            <br>
+                            🔧 "Diseña una tubería de PVC para 50 L/s en 800 metros"
+                            <br>
+                            🏗️ "Diseña un canal trapezoidal para 0.5 m³/s"
+                        </p>
+                    `, 'assistant');
+                    showToast('❌ No pude procesar tu consulta', 'error');
+                }
+
+                input.disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                input.focus();
+            }, 800);
+        }
+
+        // ============================================
+        // PROCESAR CONSULTA - TOCASAI
+        // ============================================
+        function procesarConsulta(mensaje) {
+            const m = mensaje.toLowerCase();
+
+            // ============================================
+            // 1. DERIVADAS
+            // ============================================
+            if (m.includes('deriva') || m.includes('derivada') || m.includes("f'(x)")) {
+                const expr = extraerExpresion(mensaje);
+                if (expr) {
+                    try {
+                        const result = derivar(expr);
+                        return `
+                            <h3>📐 Derivada</h3>
+                            <p><strong>Función original:</strong></p>
+                            <div class="formula-box">f(x) = ${expr}</div>
+                            <p><strong>Solución:</strong></p>
+                            <div class="result-box">
+                                <span class="value" style="font-size: 1.2rem;">f'(x) = ${result}</span>
+                            </div>
+                            <div class="math-step">
+                                📝 Paso a paso:
+                                <br>
+                                Aplicando la regla de derivación término a término.
+                                <br>
+                                ✅ Resultado: <span class="highlight-gold">f'(x) = ${result}</span>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `
+                            <h3>📐 Derivada</h3>
+                            <p>No pude derivar la expresión. Asegúrate de escribirla correctamente.</p>
+                            <p style="font-size: 0.85rem; opacity: 0.7;">💡 Ejemplo: "Deriva f(x)=3x²+2x-5"</p>
+                        `;
+                    }
+                }
+                return null;
+            }
+
+            // ============================================
+            // 2. INTEGRALES
+            // ============================================
+            if (m.includes('integra') || m.includes('integral') || m.includes('∫')) {
+                const expr = extraerExpresionIntegral(mensaje);
+                if (expr) {
+                    try {
+                        const result = integrar(expr);
+                        return `
+                            <h3>📊 Integral</h3>
+                            <p><strong>Integral a resolver:</strong></p>
+                            <div class="formula-box">∫ ${expr} dx</div>
+                            <p><strong>Solución:</strong></p>
+                            <div class="result-box">
+                                <span class="value" style="font-size: 1.2rem;">∫ ${expr} dx = ${result}</span>
+                            </div>
+                            <div class="math-step">
+                                📝 Paso a paso:
+                                <br>
+                                Aplicando la regla de integración término a término.
+                                <br>
+                                ✅ Resultado: <span class="highlight-gold">${result}</span>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `
+                            <h3>📊 Integral</h3>
+                            <p>No pude integrar la expresión. Asegúrate de escribirla correctamente.</p>
+                            <p style="font-size: 0.85rem; opacity: 0.7;">💡 Ejemplo: "Integra ∫(2x+3)dx"</p>
+                        `;
+                    }
+                }
+                return null;
+            }
+
+            // ============================================
+            // 3. ECUACIONES
+            // ============================================
+            if (m.includes('ecuación') || m.includes('resuelve') || m.includes('=') && !m.includes('lim')) {
+                const eq = extraerEcuacion(mensaje);
+                if (eq) {
+                    try {
+                        const result = resolverEcuacion(eq);
+                        return `
+                            <h3>✏️ Ecuación</h3>
+                            <p><strong>Ecuación a resolver:</strong></p>
+                            <div class="formula-box">${eq}</div>
+                            <p><strong>Solución:</strong></p>
+                            <div class="result-box">
+                                <span class="value" style="font-size: 1.2rem;">${result}</span>
+                            </div>
+                            <div class="math-step">
+                                📝 Paso a paso:
+                                <br>
+                                Despejando la variable x:
+                                <br>
+                                ✅ Resultado: <span class="highlight-gold">${result}</span>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `
+                            <h3>✏️ Ecuación</h3>
+                            <p>No pude resolver la ecuación. Asegúrate de escribirla correctamente.</p>
+                            <p style="font-size: 0.85rem; opacity: 0.7;">💡 Ejemplo: "Resuelve 2x+3=7"</p>
+                        `;
+                    }
+                }
+                return null;
+            }
+
+            // ============================================
+            // 4. LÍMITES
+            // ============================================
+            if (m.includes('límite') || m.includes('lim') || m.includes('→')) {
+                const lim = extraerLimite(mensaje);
+                if (lim) {
+                    try {
+                        const result = calcularLimite(lim);
+                        return `
+                            <h3>📈 Límite</h3>
+                            <p><strong>Límite a calcular:</strong></p>
+                            <div class="formula-box">${lim}</div>
+                            <p><strong>Solución:</strong></p>
+                            <div class="result-box">
+                                <span class="value" style="font-size: 1.2rem;">${result}</span>
+                            </div>
+                            <div class="math-step">
+                                📝 Paso a paso:
+                                <br>
+                                Evaluando el límite y simplificando.
+                                <br>
+                                ✅ Resultado: <span class="highlight-gold">${result}</span>
+                            </div>
+                        `;
+                    } catch (e) {
+                        return `
+                            <h3>📈 Límite</h3>
+                            <p>No pude calcular el límite. Asegúrate de escribirlo correctamente.</p>
+                            <p style="font-size: 0.85rem; opacity: 0.7;">💡 Ejemplo: "Calcula el límite lim(x→2) (x²-4)/(x-2)"</p>
+                        `;
+                    }
+                }
+                return null;
+            }
+
+            // ============================================
+            // 5. HIDRÁULICA - CAUDAL
+            // ============================================
+            if (m.includes('caudal') || m.includes('flujo') || (m.includes('q') && !m.includes('reynolds'))) {
+                const velocidad = extraerNumero(m, 'velocidad') || extraerNumero(m, 'v');
+                const area = extraerNumero(m, 'área') || extraerNumero(m, 'area') || extraerNumero(m, 'a');
+
+                if (velocidad && area) {
+                    const Q = velocidad * area;
+                    return `
+                        <h3>💧 Cálculo de Caudal</h3>
+                        <p><strong>Datos ingresados:</strong></p>
+                        <ul>
+                            <li>Velocidad: ${velocidad} m/s</li>
+                            <li>Área: ${area} m²</li>
+                        </ul>
+                        <div class="formula-box">Q = V × A</div>
+                        <div class="result-box">
+                            <span class="label">Caudal:</span>
+                            <span class="value">${Q.toFixed(4)} m³/s</span>
+                            <br>
+                            <span class="label">Caudal:</span>
+                            <span class="value">${(Q * 1000).toFixed(1)} L/s</span>
+                        </div>
+                        <p style="font-size: 0.85rem; opacity: 0.7;">✅ El flujo es de <span class="highlight-agua">${(Q * 1000).toFixed(1)} L/s</span></p>
+                    `;
+                }
+                return null;
+            }
+
+            // ============================================
+            // 6. HIDRÁULICA - TUBERÍA
+            // ============================================
+            if ((m.includes('tubería') || m.includes('tuberia')) && (m.includes('diseña') || m.includes('diseño'))) {
+                const Q = extraerNumero(m, 'caudal') || 50;
+                const L = extraerNumero(m, 'longitud') || 100;
+                const material = detectarMaterial(m);
+
+                const Q_m3s = Q / 1000;
+                const V_recomendada = 1.5;
+                const diametros = [25, 32, 40, 50, 63, 75, 90, 110, 125, 140, 160, 200, 250];
+                const A_requerida = Q_m3s / V_recomendada;
+                const D_calc = Math.sqrt(4 * A_requerida / Math.PI);
+                const D_mm = D_calc * 1000;
+                const D_seleccionado = diametros.reduce((prev, curr) =>
+                    Math.abs(curr - D_mm) < Math.abs(prev - D_mm) ? curr : prev
+                );
+                const D = D_seleccionado / 1000;
+                const A = Math.PI * (D ** 2) / 4;
+                const V = Q_m3s / A;
+                const estado = (V >= 0.5 && V <= 3) ? '✅ Velocidad adecuada' : '⚠️ Revisar velocidad';
+                const estadoColor = (V >= 0.5 && V <= 3) ? 'var(--verde-neon)' : 'var(--naranja)';
+
+                return `
+                    <h3>🔧 Diseño de Tubería</h3>
+                    <p><strong>Datos de entrada:</strong></p>
+                    <ul>
+                        <li>Caudal: <span class="highlight-agua">${Q} L/s</span> (${Q_m3s.toFixed(3)} m³/s)</li>
+                        <li>Longitud: ${L} m</li>
+                        <li>Material: ${material}</li>
+                    </ul>
+                    <div class="result-box">
+                        <span class="label">Diámetro comercial seleccionado:</span>
+                        <span class="value" style="font-size: 1.2rem;">${D_seleccionado} mm</span>
+                        <br>
+                        <span class="label">Velocidad real:</span>
+                        <span class="value">${V.toFixed(2)} m/s</span>
+                        <br>
+                        <span class="label">Estado:</span>
+                        <span class="value" style="color: ${estadoColor};">${estado}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">💡 Recomendación: Usar tubería de <span class="highlight-gold">${material}</span> de ${D_seleccionado} mm de diámetro.</p>
+                `;
+            }
+
+            // ============================================
+            // 7. HIDRÁULICA - CANAL
+            // ============================================
+            if ((m.includes('canal') || m.includes('canales')) && (m.includes('diseña') || m.includes('diseño'))) {
+                const Q = extraerNumero(m, 'caudal') || 0.5;
+                const S = extraerNumero(m, 'pendiente') || 0.001;
+                const n = 0.013;
+
+                const y = Math.pow((Q * n / Math.sqrt(S)), 0.6);
+                const z = 1;
+                const b = 2 * y * (Math.sqrt(1 + z ** 2) - z);
+                const A = (b + z * y) * y;
+                const P = b + 2 * y * Math.sqrt(1 + z ** 2);
+                const R = A / P;
+                const V = Q / A;
+
+                return `
+                    <h3>🏗️ Diseño de Canal Trapezoidal</h3>
+                    <p><strong>Datos de entrada:</strong></p>
+                    <ul>
+                        <li>Caudal: <span class="highlight-agua">${Q} m³/s</span></li>
+                        <li>Pendiente: ${S}</li>
+                        <li>Rugosidad (n): ${n}</li>
+                        <li>Tipo: Trapezoidal</li>
+                    </ul>
+                    <div class="result-box">
+                        <span class="label">Base (b):</span>
+                        <span class="value">${b.toFixed(3)} m</span>
+                        <br>
+                        <span class="label">Tirante (y):</span>
+                        <span class="value">${y.toFixed(3)} m</span>
+                        <br>
+                        <span class="label">Área hidráulica:</span>
+                        <span class="value">${A.toFixed(3)} m²</span>
+                        <br>
+                        <span class="label">Perímetro mojado:</span>
+                        <span class="value">${P.toFixed(3)} m</span>
+                        <br>
+                        <span class="label">Radio hidráulico:</span>
+                        <span class="value">${R.toFixed(3)} m</span>
+                        <br>
+                        <span class="label">Velocidad:</span>
+                        <span class="value">${V.toFixed(2)} m/s</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">💡 Canal trapezoidal con base <span class="highlight-agua">${b.toFixed(2)}m</span> y tirante <span class="highlight-agua">${y.toFixed(2)}m</span>.</p>
+                `;
+            }
+
+            // ============================================
+            // 8. HIDRÁULICA - REYNOLDS
+            // ============================================
+            if (m.includes('reynolds') || m.includes('re') || m.includes('número de reynolds')) {
+                const velocidad = extraerNumero(m, 'velocidad') || extraerNumero(m, 'v');
+                const diametro = extraerNumero(m, 'diámetro') || extraerNumero(m, 'diametro') || extraerNumero(m, 'd');
+
+                if (velocidad && diametro) {
+                    const nu = 0.000001;
+                    const Re = (velocidad * diametro) / nu;
+                    let tipo, emoji, descripcion, color;
+                    if (Re < 2000) {
+                        tipo = 'Laminar';
+                        emoji = '🔵';
+                        color = 'var(--azul-neon)';
+                        descripcion = 'Las partículas se mueven en capas paralelas, flujo suave y ordenado.';
+                    } else if (Re < 4000) {
+                        tipo = 'Transición';
+                        emoji = '🟡';
+                        color = 'var(--naranja)';
+                        descripcion = 'Comportamiento intermedio entre laminar y turbulento, inestable.';
+                    } else {
+                        tipo = 'Turbulento';
+                        emoji = '🔴';
+                        color = 'var(--rojo-neon)';
+                        descripcion = 'Movimiento caótico y mezclado, alta velocidad y mayor pérdida de energía.';
+                    }
+
+                    return `
+                        <h3>🔬 Número de Reynolds</h3>
+                        <p><strong>Datos ingresados:</strong></p>
+                        <ul>
+                            <li>Velocidad: ${velocidad} m/s</li>
+                            <li>Diámetro: ${diametro} m</li>
+                        </ul>
+                        <div class="formula-box">Re = (V × D) / ν</div>
+                        <div class="result-box">
+                            <span class="label">Número de Reynolds:</span>
+                            <span class="value">${Math.round(Re).toLocaleString()}</span>
+                            <br>
+                            <span class="label">Tipo de flujo:</span>
+                            <span class="value" style="color: ${color};">${emoji} ${tipo}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; opacity: 0.7;">${descripcion}</p>
+                    `;
+                }
+                return null;
+            }
+
+            // ============================================
+            // 9. HIDRÁULICA - BERNOULLI
+            // ============================================
+            if (m.includes('bernoulli') || m.includes('energía')) {
+                return `
+                    <h3>⚡ Ecuación de Bernoulli</h3>
+                    <p>La ecuación de Bernoulli establece la conservación de energía en fluidos:</p>
+                    <div class="formula-box">P/γ + V²/2g + z = constante</div>
+                    <p><strong>Variables:</strong></p>
+                    <ul>
+                        <li><strong>P</strong> = Presión (Pa)</li>
+                        <li><strong>γ</strong> = Peso específico (N/m³)</li>
+                        <li><strong>V</strong> = Velocidad (m/s)</li>
+                        <li><strong>g</strong> = Gravedad (9.81 m/s²)</li>
+                        <li><strong>z</strong> = Altura (m)</li>
+                    </ul>
+                    <p><strong>Aplicaciones:</strong></p>
+                    <ul>
+                        <li>✅ Diseño de sistemas de bombeo</li>
+                        <li>✅ Cálculo de presiones en tuberías</li>
+                        <li>✅ Análisis de flujo en estructuras</li>
+                        <li>✅ Medición de caudal con Venturi</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">💡 <span class="highlight-gold">Importante:</span> La ecuación asume flujo incompresible, no viscoso y estacionario.</p>
+                `;
+            }
+
+            // ============================================
+            // 10. HIDRÁULICA - MANNING
+            // ============================================
+            if (m.includes('manning') || m.includes('ecuación de manning')) {
+                return `
+                    <h3>📚 Ecuación de Manning</h3>
+                    <p>La ecuación de Manning es una fórmula empírica para calcular el caudal en canales abiertos.</p>
+                    <div class="formula-box">Q = (1/n) × A × R^(2/3) × S^(1/2)</div>
+                    <p><strong>Variables:</strong></p>
+                    <ul>
+                        <li><strong>Q</strong> = Caudal (m³/s)</li>
+                        <li><strong>n</strong> = Coeficiente de rugosidad</li>
+                        <li><strong>A</strong> = Área hidráulica (m²)</li>
+                        <li><strong>R</strong> = Radio hidráulico (m)</li>
+                        <li><strong>S</strong> = Pendiente (m/m)</li>
+                    </ul>
+                    <p><strong>Coeficientes típicos:</strong></p>
+                    <ul>
+                        <li>Concreto: n = 0.013</li>
+                        <li>Tierra: n = 0.025</li>
+                        <li>PVC: n = 0.009</li>
+                    </ul>
+                `;
+            }
+
+            // ============================================
+            // 11. HIDRÁULICA - FLUJO LAMINAR/TURBULENTO
+            // ============================================
+            if (m.includes('laminar') && m.includes('turbulento')) {
+                return `
+                    <h3>🌊 Flujo Laminar vs Turbulento</h3>
+                    <p>La diferencia está determinada por el <strong>Número de Reynolds (Re)</strong>:</p>
+                    <div class="formula-box">Re = (V × D) / ν</div>
+                    
+                    <h4 style="color: var(--azul-neon); margin-top: 0.5rem;">🔵 Flujo Laminar (Re &lt; 2000)</h4>
+                    <ul>
+                        <li>Las partículas se mueven en capas paralelas</li>
+                        <li>Flujo suave y ordenado</li>
+                        <li>Baja velocidad y alta viscosidad</li>
+                        <li>Ejemplo: agua en tuberías de pequeño diámetro a baja velocidad</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--naranja); margin-top: 0.5rem;">🟡 Flujo de Transición (2000 &lt; Re &lt; 4000)</h4>
+                    <ul>
+                        <li>Comportamiento intermedio entre laminar y turbulento</li>
+                        <li>Inestable y sensible a perturbaciones</li>
+                    </ul>
+                    
+                    <h4 style="color: var(--rojo-neon); margin-top: 0.5rem;">🔴 Flujo Turbulento (Re &gt; 4000)</h4>
+                    <ul>
+                        <li>Movimiento caótico y mezclado</li>
+                        <li>Alta velocidad y baja viscosidad</li>
+                        <li>Mayor pérdida de energía</li>
+                        <li>Ejemplo: agua en tuberías de gran diámetro a alta velocidad</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">💡 <span class="highlight-gold">Recomendación:</span> Para sistemas de agua potable se busca Re > 4000 (flujo turbulento).</p>
+                `;
+            }
+
+            // ============================================
+            // 12. HIDRÁULICA - PRESA
+            // ============================================
+            if (m.includes('presa') && (m.includes('diseña') || m.includes('diseño'))) {
+                const H = extraerNumero(m, 'altura') || 25;
+                const material = detectarMaterialPresa(m);
+
+                const gamma_agua = 9.81;
+                const E = 0.5 * gamma_agua * H * H;
+                const b_corona = 4;
+                const b_base = H * 0.6;
+                const gamma = material === 'concreto' ? 24 : material === 'mamposteria' ? 22 : 20;
+                const A_presa = 0.5 * (b_corona + b_base) * H;
+                const W = A_presa * gamma;
+                const x_cg = (b_base * (2 * b_corona + b_base)) / (3 * (b_corona + b_base));
+                const M_vuelco = E * H / 3;
+                const M_estabilizador = W * x_cg;
+                const FS_vuelco = M_estabilizador / M_vuelco;
+                const f = 0.7;
+                const FS_deslizamiento = (W * f) / E;
+
+                let estado, color;
+                if (FS_vuelco >= 1.5 && FS_deslizamiento >= 1.5) {
+                    estado = '✅ ESTABLE';
+                    color = 'var(--verde-neon)';
+                } else if (FS_vuelco >= 1.2 && FS_deslizamiento >= 1.2) {
+                    estado = '⚠️ ALERTA';
+                    color = 'var(--naranja)';
+                } else {
+                    estado = '❌ INESTABLE';
+                    color = 'var(--rojo-neon)';
+                }
+
+                return `
+                    <h3>🏗️ Diseño de Presa de ${material.charAt(0).toUpperCase() + material.slice(1)}</h3>
+                    <p><strong>Datos de entrada:</strong></p>
+                    <ul>
+                        <li>Altura: <span class="highlight-agua">${H} m</span></li>
+                        <li>Material: ${material.charAt(0).toUpperCase() + material.slice(1)}</li>
+                        <li>Ancho de corona: ${b_corona} m</li>
+                        <li>Ancho de base: ${b_base.toFixed(1)} m</li>
+                    </ul>
+                    <div class="result-box">
+                        <span class="label">Empuje hidrostático:</span>
+                        <span class="value">${E.toFixed(1)} kN</span>
+                        <br>
+                        <span class="label">Peso de la presa:</span>
+                        <span class="value">${W.toFixed(1)} kN</span>
+                        <br>
+                        <span class="label">Factor de seguridad al vuelco:</span>
+                        <span class="value" style="color: ${color};">${FS_vuelco.toFixed(2)}</span>
+                        <br>
+                        <span class="label">Factor de seguridad al deslizamiento:</span>
+                        <span class="value" style="color: ${color};">${FS_deslizamiento.toFixed(2)}</span>
+                        <br>
+                        <span class="label" style="font-size: 1.1rem;">Estado:</span>
+                        <span class="value" style="font-size: 1.2rem; color: ${color};">${estado}</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">
+                        💡 <span class="highlight-gold">Recomendación:</span> 
+                        ${FS_vuelco >= 1.5 && FS_deslizamiento >= 1.5 ? 
+                            'La presa cumple con los factores de seguridad requeridos. ✅' : 
+                            FS_vuelco >= 1.2 && FS_deslizamiento >= 1.2 ? 
+                            'La presa está en el límite. Se recomienda revisar el diseño. ⚠️' : 
+                            'La presa NO cumple con los factores de seguridad mínimos. ❌'}
+                    </p>
+                `;
+            }
+
+            // ============================================
+            // 13. HIDRÁULICA - BOMBEO
+            // ============================================
+            if (m.includes('bombeo') || m.includes('bomba')) {
+                const Q = extraerNumero(m, 'caudal') || 50;
+                const H = extraerNumero(m, 'altura') || 20;
+                const eficiencia = 0.75;
+
+                const Q_m3s = Q / 1000;
+                const gamma = 9810;
+                const Potencia = (Q_m3s * H * gamma) / (eficiencia * 1000);
+
+                return `
+                    <h3>🔄 Sistema de Bombeo</h3>
+                    <p><strong>Datos de entrada:</strong></p>
+                    <ul>
+                        <li>Caudal: ${Q} L/s (${Q_m3s.toFixed(3)} m³/s)</li>
+                        <li>Altura de bombeo: ${H} m</li>
+                        <li>Eficiencia estimada: ${eficiencia * 100}%</li>
+                    </ul>
+                    <div class="formula-box">P = (Q × H × γ) / (η × 1000)</div>
+                    <div class="result-box">
+                        <span class="label">Potencia requerida:</span>
+                        <span class="value" style="font-size: 1.2rem;">${Potencia.toFixed(2)} kW</span>
+                        <br>
+                        <span class="label">Potencia en HP:</span>
+                        <span class="value">${(Potencia * 1.341).toFixed(2)} HP</span>
+                    </div>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">
+                        💡 <span class="highlight-gold">Recomendación:</span> Seleccionar una bomba de ${Math.ceil(Potencia * 1.2)} kW de potencia.
+                    </p>
+                `;
+            }
+
+            // ============================================
+            // 14. HIDRÁULICA - PÉRDIDAS
+            // ============================================
+            if (m.includes('pérdida') || m.includes('perdida') || m.includes('darcy') || m.includes('weisbach')) {
+                const Q = extraerNumero(m, 'caudal') || extraerNumero(m, 'q');
+                const D = extraerNumero(m, 'diámetro') || extraerNumero(m, 'diametro') || extraerNumero(m, 'd');
+                const L = extraerNumero(m, 'longitud') || extraerNumero(m, 'l');
+
+                if (Q && D && L) {
+                    const A = Math.PI * (D ** 2) / 4;
+                    const V = Q / A;
+                    const nu = 1e-6;
+                    const Re = (V * D) / nu;
+                    const rug = 0.00015;
+                    const rugRel = rug / D;
+
+                    let f = 0.02;
+                    for (let i = 0; i < 10; i++) {
+                        try {
+                            f = 1 / Math.pow(-2 * Math.log10((rugRel / 3.7) + (2.51 / (Re * Math.sqrt(f)))), 2);
+                        } catch {
+                            f = 0.02;
+                            break;
+                        }
+                    }
+
+                    const hf = f * (L / D) * (V ** 2) / (2 * 9.81);
+                    const hm = 0.1 * hf;
+
+                    return `
+                        <h3>📉 Pérdidas de Carga</h3>
+                        <p><strong>Datos ingresados:</strong></p>
+                        <ul>
+                            <li>Caudal: ${Q} m³/s</li>
+                            <li>Diámetro: ${D} m</li>
+                            <li>Longitud: ${L} m</li>
+                        </ul>
+                        <div class="formula-box">hf = f × (L/D) × (V²/2g)</div>
+                        <div class="result-box">
+                            <span class="label">Velocidad:</span>
+                            <span class="value">${V.toFixed(2)} m/s</span>
+                            <br>
+                            <span class="label">Reynolds:</span>
+                            <span class="value">${Math.round(Re).toLocaleString()}</span>
+                            <br>
+                            <span class="label">Factor de fricción:</span>
+                            <span class="value">${f.toFixed(4)}</span>
+                            <br>
+                            <span class="label">Pérdida por fricción:</span>
+                            <span class="value">${hf.toFixed(3)} m</span>
+                            <br>
+                            <span class="label">Pérdida menor (10%):</span>
+                            <span class="value">${hm.toFixed(3)} m</span>
+                            <br>
+                            <span class="label" style="font-size: 1.1rem;">Pérdida total:</span>
+                            <span class="value" style="font-size: 1.2rem; color: var(--rojo-neon);">${(hf + hm).toFixed(3)} m</span>
+                        </div>
+                    `;
+                }
+                return null;
+            }
+
+            // ============================================
+            // 15. HIDRÁULICA - HAZEN-WILLIAMS
+            // ============================================
+            if (m.includes('hazen') || m.includes('williams')) {
+                return `
+                    <h3>💧 Ecuación de Hazen-Williams</h3>
+                    <p>Se usa para calcular la velocidad en tuberías:</p>
+                    <div class="formula-box">V = 0.849 × C × R^(0.63) × S^(0.54)</div>
+                    <p><strong>Variables:</strong></p>
+                    <ul>
+                        <li><strong>V</strong> = Velocidad (m/s)</li>
+                        <li><strong>C</strong> = Coeficiente de Hazen-Williams</li>
+                        <li><strong>R</strong> = Radio hidráulico (m)</li>
+                        <li><strong>S</strong> = Pendiente de energía</li>
+                    </ul>
+                    <p><strong>Coeficientes típicos:</strong></p>
+                    <ul>
+                        <li>PVC nuevo: <span class="highlight-gold">C = 150</span></li>
+                        <li>Hierro fundido: C = 130</li>
+                        <li>Concreto: C = 120</li>
+                        <li>Asbesto cemento: C = 140</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; opacity: 0.7;">💡 Se usa principalmente para tuberías de agua potable y sistemas de riego.</p>
+                `;
+            }
+
+            // ============================================
+            // 16. RESPUESTA GENERAL
+            // ============================================
+            return null;
+        }
+
+        // ============================================
+        // FUNCIONES MATEMÁTICAS
+        // ============================================
+
+        function extraerExpresion(mensaje) {
+            const match = mensaje.match(/f\s*\(\s*x\s*\)\s*=\s*([^)]+)/i) ||
+                          mensaje.match(/deriva\s*([^)]+)/i) ||
+                          mensaje.match(/derivada\s*([^)]+)/i);
+            if (match) return match[1].trim();
+            const simple = mensaje.match(/([0-9x+\-*/^().]+)/);
+            if (simple && simple[1].includes('x')) return simple[1].trim();
+            return null;
+        }
+
+        function derivar(expr) {
+            expr = expr.replace(/\s/g, '');
+            if (/^[0-9.]+$/.test(expr)) return '0';
+            let result = expr;
+            result = result.replace(/([0-9]*)x\^([0-9]+)/g, (match, coef, exp) => {
+                const c = coef || '1';
+                const e = parseInt(exp);
+                const newCoef = parseInt(c) * e;
+                const newExp = e - 1;
+                if (newExp === 0) return newCoef;
+                if (newExp === 1) return newCoef + '*x';
+                return newCoef + '*x^' + newExp;
+            });
+            result = result.replace(/([0-9]*)x(?!\^)/g, (match, coef) => {
+                const c = coef || '1';
+                return c;
+            });
+            result = result.replace(/\b[0-9.]+\b/g, '0');
+            result = result.replace(/\+0/g, '');
+            result = result.replace(/0\+/g, '');
+            result = result.replace(/\-0/g, '');
+            result = result.replace(/0\-/g, '');
+            result = result.replace(/^\s*0\s*/, '');
+            if (result === '') return '0';
+            return result;
+        }
+
+        function extraerExpresionIntegral(mensaje) {
+            const match = mensaje.match(/∫\s*\(?([^)]*)\)?\s*dx/i) ||
+                          mensaje.match(/integra\s*\(?([^)]*)\)?\s*dx/i);
+            if (match) return match[1].trim();
+            const simple = mensaje.match(/([0-9x+\-*/^().]+)\s*dx/i);
+            if (simple) return simple[1].trim();
+            return null;
+        }
+
+        function integrar(expr) {
+            expr = expr.replace(/\s/g, '');
+            let result = expr;
+            result = result.replace(/([0-9]*)x\^([0-9]+)/g, (match, coef, exp) => {
+                const c = coef || '1';
+                const e = parseInt(exp);
+                const newExp = e + 1;
+                const newCoef = parseInt(c) / newExp;
+                if (newCoef === 1) return 'x^' + newExp + '/' + newExp;
+                return newCoef + '*x^' + newExp + '/' + newExp;
+            });
+            result = result.replace(/([0-9]*)x(?!\^)/g, (match, coef) => {
+                const c = coef || '1';
+                const val = parseInt(c) / 2;
+                if (val === 1) return 'x^2/2';
+                return val + '*x^2/2';
+            });
+            result = result.replace(/\b([0-9.]+)\b/g, (match, num) => {
+                return num + '*x';
+            });
+            result = result.replace(/\+0/g, '');
+            result = result.replace(/0\+/g, '');
+            return result + ' + C';
+        }
+
+        function extraerEcuacion(mensaje) {
+            const match = mensaje.match(/([0-9x+\-*/^().]+)\s*=\s*([0-9.]+)/i);
+            if (match) return match[1].trim() + ' = ' + match[2].trim();
+            const eq = mensaje.match(/([^=]+)=([^=]+)/);
+            if (eq) return eq[1].trim() + ' = ' + eq[2].trim();
+            return null;
+        }
+
+        function resolverEcuacion(eq) {
+            const parts = eq.split('=');
+            if (parts.length !== 2) return 'No es una ecuación válida';
+            let left = parts[0].trim();
+            let right = parts[1].trim();
+            const leftMatch = left.match(/([0-9.]*)x\s*\+\s*([0-9.]+)/i) ||
+                              left.match(/([0-9.]+)\s*\+\s*([0-9.]*)x/i);
+            if (leftMatch) {
+                let a, b;
+                if (leftMatch[1] && leftMatch[1].includes('x')) {
+                    a = parseFloat(leftMatch[1]) || 1;
+                    b = parseFloat(leftMatch[2]) || 0;
+                } else {
+                    a = parseFloat(leftMatch[2]) || 1;
+                    b = parseFloat(leftMatch[1]) || 0;
+                }
+                const c = parseFloat(right);
+                if (!isNaN(a) && !isNaN(b) && !isNaN(c)) {
+                    const x = (c - b) / a;
+                    return 'x = ' + x.toFixed(2);
+                }
+            }
+            const simple = left.match(/([0-9.]+)x/i);
+            if (simple) {
+                const a = parseFloat(simple[1]);
+                const c = parseFloat(right);
+                if (!isNaN(a) && !isNaN(c)) {
+                    const x = c / a;
+                    return 'x = ' + x.toFixed(2);
+                }
+            }
+            return 'No se pudo resolver la ecuación automáticamente.';
+        }
+
+        function extraerLimite(mensaje) {
+            const match = mensaje.match(/lim\s*\(?\s*x\s*→\s*([0-9.]+)\s*\)?\s*\(?\s*([^)]+)\)?/i) ||
+                          mensaje.match(/límite\s*\(?\s*x\s*→\s*([0-9.]+)\s*\)?\s*\(?\s*([^)]+)\)?/i);
+            if (match) {
+                const valor = match[1];
+                const expr = match[2].trim();
+                return `lim(x→${valor}) (${expr})`;
+            }
+            return null;
+        }
+
+        function calcularLimite(lim) {
+            const match = lim.match(/lim\(x→([0-9.]+)\)\s*\(([^)]+)\)/i);
+            if (!match) return 'No se pudo interpretar el límite';
+            const valor = parseFloat(match[1]);
+            let expr = match[2].trim();
+            let result = expr.replace(/x\^2/g, (valor * valor).toString());
+            result = result.replace(/x\^3/g, (valor * valor * valor).toString());
+            result = result.replace(/x/g, valor.toString());
+            try {
+                const evalResult = Function('"use strict"; return (' + result + ')')();
+                return evalResult.toFixed(2);
+            } catch (e) {
+                return 'No se pudo evaluar el límite';
+            }
+        }
+
+        // ============================================
+        // FUNCIONES AUXILIARES
+        // ============================================
+        function extraerNumero(texto, palabra) {
+            const regex = new RegExp(`${palabra}[:\\s]*([0-9.]+)`, 'i');
+            const match = texto.match(regex);
+            if (match) return parseFloat(match[1]);
+            const regex2 = new RegExp(`(\\d+\\.?\\d*)\\s*${palabra}`, 'i');
+            const match2 = texto.match(regex2);
+            if (match2) return parseFloat(match2[1]);
+            return null;
+        }
+
+        function detectarMaterial(texto) {
+            if (texto.includes('pvc')) return 'PVC';
+            if (texto.includes('acero')) return 'Acero';
+            if (texto.includes('concreto')) return 'Concreto';
+            if (texto.includes('hierro')) return 'Hierro';
+            if (texto.includes('cobre')) return 'Cobre';
+            return 'PVC (recomendado)';
+        }
+
+        function detectarMaterialPresa(texto) {
+            if (texto.includes('concreto')) return 'concreto';
+            if (texto.includes('mamposteria')) return 'mamposteria';
+            if (texto.includes('tierra')) return 'tierra';
+            if (texto.includes('enrocado')) return 'enrocado';
+            return 'concreto (recomendado)';
+        }
+
+        function formatearRespuesta(respuesta) {
+            let html = respuesta;
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+
+        // ============================================
+        // MENSAJES
+        // ============================================
+        function agregarMensaje(texto, tipo) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `message ${tipo}`;
+            const sender = tipo === 'user' ? 'Tú' : 'TOCASAI';
+            const icon = tipo === 'user' ? 'fa-user' : 'fa-robot';
+            div.innerHTML = `
+                <div class="bubble">
+                    <div class="sender"><i class="fas ${icon}"></i> ${sender}</div>
+                    ${texto}
+                </div>
+            `;
+            container.appendChild(div);
+            scrollToBottom();
+        }
+
+        function agregarMensajeHTML(html, tipo) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `message ${tipo}`;
+            const sender = tipo === 'user' ? 'Tú' : 'TOCASAI';
+            const icon = tipo === 'user' ? 'fa-user' : 'fa-robot';
+            div.innerHTML = `
+                <div class="bubble">
+                    <div class="sender"><i class="fas ${icon}"></i> ${sender}</div>
+                    ${html}
+                </div>
+            `;
+            container.appendChild(div);
+            scrollToBottom();
+        }
+
+        function mostrarTyping() {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = 'message assistant';
+            div.id = 'typingIndicator';
+            div.innerHTML = `
+                <div class="bubble">
+                    <div class="sender"><i class="fas fa-robot"></i> TOCASAI</div>
+                    <div class="typing-indicator">
+                        <div class="dots">
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                            <span class="dot"></span>
+                        </div>
+                        <span class="text">Procesando consulta...</span>
+                    </div>
+                </div>
+            `;
+            container.appendChild(div);
+            scrollToBottom();
+        }
+
+        function ocultarTyping() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) indicator.remove();
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ============================================
+        // PREGUNTAS RÁPIDAS
+        // ============================================
+        function preguntaRapida(pregunta) {
+            document.getElementById('chatInput').value = pregunta;
+            enviarConsulta();
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chatInput').focus();
+
+            const savedTheme = localStorage.getItem('tocasai-theme');
+            if (savedTheme === 'light') {
+                toggleTheme();
+            }
+
+            console.log('🌊 TOCASAI - Asistente IA cargado');
+            console.log('💡 Matemáticas + Hidráulica + Hidrología');
+            console.log('🌙 Modo oscuro/claro disponible');
+        });
+
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                enviarConsulta();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('chatInput').value = '';
+                document.getElementById('chatInput').focus();
+            }
+        });
+    </script>
+</body>
+</html>

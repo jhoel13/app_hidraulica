@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- PDF.js para visualizar PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        /* ============================================
+           RESET Y VARIABLES - NUEVO DISEÑO
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --azul-medio: #1a3a5c;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --naranja: #f59e0b;
+            --naranja-claro: #fef3c7;
+            --morado: #8b5cf6;
+            --morado-claro: #ede9fe;
+            --sombra: 0 20px 60px rgba(0,0,0,0.08);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.12);
+            --borde-redondeado: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR MODERNA
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .navbar-title span { color: var(--dorado); }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.08); }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.12); }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .portfolio-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .portfolio-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .portfolio-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+        }
+        .portfolio-header h1 i { color: var(--dorado); }
+        .portfolio-header p {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           BOTONES MODERNOS
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary { background: var(--azul-oscuro); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(10,22,40,0.25); }
+
+        .btn-gold { background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro)); color: var(--azul-oscuro); }
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(240,184,41,0.3); }
+
+        .btn-outline { background: transparent; color: var(--azul-oscuro); border: 2px solid var(--azul-oscuro); }
+        .btn-outline:hover { background: var(--azul-oscuro); color: white; transform: translateY(-2px); }
+
+        .btn-danger { background: var(--rojo); color: white; }
+        .btn-danger:hover { background: #b91c1c; transform: translateY(-2px); }
+
+        .btn-success { background: var(--verde); color: white; }
+        .btn-success:hover { background: #15803d; transform: translateY(-2px); }
+
+        .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.75rem; border-radius: 8px; }
+        .btn-purple { background: var(--morado); color: white; }
+        .btn-purple:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        /* ============================================
+           TOOLBAR
+           ============================================ */
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            align-items: center;
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: var(--crema-claro);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--dorado);
+            box-shadow: 0 0 0 4px rgba(240,184,41,0.12);
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--texto-gris);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            border: 2px solid #e5e0d8;
+            background: transparent;
+            color: var(--texto-gris);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--celeste-hielo);
+            color: var(--azul-oscuro);
+        }
+
+        .filter-btn.active {
+            border-color: var(--dorado);
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        /* ============================================
+           DROP ZONE MODERNA
+           ============================================ */
+        .drop-zone {
+            border: 3px dashed #e5e0d8;
+            border-radius: var(--borde-redondeado);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: var(--crema-claro);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--dorado);
+            background: rgba(240,184,41,0.05);
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--dorado);
+            background: rgba(240,184,41,0.1);
+            transform: scale(1.01);
+        }
+
+        .drop-zone .drop-icon {
+            font-size: 4rem;
+            color: var(--texto-gris);
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone h3 {
+            color: var(--azul-oscuro);
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .drop-zone p {
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+        }
+
+        .drop-zone .file-types {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .drop-zone .file-types span {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            background: white;
+            border-radius: 6px;
+            margin: 0.2rem;
+            font-weight: 500;
+            border: 1px solid #e5e0d8;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           ESTADÍSTICAS MODERNAS
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--dorado), var(--celeste-hielo));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+        .stat-card .stat-icon.blue { color: var(--azul-oscuro); }
+        .stat-card .stat-icon.gold { color: var(--dorado); }
+        .stat-card .stat-icon.green { color: var(--verde); }
+        .stat-card .stat-icon.purple { color: var(--morado); }
+
+        .stat-card .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--texto-gris);
+        }
+
+        /* ============================================
+           PORTAFOLIO GRID - NUEVO DISEÑO MODERNO
+           ============================================ */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .portfolio-item {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(184,226,242,0.1);
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .portfolio-item:nth-child(1) { animation-delay: 0.05s; }
+        .portfolio-item:nth-child(2) { animation-delay: 0.1s; }
+        .portfolio-item:nth-child(3) { animation-delay: 0.15s; }
+        .portfolio-item:nth-child(4) { animation-delay: 0.2s; }
+        .portfolio-item:nth-child(5) { animation-delay: 0.25s; }
+        .portfolio-item:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .portfolio-item:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--sombra-hover);
+            border-color: var(--dorado);
+        }
+
+        .portfolio-item .item-header {
+            padding: 1rem 1.2rem;
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-profundo));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .portfolio-item .item-header .item-icon {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .portfolio-item .item-header .item-icon span {
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.6;
+        }
+
+        .portfolio-item .item-header .item-date {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        .portfolio-item .item-preview {
+            height: 180px;
+            background: var(--crema-claro);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid #f0ebe3;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            padding: 0.5rem;
+        }
+
+        .portfolio-item .item-preview .preview-icon {
+            font-size: 4rem;
+            opacity: 0.2;
+        }
+
+        .portfolio-item .item-preview .preview-badge {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 0.2rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
+        }
+
+        .portfolio-item .item-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: white;
+        }
+
+        .portfolio-item .item-preview .file-content-preview {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            max-height: 100%;
+            overflow: hidden;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .portfolio-item .item-preview .file-content-preview .file-title {
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .portfolio-item .item-preview canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 4px;
+        }
+
+        .portfolio-item .item-body {
+            padding: 1rem 1.2rem;
+        }
+
+        .portfolio-item .item-body h4 {
+            color: var(--azul-oscuro);
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .portfolio-item .item-body p {
+            color: var(--texto-gris);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .portfolio-item .item-body .item-meta {
+            display: flex;
+            gap: 0.8rem;
+            font-size: 0.7rem;
+            color: var(--texto-gris);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid #f0ebe3;
+            flex-wrap: wrap;
+        }
+
+        .portfolio-item .item-body .item-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .portfolio-item .item-actions {
+            padding: 0.8rem 1.2rem;
+            background: var(--crema-claro);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            border-top: 1px solid #f0ebe3;
+        }
+
+        .portfolio-item .item-actions .btn {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        /* ============================================
+           MODAL DE VISUALIZACIÓN - NUEVO DISEÑO
+           ============================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            max-width: 900px;
+            width: 95%;
+            max-height: 92vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-content .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            background: linear-gradient(135deg, var(--azul-oscuro), var(--azul-profundo));
+            color: white;
+            border-radius: var(--borde-redondeado) var(--borde-redondeado) 0 0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .modal-content .modal-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-content .modal-header h3 i {
+            color: var(--dorado);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: rgba(255,255,255,0.6);
+            transition: var(--transition);
+            padding: 0.2rem;
+        }
+
+        .modal-close:hover {
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-body .file-preview-container {
+            background: var(--crema-claro);
+            border-radius: 12px;
+            padding: 1.5rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body .file-preview-container .preview-content {
+            width: 100%;
+            text-align: center;
+        }
+
+        .modal-body .file-preview-container .preview-content .preview-icon-big {
+            font-size: 6rem;
+            opacity: 0.2;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .modal-body .file-preview-container .preview-content img {
+            max-width: 100%;
+            max-height: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .modal-body .file-preview-container .preview-content .file-text-content {
+            text-align: left;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            border: 1px solid #f0ebe3;
+        }
+
+        .modal-body .file-preview-container .preview-content .file-text-content .file-title-modal {
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            border-bottom: 2px solid var(--dorado);
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-body .file-preview-container .preview-content #pdfViewer {
+            width: 100%;
+            max-height: 500px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .modal-body .file-preview-container .preview-content #pdfViewer canvas {
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .modal-body .file-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .modal-body .file-details .detail-item {
+            background: var(--crema-claro);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .modal-body .file-details .detail-item .label {
+            color: var(--texto-gris);
+        }
+
+        .modal-body .file-details .detail-item .value {
+            font-weight: 600;
+            color: var(--azul-oscuro);
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #f0ebe3;
+            display: flex;
+            gap: 0.8rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           EMPTY STATE - NUEVO DISEÑO
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: var(--celeste-hielo);
+            opacity: 0.5;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--azul-oscuro);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--texto-gris);
+            max-width: 450px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--verde); }
+        .toast.error { background: var(--rojo); }
+        .toast.info { background: var(--azul-oscuro); }
+        .toast.warning { background: var(--naranja); }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .portfolio-container { padding: 1rem; }
+            .portfolio-header h1 { font-size: 1.6rem; }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .toolbar { flex-direction: column; padding: 1rem; }
+            .search-box { width: 100%; }
+            .filter-group { width: 100%; justify-content: center; }
+            .filter-btn { flex: 1; text-align: center; font-size: 0.7rem; padding: 0.3rem 0.5rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+            .stat-card .stat-number { font-size: 1.5rem; }
+            .header-actions { width: 100%; }
+            .header-actions .btn { flex: 1; justify-content: center; font-size: 0.8rem; padding: 0.5rem 1rem; }
+            .navbar-title { font-size: 0.9rem; }
+            .navbar-logo { width: 35px; height: 35px; }
+            .drop-zone { padding: 2rem 1rem; }
+            .drop-zone .drop-icon { font-size: 3rem; }
+            .modal-content { width: 98%; }
+            .modal-body .file-details { grid-template-columns: 1fr; }
+            .portfolio-item .item-preview { height: 140px; }
+            .modal-body .file-preview-container { min-height: 200px; padding: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .portfolio-item .item-actions { flex-direction: column; }
+            .portfolio-item .item-actions .btn { justify-content: center; width: 100%; }
+            .modal-footer { flex-direction: column; }
+            .modal-footer .btn { justify-content: center; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="portfolio-container">
+
+        <!-- Header -->
+        <div class="portfolio-header">
+            <div>
+                <h1><i class="fas fa-folder-open"></i> Mi Portafolio</h1>
+                <p>Gestiona, visualiza y comparte tus proyectos hidráulicos</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-gold" onclick="abrirSubida()">
+                    <i class="fas fa-upload"></i> Subir Archivo
+                </button>
+                <button class="btn btn-outline" onclick="exportarPortafolio()">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-icon blue"><i class="fas fa-folder"></i></span>
+                <span class="stat-number" id="totalItems">0</span>
+                <span class="stat-label">Total Portafolios</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon gold"><i class="fas fa-eye"></i></span>
+                <span class="stat-number" id="totalViews">0</span>
+                <span class="stat-label">Vistas Totales</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon green"><i class="fas fa-download"></i></span>
+                <span class="stat-number" id="totalDownloads">0</span>
+                <span class="stat-label">Descargas</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon purple"><i class="fas fa-file"></i></span>
+                <span class="stat-number" id="totalSize">0</span>
+                <span class="stat-label">Espacio Usado (MB)</span>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por título, descripción o tipo..." oninput="filtrarPortafolios()">
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="todos" onclick="filtrarPorCategoria('todos')">
+                    <i class="fas fa-th"></i> Todos
+                </button>
+                <button class="filter-btn" data-filter="pdf" onclick="filtrarPorCategoria('pdf')">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </button>
+                <button class="filter-btn" data-filter="imagen" onclick="filtrarPorCategoria('imagen')">
+                    <i class="fas fa-image"></i> Imagen
+                </button>
+                <button class="filter-btn" data-filter="documento" onclick="filtrarPorCategoria('documento')">
+                    <i class="fas fa-file-alt"></i> Documento
+                </button>
+            </div>
+            <span style="font-size: 0.75rem; color: var(--texto-gris); margin-left: auto;">
+                <span id="filterCount">0</span> mostrados
+            </span>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-cloud-upload-alt drop-icon"></i>
+            <h3>Arrastra y suelta tus archivos aquí</h3>
+            <p>o haz clic para seleccionar archivos</p>
+            <div class="file-types">
+                <span>📄 PDF</span>
+                <span>📝 DOC</span>
+                <span>🖼️ Imagen</span>
+                <span>📊 XLS</span>
+                <span>📋 TXT</span>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.xlsx,.xls,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.bmp,.txt">
+        </div>
+
+        <!-- Portfolio Grid -->
+        <div class="portfolio-grid" id="portfolioGrid">
+            <!-- Los portafolios se cargan dinámicamente -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-folder-open"></i>
+            <h3>No tienes portafolios</h3>
+            <p>Comienza a subir tus proyectos hidráulicos para compartirlos con la comunidad.</p>
+            <button class="btn btn-gold" onclick="abrirSubida()">
+                <i class="fas fa-upload"></i> Subir mi primer portafolio
+            </button>
+        </div>
+    </div>
+
+    <!-- ============================================
+    MODAL DE VISUALIZACIÓN
+    ============================================ -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-file"></i> <span id="modalTitle">Detalles del Archivo</span></h3>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- El contenido se carga dinámicamente -->
+            </div>
+            <div class="modal-footer" id="modalFooter">
+                <!-- Los botones se cargan dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN DE PDF.JS
+        // ============================================
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // ============================================
+        // DATOS DE EJEMPLO
+        // ============================================
+        let portafolios = [{
+            id: 1,
+            titulo: 'Manual de Hidráulica Básica',
+            descripcion: 'Manual completo de hidráulica que incluye conceptos fundamentales, ecuaciones y aplicaciones prácticas.',
+            tipo: 'pdf',
+            fecha: '2026-06-28',
+            tamaño: '3.2 MB',
+            autor: 'Dr. Juan Pérez',
+            categoria: 'manual',
+            vistas: 45,
+            descargas: 12,
+            contenido: 'Este es un documento PDF de ejemplo. La ecuación de Manning establece que Q = (1/n) * A * R^(2/3) * S^(1/2).',
+            tags: ['hidráulica', 'manual', 'ecuaciones'],
+            archivo: null
+        }, {
+            id: 2,
+            titulo: 'Diseño de Canal Trapezoidal',
+            descripcion: 'Diseño hidráulico completo de un canal trapezoidal para riego agrícola, incluyendo planos y cálculos.',
+            tipo: 'pdf',
+            fecha: '2026-06-25',
+            tamaño: '2.4 MB',
+            autor: 'Ing. María González',
+            categoria: 'diseno',
+            vistas: 32,
+            descargas: 8,
+            contenido: 'Para el diseño de canales trapezoidales se recomienda una base de 0.85m y un tirante de 0.52m para Q=0.5 m³/s.',
+            tags: ['canal', 'trapezoidal', 'riego'],
+            archivo: null
+        }, {
+            id: 3,
+            titulo: 'Monitoreo Río Cajamarca',
+            descripcion: 'Estudio de monitoreo del río Cajamarca, incluyendo mediciones de caudal, nivel y calidad de agua.',
+            tipo: 'imagen',
+            fecha: '2026-06-20',
+            tamaño: '5.2 MB',
+            autor: 'Ing. Carlos Ruiz',
+            categoria: 'investigacion',
+            vistas: 28,
+            descargas: 5,
+            contenido: 'https://via.placeholder.com/800x400/0a1628/f0b829?text=Río+Cajamarca',
+            tags: ['río', 'monitoreo', 'caudal'],
+            archivo: null
+        }, {
+            id: 4,
+            titulo: 'Diseño de Presa de Concreto',
+            descripcion: 'Diseño estructural e hidráulico de una presa de concreto, incluyendo cálculo de estabilidad y FS.',
+            tipo: 'pdf',
+            fecha: '2026-06-15',
+            tamaño: '4.8 MB',
+            autor: 'Dr. Ana Martínez',
+            categoria: 'proyecto',
+            vistas: 56,
+            descargas: 18,
+            contenido: 'El empuje hidrostático se calcula como E = ½·γ·H². El factor de seguridad al vuelco debe ser ≥ 1.5.',
+            tags: ['presa', 'concreto', 'estabilidad'],
+            archivo: null
+        }, {
+            id: 5,
+            titulo: 'Curvas IDF Cajamarca',
+            descripcion: 'Generación de curvas Intensidad-Duración-Frecuencia para la ciudad de Cajamarca.',
+            tipo: 'documento',
+            fecha: '2026-06-10',
+            tamaño: '1.8 MB',
+            autor: 'Ing. Luis Torres',
+            categoria: 'informe',
+            vistas: 38,
+            descargas: 10,
+            contenido: 'Las curvas IDF se generan con la fórmula i = a·T^c / (d + b)^n. Para Cajamarca: a=1000, b=10, c=0.5, n=0.8.',
+            tags: ['idf', 'drenaje', 'lluvia'],
+            archivo: null
+        }, {
+            id: 6,
+            titulo: 'Red de Agua Potable',
+            descripcion: 'Diseño de red de distribución de agua potable para la ciudad de Cajamarca, usando EPANET.',
+            tipo: 'documento',
+            fecha: '2026-06-05',
+            tamaño: '3.6 MB',
+            autor: 'Ing. Patricia Díaz',
+            categoria: 'proyecto',
+            vistas: 42,
+            descargas: 15,
+            contenido: 'La red consta de 15 nodos, 18 tuberías, 2 tanques. El caudal máximo de diseño es 120 L/s.',
+            tags: ['red', 'agua potable', 'epanet'],
+            archivo: null
+        }];
+
+        let currentFilter = 'todos';
+        let currentSearch = '';
+        let selectedItem = null;
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // DROP ZONE - SUBIDA DE ARCHIVOS
+        // ============================================
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        dropZone.addEventListener('dragenter', function() {
+            this.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                procesarArchivos(files);
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                procesarArchivos(this.files);
+                this.value = '';
+            }
+        });
+
+        function abrirSubida() {
+            document.getElementById('fileInput').click();
+        }
+
+        // ============================================
+        // PROCESAR ARCHIVOS SUBIDOS
+        // ============================================
+        function procesarArchivos(files) {
+            for (let file of files) {
+                const extension = file.name.split('.').pop().toLowerCase();
+                let tipo = 'documento';
+                if (['pdf'].includes(extension)) tipo = 'pdf';
+                else if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(extension)) tipo = 'imagen';
+
+                const nuevoItem = {
+                    id: portafolios.length + 1,
+                    titulo: file.name.replace(/\.[^/.]+$/, ''),
+                    descripcion: `Documento subido: ${file.name}`,
+                    tipo: tipo,
+                    fecha: new Date().toISOString().slice(0, 10),
+                    tamaño: (file.size / 1024 / 1024).toFixed(1) + ' MB',
+                    autor: 'Usuario Actual',
+                    categoria: 'documento',
+                    vistas: 0,
+                    descargas: 0,
+                    contenido: '',
+                    tags: ['subido'],
+                    archivo: file, // Guardar el archivo completo
+                    archivoNombre: file.name,
+                    archivoTipo: file.type
+                };
+
+                // Leer contenido para mostrar preview
+                if (tipo === 'imagen') {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        nuevoItem.contenido = e.target.result;
+                        renderizarPortafolios();
+                        actualizarEstadisticas();
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        nuevoItem.contenido = e.target.result || 'Contenido del archivo';
+                        renderizarPortafolios();
+                        actualizarEstadisticas();
+                    };
+                    reader.readAsText(file);
+                }
+
+                portafolios.unshift(nuevoItem);
+                showToast(`✅ "${nuevoItem.titulo}" subido correctamente`, 'success');
+            }
+
+            renderizarPortafolios();
+            actualizarEstadisticas();
+        }
+
+        // ============================================
+        // RENDERIZAR PORTAFOLIOS
+        // ============================================
+        function renderizarPortafolios() {
+            const grid = document.getElementById('portfolioGrid');
+            const empty = document.getElementById('emptyState');
+
+            let filtered = portafolios;
+
+            if (currentSearch) {
+                const search = currentSearch.toLowerCase();
+                filtered = filtered.filter(p =>
+                    p.titulo.toLowerCase().includes(search) ||
+                    p.descripcion.toLowerCase().includes(search) ||
+                    p.autor.toLowerCase().includes(search) ||
+                    p.categoria.toLowerCase().includes(search) ||
+                    p.tags.some(t => t.toLowerCase().includes(search))
+                );
+            }
+
+            if (currentFilter !== 'todos') {
+                filtered = filtered.filter(p => p.tipo === currentFilter);
+            }
+
+            document.getElementById('filterCount').textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.style.display = 'block';
+                return;
+            }
+
+            empty.style.display = 'none';
+
+            grid.innerHTML = filtered.map((item, index) => {
+                const iconMap = {
+                    'pdf': 'fa-file-pdf',
+                    'imagen': 'fa-file-image',
+                    'documento': 'fa-file-alt'
+                };
+
+                const colorMap = {
+                    'pdf': '#dc2626',
+                    'imagen': '#2563eb',
+                    'documento': '#f59e0b'
+                };
+
+                const icon = iconMap[item.tipo] || 'fa-file';
+                const color = colorMap[item.tipo] || '#6b7280';
+
+                // Preview
+                let previewHtml = '';
+                if (item.tipo === 'imagen') {
+                    previewHtml = `<img src="${item.contenido || 'https://via.placeholder.com/400x200/0a1628/f0b829?text=Imagen'}" alt="${item.titulo}">`;
+                } else if (item.tipo === 'pdf') {
+                    const previewText = item.contenido ? item.contenido.substring(0, 80) : 'PDF cargado correctamente';
+                    previewHtml = `
+                        <i class="fas fa-file-pdf preview-icon" style="color: #dc2626;"></i>
+                        <div class="file-content-preview">
+                            <span class="file-title">📄 ${item.titulo}</span>
+                            ${previewText}...
+                        </div>
+                        <span class="preview-badge"><i class="fas fa-file-pdf"></i> PDF</span>
+                    `;
+                } else {
+                    const previewText = item.contenido ? item.contenido.substring(0, 80) : 'Documento cargado';
+                    previewHtml = `
+                        <i class="fas fa-file-alt preview-icon" style="color: #f59e0b;"></i>
+                        <div class="file-content-preview">
+                            <span class="file-title">📝 ${item.titulo}</span>
+                            ${previewText}...
+                        </div>
+                        <span class="preview-badge"><i class="fas fa-file-alt"></i> DOC</span>
+                    `;
+                }
+
+                return `
+                    <div class="portfolio-item" data-id="${item.id}">
+                        <div class="item-header">
+                            <div class="item-icon">
+                                <i class="fas ${icon}" style="color: ${color};"></i>
+                                <span>${item.tipo.toUpperCase()}</span>
+                            </div>
+                            <span class="item-date">
+                                <i class="far fa-calendar-alt"></i> ${formatDate(item.fecha)}
+                            </span>
+                        </div>
+                        <div class="item-preview" onclick="verPortafolio(${item.id})">
+                            ${previewHtml}
+                        </div>
+                        <div class="item-body">
+                            <h4>${item.titulo}</h4>
+                            <p>${item.descripcion}</p>
+                            <div class="item-meta">
+                                <span><i class="fas fa-user"></i> ${item.autor}</span>
+                                <span><i class="fas fa-file"></i> ${item.tamaño}</span>
+                                <span><i class="fas fa-tag"></i> ${item.categoria}</span>
+                                <span><i class="fas fa-eye"></i> ${item.vistas}</span>
+                                <span><i class="fas fa-download"></i> ${item.descargas}</span>
+                            </div>
+                        </div>
+                        <div class="item-actions">
+                            <button class="btn btn-primary btn-sm" onclick="verPortafolio(${item.id})">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="descargarPortafolio(${item.id})">
+                                <i class="fas fa-download"></i> Descargar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarPortafolio(${item.id})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // VER PORTAFOLIO - CON VISUALIZACIÓN DE PDF
+        // ============================================
+        async function verPortafolio(id) {
+            const item = portafolios.find(p => p.id === id);
+            if (!item) return;
+
+            selectedItem = item;
+            item.vistas++;
+            actualizarEstadisticas();
+
+            const modal = document.getElementById('previewModal');
+            document.getElementById('modalTitle').textContent = item.titulo;
+
+            const body = document.getElementById('modalBody');
+
+            // Construir preview según tipo
+            let previewHtml = '';
+
+            if (item.tipo === 'imagen') {
+                previewHtml = `
+                    <div class="preview-content">
+                        <img src="${item.contenido || 'https://via.placeholder.com/600x400/0a1628/f0b829?text=Imagen'}" alt="${item.titulo}">
+                    </div>
+                `;
+            } else if (item.tipo === 'pdf') {
+                previewHtml = `
+                    <div class="preview-content">
+                        <div id="pdfViewer">
+                            <div style="text-align: center; padding: 2rem;">
+                                <i class="fas fa-spinner fa-spin" style="font-size: 2rem; color: var(--dorado);"></i>
+                                <p style="margin-top: 0.5rem; color: var(--texto-gris);">Cargando PDF...</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                previewHtml = `
+                    <div class="preview-content">
+                        <i class="fas fa-file-alt preview-icon-big" style="color: #f59e0b;"></i>
+                        <div class="file-text-content">
+                            <span class="file-title-modal">📝 ${item.titulo}</span>
+                            ${item.contenido || 'Contenido del documento no disponible'}
+                        </div>
+                    </div>
+                `;
+            }
+
+            body.innerHTML = `
+                <div class="file-preview-container">
+                    ${previewHtml}
+                </div>
+                <div class="file-details">
+                    <div class="detail-item">
+                        <span class="label">📄 Tipo</span>
+                        <span class="value">${item.tipo.toUpperCase()}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">📁 Categoría</span>
+                        <span class="value">${item.categoria}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">👤 Autor</span>
+                        <span class="value">${item.autor}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">📅 Fecha</span>
+                        <span class="value">${formatDate(item.fecha)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">📊 Tamaño</span>
+                        <span class="value">${item.tamaño}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">👁️ Vistas</span>
+                        <span class="value">${item.vistas}</span>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <span class="label">🏷️ Tags</span>
+                        <span class="value">${item.tags.map(t => '#' + t).join(' ')}</span>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1;">
+                        <span class="label">📝 Descripción</span>
+                        <span class="value" style="font-weight: 400; text-align: right;">${item.descripcion}</span>
+                    </div>
+                    <div class="detail-item" style="grid-column: 1 / -1; background: var(--verde-claro);">
+                        <span class="label">📎 Nombre Archivo</span>
+                        <span class="value" style="font-weight: 400;">${item.archivoNombre || item.titulo + '.' + item.tipo}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('modalFooter').innerHTML = `
+                <button class="btn btn-success" onclick="descargarPortafolio(${item.id}); cerrarModal();">
+                    <i class="fas fa-download"></i> Descargar
+                </button>
+                <button class="btn btn-danger" onclick="eliminarPortafolio(${item.id}); cerrarModal();">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+                <button class="btn btn-outline" onclick="cerrarModal()">
+                    <i class="fas fa-times"></i> Cerrar
+                </button>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            // Renderizar PDF si es necesario
+            if (item.tipo === 'pdf' && item.archivo) {
+                try {
+                    const arrayBuffer = await item.archivo.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                    const container = document.getElementById('pdfViewer');
+                    container.innerHTML = '';
+
+                    for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
+                        const page = await pdf.getPage(i);
+                        const scale = 1.2;
+                        const viewport = page.getViewport({ scale: scale });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        canvas.style.width = '100%';
+                        canvas.style.height = 'auto';
+
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        await page.render(renderContext).promise;
+                        container.appendChild(canvas);
+                    }
+
+                    if (pdf.numPages > 3) {
+                        const info = document.createElement('p');
+                        info.style.textAlign = 'center';
+                        info.style.color = 'var(--texto-gris)';
+                        info.style.fontSize = '0.8rem';
+                        info.style.marginTop = '0.5rem';
+                        info.textContent = `📄 Mostrando 3 de ${pdf.numPages} páginas`;
+                        container.appendChild(info);
+                    }
+
+                    showToast('✅ PDF cargado correctamente', 'success');
+                } catch (error) {
+                    console.error('Error al cargar PDF:', error);
+                    const container = document.getElementById('pdfViewer');
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626; opacity: 0.3;"></i>
+                            <p style="margin-top: 0.5rem; color: var(--texto-gris);">PDF: ${item.titulo}</p>
+                            <p style="font-size: 0.8rem; color: var(--texto-gris); opacity: 0.6;">${item.tamaño}</p>
+                            <button class="btn btn-success" style="margin-top: 1rem;" onclick="descargarPortafolio(${item.id})">
+                                <i class="fas fa-download"></i> Descargar PDF
+                            </button>
+                        </div>
+                    `;
+                }
+            } else {
+                // Si no hay archivo o no es PDF, mostrar mensaje
+                const container = document.getElementById('pdfViewer');
+                if (container && item.tipo === 'pdf') {
+                    container.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <i class="fas fa-file-pdf" style="font-size: 3rem; color: #dc2626; opacity: 0.3;"></i>
+                            <p style="margin-top: 0.5rem; color: var(--texto-gris);">${item.titulo}</p>
+                            <p style="font-size: 0.8rem; color: var(--texto-gris); opacity: 0.6;">${item.tamaño}</p>
+                            <button class="btn btn-success" style="margin-top: 1rem;" onclick="descargarPortafolio(${item.id})">
+                                <i class="fas fa-download"></i> Descargar PDF
+                            </button>
+                        </div>
+                    `;
+                }
+            }
+
+            renderizarPortafolios();
+        }
+
+        // ============================================
+        // MODAL CONTROLS
+        // ============================================
+        function cerrarModal() {
+            document.getElementById('previewModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') cerrarModal();
+        });
+
+        // ============================================
+        // DESCARGA FUNCIONAL DE ARCHIVOS
+        // ============================================
+        function descargarPortafolio(id) {
+            const item = portafolios.find(p => p.id === id);
+            if (!item) return;
+
+            item.descargas++;
+            actualizarEstadisticas();
+            renderizarPortafolios();
+
+            // Si hay un archivo real, descargarlo
+            if (item.archivo) {
+                // Crear URL del objeto
+                const url = URL.createObjectURL(item.archivo);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = item.archivo.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => {
+                    URL.revokeObjectURL(url);
+                }, 1000);
+                showToast(`📥 Descargando "${item.archivo.name}"`, 'success');
+                return;
+            }
+
+            // Si no hay archivo real, descargar como texto
+            let contenido = `=== ${item.titulo} ===\n\n`;
+            contenido += `Autor: ${item.autor}\n`;
+            contenido += `Fecha: ${item.fecha}\n`;
+            contenido += `Categoría: ${item.categoria}\n`;
+            contenido += `Tamaño: ${item.tamaño}\n\n`;
+            contenido += `--- CONTENIDO ---\n\n`;
+            contenido += item.contenido || 'Sin contenido disponible';
+
+            const blob = new Blob([contenido], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${item.titulo}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(`📥 Descargando "${item.titulo}"`, 'success');
+        }
+
+        // ============================================
+        // ELIMINAR PORTAFOLIO
+        // ============================================
+        function eliminarPortafolio(id) {
+            const item = portafolios.find(p => p.id === id);
+            if (!item) return;
+
+            if (!confirm(`¿Estás seguro de eliminar "${item.titulo}"?`)) return;
+
+            portafolios = portafolios.filter(p => p.id !== id);
+            renderizarPortafolios();
+            actualizarEstadisticas();
+            showToast(`🗑️ "${item.titulo}" eliminado`, 'info');
+
+            if (selectedItem && selectedItem.id === id) {
+                cerrarModal();
+            }
+        }
+
+        // ============================================
+        // EXPORTAR PORTAFOLIO
+        // ============================================
+        function exportarPortafolio() {
+            if (portafolios.length === 0) {
+                showToast('No hay portafolios para exportar', 'error');
+                return;
+            }
+
+            const data = {
+                usuario: 'Usuario Actual',
+                fecha: new Date().toISOString(),
+                total: portafolios.length,
+                portafolios: portafolios.map(p => ({
+                    titulo: p.titulo,
+                    descripcion: p.descripcion,
+                    tipo: p.tipo,
+                    fecha: p.fecha,
+                    tamaño: p.tamaño,
+                    autor: p.autor,
+                    categoria: p.categoria,
+                    tags: p.tags,
+                    vistas: p.vistas,
+                    descargas: p.descargas
+                }))
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `portafolio_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast('📦 Portafolio exportado correctamente', 'success');
+        }
+
+        // ============================================
+        // FILTROS
+        // ============================================
+        function filtrarPorCategoria(categoria) {
+            currentFilter = categoria;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === categoria);
+            });
+            renderizarPortafolios();
+        }
+
+        function filtrarPortafolios() {
+            currentSearch = document.getElementById('searchInput').value.trim();
+            renderizarPortafolios();
+        }
+
+        // ============================================
+        // ESTADÍSTICAS
+        // ============================================
+        function actualizarEstadisticas() {
+            document.getElementById('totalItems').textContent = portafolios.length;
+            document.getElementById('totalViews').textContent = portafolios.reduce((sum, p) => sum + p.vistas, 0);
+            document.getElementById('totalDownloads').textContent = portafolios.reduce((sum, p) => sum + p.descargas, 0);
+
+            const totalSize = portafolios.reduce((sum, p) => sum + parseFloat(p.tamaño), 0);
+            document.getElementById('totalSize').textContent = totalSize.toFixed(1);
+        }
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const ahora = new Date();
+            const diff = Math.floor((ahora - date) / (1000 * 60 * 60 * 24));
+
+            if (diff === 0) return 'Hoy';
+            if (diff === 1) return 'Ayer';
+            if (diff < 7) return `Hace ${diff} días`;
+            if (diff < 30) return `Hace ${Math.floor(diff / 7)} semanas`;
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarPortafolios();
+            actualizarEstadisticas();
+
+            console.log('📁 Portafolio con nuevo diseño cargado');
+            console.log(`📊 ${portafolios.length} portafolios disponibles`);
+            console.log('✅ Descarga de PDF funcional');
+            console.log('🎨 Nuevo diseño moderno implementado');
+        });
+    </script>
+</body>
+</html>

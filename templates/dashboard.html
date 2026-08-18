@@ -1,0 +1,1779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOCAS - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* ============================================
+           RESET Y VARIABLES PREMIUM
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a0a1a;
+            --azul-profundo: #0d1b2a;
+            --azul-medio: #1b2a4a;
+            --azul-neon: #00d4ff;
+            --morado-neon: #7b2ffc;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --dorado-claro: #fce4a8;
+            --dorado-neon: #ffd700;
+            --sombra-dorada: 0 0 40px rgba(240,184,41,0.15), 0 0 80px rgba(240,184,41,0.05);
+            --sombra-dorada-hover: 0 0 60px rgba(240,184,41,0.25), 0 0 100px rgba(240,184,41,0.1);
+            --crema: #f5f0e8;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde-neon: #00ff88;
+            --rojo-neon: #ff0044;
+            --sombra: 0 20px 60px rgba(0,0,0,0.3);
+            --sombra-hover: 0 30px 80px rgba(0,0,0,0.4);
+            --borde-redondeado: 20px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--azul-oscuro);
+            color: white;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           FONDO CON BURBUJAS
+           ============================================ */
+        .bg-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at 20% 50%, var(--azul-profundo), var(--azul-oscuro));
+            overflow: hidden;
+        }
+
+        .bubble-bg {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(240,184,41,0.08), rgba(123,47,252,0.03));
+            border: 1px solid rgba(240,184,41,0.06);
+            animation: bubbleFloat linear infinite;
+            pointer-events: none;
+            backdrop-filter: blur(2px);
+        }
+
+        .bubble-bg::before {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 30%;
+            height: 25%;
+            background: radial-gradient(circle, rgba(240,184,41,0.15), transparent);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        @keyframes bubbleFloat {
+            0% {
+                transform: translateY(100vh) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .particle-bg {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: radial-gradient(circle, rgba(240,184,41,0.2), transparent);
+            border-radius: 50%;
+            animation: particleDrift linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes particleDrift {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(100px, -100px) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* ============================================
+           NAVBAR PREMIUM
+           ============================================ */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0.8rem 2rem;
+            background: rgba(10, 10, 26, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(240,184,41,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5), var(--sombra-dorada);
+        }
+
+        .navbar::before {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--dorado), var(--dorado-claro), var(--dorado), transparent);
+            animation: neonGold 3s ease-in-out infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes neonGold {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+            box-shadow: 0 0 30px rgba(240,184,41,0.2);
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { box-shadow: 0 0 30px rgba(240,184,41,0.2); }
+            50% { box-shadow: 0 0 60px rgba(240,184,41,0.4); }
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-title .tocas {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-claro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(240,184,41,0.2);
+        }
+
+        .navbar-title span { 
+            color: var(--dorado);
+            -webkit-text-fill-color: var(--dorado);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--dorado);
+            background: var(--azul-profundo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--dorado);
+            box-shadow: 0 0 30px rgba(240,184,41,0.15);
+            transition: var(--transition);
+        }
+
+        .user-avatar:hover {
+            box-shadow: 0 0 50px rgba(240,184,41,0.3);
+            transform: scale(1.05);
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .user-name .highlight {
+            color: var(--dorado);
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            background: rgba(240,184,41,0.06);
+            border: 1px solid rgba(240,184,41,0.15);
+            color: rgba(255,255,255,0.7);
+            padding: 0.4rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.85rem;
+        }
+        .btn-logout:hover {
+            background: rgba(240,184,41,0.12);
+            color: white;
+            box-shadow: 0 0 30px rgba(240,184,41,0.1);
+        }
+
+        .notification-bell {
+            position: relative;
+            color: rgba(255,255,255,0.7);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .notification-bell:hover {
+            color: var(--dorado);
+            transform: scale(1.1);
+        }
+        .notification-bell .badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--rojo-neon);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50%;
+            min-width: 18px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(255,0,68,0.3);
+            animation: pulseBadge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* ============================================
+           DASHBOARD CONTAINER
+           ============================================ */
+        .dashboard-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ============================================
+           HEADER - TOCAS
+           ============================================ */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header .greeting h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+        }
+
+        .dashboard-header .greeting h1 .tocas-title {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-claro), var(--dorado));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(240,184,41,0.15);
+            animation: textShimmer 3s ease-in-out infinite;
+            background-size: 200% 100%;
+        }
+
+        @keyframes textShimmer {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .dashboard-header .greeting h1 i {
+            -webkit-text-fill-color: var(--dorado);
+            filter: drop-shadow(0 0 20px rgba(240,184,41,0.2));
+        }
+
+        .dashboard-header .greeting .user-highlight {
+            color: var(--dorado);
+            font-weight: 700;
+            -webkit-text-fill-color: var(--dorado);
+            text-shadow: 0 0 30px rgba(240,184,41,0.15);
+        }
+
+        .dashboard-header .greeting p {
+            color: rgba(255,255,255,0.5);
+            font-size: 1rem;
+            margin-top: 0.2rem;
+        }
+
+        .dashboard-header .greeting p .date {
+            color: var(--dorado);
+            font-weight: 600;
+            -webkit-text-fill-color: var(--dorado);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--dorado), var(--dorado-oscuro));
+            color: var(--azul-oscuro);
+            box-shadow: 0 0 40px rgba(240,184,41,0.15);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 60px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline-gold {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(240,184,41,0.2);
+        }
+
+        .btn-outline-gold:hover {
+            background: rgba(240,184,41,0.05);
+            border-color: var(--dorado);
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(240,184,41,0.05);
+        }
+
+        .btn-neon {
+            background: linear-gradient(135deg, var(--azul-neon), var(--morado-neon));
+            color: white;
+            box-shadow: 0 0 30px rgba(0,212,255,0.15);
+        }
+
+        .btn-neon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 50px rgba(0,212,255,0.25);
+        }
+
+        /* ============================================
+           STATS CARDS CON SOMBRA DORADA
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: var(--borde-redondeado);
+            border: 1px solid rgba(240,184,41,0.06);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            animation: cardFadeIn 0.6s ease forwards;
+            opacity: 0;
+            box-shadow: var(--sombra-dorada);
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: var(--borde-redondeado);
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(240,184,41,0.15), rgba(123,47,252,0.05));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(240,184,41,0.03), transparent 70%);
+            pointer-events: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(240,184,41,0.15);
+            box-shadow: var(--sombra-dorada-hover), var(--sombra);
+        }
+
+        .stat-card .stat-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            position: relative;
+        }
+
+        .stat-card .stat-icon.gold {
+            background: rgba(240,184,41,0.1);
+            color: var(--dorado);
+            box-shadow: 0 0 30px rgba(240,184,41,0.1);
+        }
+
+        .stat-card .stat-icon.blue {
+            background: rgba(0,212,255,0.08);
+            color: var(--azul-neon);
+            box-shadow: 0 0 30px rgba(0,212,255,0.05);
+        }
+
+        .stat-card .stat-icon.green {
+            background: rgba(0,255,136,0.08);
+            color: var(--verde-neon);
+            box-shadow: 0 0 30px rgba(0,255,136,0.05);
+        }
+
+        .stat-card .stat-icon.purple {
+            background: rgba(123,47,252,0.08);
+            color: var(--morado-neon);
+            box-shadow: 0 0 30px rgba(123,47,252,0.05);
+        }
+
+        .stat-card .stat-change {
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+        .stat-card .stat-change.up {
+            background: rgba(0,255,136,0.12);
+            color: var(--verde-neon);
+        }
+        .stat-card .stat-change.down {
+            background: rgba(255,0,68,0.12);
+            color: var(--rojo-neon);
+        }
+        .stat-card .stat-change.stable {
+            background: rgba(240,184,41,0.12);
+            color: var(--dorado);
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            display: block;
+            margin-top: 0.5rem;
+            line-height: 1.2;
+            background: linear-gradient(135deg, white, var(--dorado-claro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .stat-label {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+
+        /* ============================================
+           QUICK ACCESS
+           ============================================ */
+        .quick-access {
+            margin-bottom: 2rem;
+        }
+
+        .quick-access .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-access .section-title i {
+            color: var(--dorado);
+            filter: drop-shadow(0 0 15px rgba(240,184,41,0.2));
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .quick-item {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 1rem;
+            border-radius: var(--borde-redondeado);
+            border: 1px solid rgba(240,184,41,0.04);
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--sombra-dorada);
+        }
+
+        .quick-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(240,184,41,0.05), rgba(123,47,252,0.02));
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .quick-item:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(240,184,41,0.15);
+            box-shadow: var(--sombra-dorada-hover);
+        }
+
+        .quick-item:hover::before {
+            opacity: 1;
+        }
+
+        .quick-item .q-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-item .q-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quick-item .q-shortcut {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.2);
+            margin-top: 0.2rem;
+            display: block;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================
+           MAIN GRID
+           ============================================ */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border: 1px solid rgba(240,184,41,0.04);
+            transition: var(--transition);
+            box-shadow: var(--sombra-dorada);
+        }
+
+        .dashboard-card:hover {
+            border-color: rgba(240,184,41,0.08);
+            box-shadow: var(--sombra-dorada-hover);
+        }
+
+        .dashboard-card .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.2rem;
+        }
+
+        .dashboard-card .card-header h3 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: white;
+        }
+        .dashboard-card .card-header h3 i {
+            color: var(--dorado);
+            margin-right: 6px;
+            filter: drop-shadow(0 0 15px rgba(240,184,41,0.15));
+        }
+        .dashboard-card .card-header a {
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+        .dashboard-card .card-header a:hover {
+            color: var(--dorado);
+        }
+
+        .card-chart {
+            height: 220px;
+            position: relative;
+        }
+        .card-chart canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* ============================================
+           ACTIVITY LIST
+           ============================================ */
+        .activity-list {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .activity-list::-webkit-scrollbar {
+            width: 4px;
+        }
+        .activity-list::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.02);
+        }
+        .activity-list::-webkit-scrollbar-thumb {
+            background: var(--dorado);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(240,184,41,0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.6rem 0.5rem;
+            border-radius: 10px;
+            transition: var(--transition);
+            animation: slideIn 0.3s ease forwards;
+            opacity: 0;
+        }
+
+        .activity-item:nth-child(1) { animation-delay: 0.05s; }
+        .activity-item:nth-child(2) { animation-delay: 0.1s; }
+        .activity-item:nth-child(3) { animation-delay: 0.15s; }
+        .activity-item:nth-child(4) { animation-delay: 0.2s; }
+        .activity-item:nth-child(5) { animation-delay: 0.25s; }
+        .activity-item:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .activity-item:hover {
+            background: rgba(240,184,41,0.04);
+        }
+
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.8rem;
+        }
+
+        .activity-icon.calculo {
+            background: rgba(0,212,255,0.08);
+            color: var(--azul-neon);
+        }
+        .activity-icon.portafolio {
+            background: rgba(240,184,41,0.1);
+            color: var(--dorado);
+        }
+        .activity-icon.proyecto {
+            background: rgba(123,47,252,0.08);
+            color: var(--morado-neon);
+        }
+        .activity-icon.ia {
+            background: rgba(0,255,136,0.08);
+            color: var(--verde-neon);
+        }
+        .activity-icon.presa {
+            background: rgba(255,45,149,0.08);
+            color: #ff2d95;
+        }
+        .activity-icon.tuberia {
+            background: rgba(59,130,246,0.08);
+            color: #3b82f6;
+        }
+        .activity-icon.canal {
+            background: rgba(16,185,129,0.08);
+            color: #10b981;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+        .activity-content .activity-title {
+            font-weight: 600;
+            color: white;
+            font-size: 0.9rem;
+        }
+        .activity-content .activity-desc {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+        }
+        .activity-content .activity-time {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+        }
+
+        /* ============================================
+           PROYECTOS
+           ============================================ */
+        .proyecto-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: var(--transition);
+        }
+        .proyecto-item:last-child {
+            border-bottom: none;
+        }
+        .proyecto-item:hover {
+            padding-left: 0.5rem;
+        }
+
+        .proyecto-item .proyecto-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .proyecto-item .proyecto-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .proyecto-item .proyecto-status.activo {
+            background: var(--verde-neon);
+            box-shadow: 0 0 15px rgba(0,255,136,0.2);
+        }
+        .proyecto-item .proyecto-status.borrador {
+            background: var(--dorado);
+            box-shadow: 0 0 15px rgba(240,184,41,0.2);
+        }
+        .proyecto-item .proyecto-status.completado {
+            background: var(--azul-neon);
+            box-shadow: 0 0 15px rgba(0,212,255,0.2);
+        }
+        .proyecto-item .proyecto-status.pausado {
+            background: var(--rojo-neon);
+            box-shadow: 0 0 15px rgba(255,0,68,0.2);
+        }
+
+        .proyecto-item .proyecto-nombre {
+            font-weight: 500;
+            color: white;
+            font-size: 0.85rem;
+        }
+        .proyecto-item .proyecto-fecha {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+        }
+        .proyecto-item .proyecto-badge {
+            font-size: 0.6rem;
+            padding: 0.1rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .proyecto-item .proyecto-badge.activo {
+            background: rgba(0,255,136,0.12);
+            color: var(--verde-neon);
+        }
+        .proyecto-item .proyecto-badge.borrador {
+            background: rgba(240,184,41,0.12);
+            color: var(--dorado);
+        }
+        .proyecto-item .proyecto-badge.completado {
+            background: rgba(0,212,255,0.12);
+            color: var(--azul-neon);
+        }
+        .proyecto-item .proyecto-badge.pausado {
+            background: rgba(255,0,68,0.12);
+            color: var(--rojo-neon);
+        }
+
+        /* ============================================
+           QUICK STATS
+           ============================================ */
+        .quick-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .quick-stat-item {
+            background: rgba(255,255,255,0.03);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(240,184,41,0.03);
+            transition: var(--transition);
+            box-shadow: var(--sombra-dorada);
+        }
+
+        .quick-stat-item:hover {
+            background: rgba(240,184,41,0.04);
+            transform: translateY(-2px);
+            box-shadow: var(--sombra-dorada-hover);
+        }
+
+        .quick-stat-item .qs-number {
+            font-size: 1.8rem;
+            font-weight: 900;
+            display: block;
+            background: linear-gradient(135deg, white, var(--dorado-claro));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .quick-stat-item .qs-label {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .goal-progress {
+            margin-top: 1.2rem;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, rgba(240,184,41,0.04), rgba(123,47,252,0.02));
+            border-radius: 12px;
+            border: 1px solid rgba(240,184,41,0.04);
+            text-align: center;
+            box-shadow: var(--sombra-dorada);
+        }
+
+        .goal-progress .goal-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            display: block;
+        }
+
+        .goal-progress .goal-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: block;
+            margin: 0.2rem 0;
+            color: white;
+        }
+
+        .goal-progress .progress-bar {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            height: 6px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .goal-progress .progress-bar .progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--dorado), var(--dorado-claro));
+            width: 0%;
+            transition: width 1.5s ease;
+            box-shadow: 0 0 30px rgba(240,184,41,0.15);
+        }
+
+        .goal-progress .progress-text {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.2);
+            margin-top: 0.3rem;
+            display: block;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5), 0 0 30px rgba(240,184,41,0.05);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+            background: rgba(10,10,26,0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(240,184,41,0.08);
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast.success {
+            border-color: rgba(0,255,136,0.15);
+        }
+        .toast.error {
+            border-color: rgba(255,0,68,0.15);
+        }
+        .toast.info {
+            border-color: rgba(0,212,255,0.15);
+        }
+        .toast.warning {
+            border-color: rgba(240,184,41,0.15);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+            .dashboard-header .greeting h1 {
+                font-size: 2rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-card .stat-number {
+                font-size: 1.8rem;
+            }
+            .quick-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .navbar-right .user-name {
+                display: none;
+            }
+            .header-actions .btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+            }
+            .card-chart {
+                height: 180px;
+            }
+            .quick-stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .navbar-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stat-card .stat-number {
+                font-size: 1.4rem;
+            }
+            .quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .quick-item {
+                padding: 0.8rem;
+            }
+            .quick-item .q-icon {
+                font-size: 1.5rem;
+            }
+            .quick-item .q-label {
+                font-size: 0.65rem;
+            }
+            .dashboard-header .greeting h1 {
+                font-size: 1.5rem;
+            }
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+            .header-actions {
+                width: 100%;
+            }
+            .header-actions .btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+            .goal-progress {
+                padding: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    FONDO CON BURBUJAS
+    ============================================ -->
+    <div class="bg-container" id="bgContainer">
+        <!-- Las burbujas y partículas se generan con JS -->
+    </div>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('dashboard') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title"><span class="tocas">TOCAS</span> <span>Hidráulica</span></span>
+        </a>
+        <div class="navbar-right">
+            <div class="notification-bell" onclick="showToast('📬 No tienes notificaciones nuevas', 'info')">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </div>
+            <div class="user-profile">
+                <div class="user-avatar">
+                    {{ current_user.nombre[0] }}{{ current_user.apellido[0] }}
+                </div>
+                <span class="user-name">
+                    {{ current_user.nombre }} <span class="highlight">{{ current_user.apellido }}</span>
+                </span>
+                <a href="{{ url_for('logout') }}" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    DASHBOARD
+    ============================================ -->
+    <div class="dashboard-container">
+
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="greeting">
+                <h1><i class="fas fa-chart-pie"></i> <span class="tocas-title">TOCAS</span></h1>
+                <p>
+                    Bienvenido, <span class="user-highlight">{{ current_user.nombre }} {{ current_user.apellido }}</span>
+                    <span class="date">
+                        <i class="far fa-calendar-alt"></i>
+                        {{ now.strftime('%d de %B de %Y') if now else 'Hoy' }}
+                    </span>
+                </p>
+            </div>
+            <div class="header-actions">
+                <a href="{{ url_for('calculadora') }}" class="btn btn-gold">
+                    <i class="fas fa-calculator"></i> Calculadora
+                </a>
+                <a href="{{ url_for('ia_asistente') }}" class="btn btn-neon">
+                    <i class="fas fa-robot"></i> IA Asistente
+                </a>
+                <a href="{{ url_for('portafolio') }}" class="btn btn-outline-gold">
+                    <i class="fas fa-upload"></i> Subir
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats con sombra dorada -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon blue"><i class="fas fa-calculator"></i></div>
+                    <span class="stat-change up"><i class="fas fa-arrow-up"></i> +12%</span>
+                </div>
+                <span class="stat-number" id="totalCalculos">0</span>
+                <span class="stat-label">Cálculos Realizados</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon gold"><i class="fas fa-folder-open"></i></div>
+                    <span class="stat-change up"><i class="fas fa-arrow-up"></i> +8%</span>
+                </div>
+                <span class="stat-number" id="totalPortafolios">0</span>
+                <span class="stat-label">Portafolios</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon green"><i class="fas fa-robot"></i></div>
+                    <span class="stat-change up"><i class="fas fa-arrow-up"></i> +25%</span>
+                </div>
+                <span class="stat-number" id="totalIA">0</span>
+                <span class="stat-label">Consultas IA</span>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <div class="stat-icon purple"><i class="fas fa-file-pdf"></i></div>
+                    <span class="stat-change stable"><i class="fas fa-minus"></i> Estable</span>
+                </div>
+                <span class="stat-number" id="totalPDF">0</span>
+                <span class="stat-label">PDFs Generados</span>
+            </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="quick-access">
+            <div class="section-title">
+                <i class="fas fa-bolt"></i> Acceso Rápido
+                <span style="font-size: 0.7rem; font-weight: 400; color: rgba(255,255,255,0.2); margin-left: 0.5rem;">
+                    Ctrl + Número
+                </span>
+            </div>
+            <div class="quick-grid">
+                <a href="{{ url_for('calculadora') }}#caudal" class="quick-item">
+                    <span class="q-icon">💧</span>
+                    <span class="q-label">Caudal</span>
+                    <span class="q-shortcut">Ctrl+1</span>
+                </a>
+                <a href="{{ url_for('calculadora') }}#perdidas" class="quick-item">
+                    <span class="q-icon">📉</span>
+                    <span class="q-label">Pérdidas</span>
+                    <span class="q-shortcut">Ctrl+2</span>
+                </a>
+                <a href="{{ url_for('tuberias') }}" class="quick-item">
+                    <span class="q-icon">🔧</span>
+                    <span class="q-label">Tuberías</span>
+                    <span class="q-shortcut">Ctrl+3</span>
+                </a>
+                <a href="{{ url_for('canales') }}" class="quick-item">
+                    <span class="q-icon">🏗️</span>
+                    <span class="q-label">Canales</span>
+                    <span class="q-shortcut">Ctrl+4</span>
+                </a>
+                <a href="{{ url_for('rios') }}" class="quick-item">
+                    <span class="q-icon">🌊</span>
+                    <span class="q-label">Ríos</span>
+                    <span class="q-shortcut">Ctrl+5</span>
+                </a>
+                <a href="{{ url_for('presas') }}" class="quick-item">
+                    <span class="q-icon">🏗️</span>
+                    <span class="q-label">Presas</span>
+                    <span class="q-shortcut">Ctrl+6</span>
+                </a>
+                <a href="{{ url_for('hidrologia') }}" class="quick-item">
+                    <span class="q-icon">🌧️</span>
+                    <span class="q-label">Hidrología</span>
+                    <span class="q-shortcut">Ctrl+7</span>
+                </a>
+                <a href="{{ url_for('red_agua') }}" class="quick-item">
+                    <span class="q-icon">🔄</span>
+                    <span class="q-label">Redes</span>
+                    <span class="q-shortcut">Ctrl+8</span>
+                </a>
+                <a href="{{ url_for('inundaciones') }}" class="quick-item">
+                    <span class="q-icon">⚠️</span>
+                    <span class="q-label">Inundaciones</span>
+                    <span class="q-shortcut">Ctrl+9</span>
+                </a>
+                <a href="{{ url_for('biblioteca') }}" class="quick-item">
+                    <span class="q-icon">📚</span>
+                    <span class="q-label">Biblioteca</span>
+                    <span class="q-shortcut">Ctrl+0</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <!-- Chart -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-line"></i> Actividad Semanal</h3>
+                    <a href="#" onclick="showToast('📊 Actualizando gráfico...', 'info')">
+                        <i class="fas fa-sync"></i> Actualizar
+                    </a>
+                </div>
+                <div class="card-chart">
+                    <canvas id="activityChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Proyectos Recientes -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-project-diagram"></i> Proyectos Recientes</h3>
+                    <a href="#">Ver todos</a>
+                </div>
+                <div id="proyectosList">
+                    <div class="proyecto-item">
+                        <div class="proyecto-info">
+                            <span class="proyecto-status activo"></span>
+                            <span class="proyecto-nombre">Red de Agua - Cajamarca</span>
+                        </div>
+                        <span class="proyecto-badge activo">Activo</span>
+                    </div>
+                    <div class="proyecto-item">
+                        <div class="proyecto-info">
+                            <span class="proyecto-status completado"></span>
+                            <span class="proyecto-nombre">Diseño de Canal Trapezoidal</span>
+                        </div>
+                        <span class="proyecto-badge completado">Completado</span>
+                    </div>
+                    <div class="proyecto-item">
+                        <div class="proyecto-info">
+                            <span class="proyecto-status borrador"></span>
+                            <span class="proyecto-nombre">Presa de Concreto - Proyecto</span>
+                        </div>
+                        <span class="proyecto-badge borrador">Borrador</span>
+                    </div>
+                    <div class="proyecto-item">
+                        <div class="proyecto-info">
+                            <span class="proyecto-status activo"></span>
+                            <span class="proyecto-nombre">Monitoreo de Ríos</span>
+                        </div>
+                        <span class="proyecto-badge activo">Activo</span>
+                    </div>
+                    <div class="proyecto-item">
+                        <div class="proyecto-info">
+                            <span class="proyecto-status completado"></span>
+                            <span class="proyecto-nombre">Curva IDF - Cajamarca</span>
+                        </div>
+                        <span class="proyecto-badge completado">Completado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Grid -->
+        <div class="dashboard-grid">
+            <!-- Activity Feed -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-history"></i> Actividad Reciente</h3>
+                    <a href="#" onclick="showToast('📋 Mostrando toda la actividad', 'info')">Ver todo</a>
+                </div>
+                <div class="activity-list" id="activityList">
+                    <div class="activity-item">
+                        <div class="activity-icon calculo"><i class="fas fa-calculator"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Cálculo de Pérdidas</div>
+                            <div class="activity-desc">hf = 2.45 m</div>
+                            <div class="activity-time"><i class="far fa-clock"></i> Hace 5 min</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon portafolio"><i class="fas fa-folder-open"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Portafolio subido</div>
+                            <div class="activity-desc">"Diseño Hidráulico"</div>
+                            <div class="activity-time"><i class="far fa-clock"></i> Hace 20 min</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon ia"><i class="fas fa-robot"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Consulta IA</div>
+                            <div class="activity-desc">"Explica Manning"</div>
+                            <div class="activity-time"><i class="far fa-clock"></i> Hace 45 min</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon tuberia"><i class="fas fa-pipe"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Tubería diseñada</div>
+                            <div class="activity-desc">PVC 200mm ✅</div>
+                            <div class="activity-time"><i class="far fa-clock"></i> Hace 1h</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon canal"><i class="fas fa-ruler"></i></div>
+                        <div class="activity-content">
+                            <div class="activity-title">Canal diseñado</div>
+                            <div class="activity-desc">Trapezoidal 0.85m</div>
+                            <div class="activity-time"><i class="far fa-clock"></i> Hace 2h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-chart-simple"></i> Resumen Rápido</h3>
+                </div>
+                <div class="quick-stats-grid">
+                    <div class="quick-stat-item">
+                        <span class="qs-number">4</span>
+                        <span class="qs-label">Proyectos Activos</span>
+                    </div>
+                    <div class="quick-stat-item">
+                        <span class="qs-number">89%</span>
+                        <span class="qs-label">Tasa de Éxito</span>
+                    </div>
+                    <div class="quick-stat-item">
+                        <span class="qs-number">12</span>
+                        <span class="qs-label">Horas de Estudio</span>
+                    </div>
+                    <div class="quick-stat-item">
+                        <span class="qs-number">5</span>
+                        <span class="qs-label">Certificaciones</span>
+                    </div>
+                </div>
+
+                <div class="goal-progress">
+                    <span class="goal-label">🎯 Próximo Objetivo</span>
+                    <span class="goal-title">Completar 5 diseños de tuberías</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 40%;"></div>
+                    </div>
+                    <span class="progress-text">2/5 completados</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // BURBUJAS Y PARTÍCULAS
+        // ============================================
+        (function createBubbles() {
+            const container = document.getElementById('bgContainer');
+            const count = 25;
+
+            for (let i = 0; i < count; i++) {
+                const bubble = document.createElement('div');
+                bubble.className = 'bubble-bg';
+                const size = Math.random() * 80 + 30;
+                bubble.style.width = size + 'px';
+                bubble.style.height = size + 'px';
+                bubble.style.left = Math.random() * 100 + '%';
+                bubble.style.animationDuration = (Math.random() * 25 + 15) + 's';
+                bubble.style.animationDelay = (Math.random() * 20) + 's';
+                bubble.style.opacity = Math.random() * 0.3 + 0.05;
+                container.appendChild(bubble);
+            }
+        })();
+
+        (function createParticles() {
+            const container = document.getElementById('bgContainer');
+            const count = 50;
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle-bg';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 30 + 20) + 's';
+                particle.style.animationDelay = (Math.random() * 15) + 's';
+                particle.style.opacity = Math.random() * 0.4 + 0.05;
+                container.appendChild(particle);
+            }
+        })();
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // CONTADORES ANIMADOS
+        // ============================================
+        function animateCounter(element, target, suffix = '') {
+            let current = 0;
+            const increment = Math.max(1, target / 50);
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = Math.round(target) + suffix;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.round(current) + suffix;
+                }
+            }, 30);
+        }
+
+        // ============================================
+        // GRÁFICO CON DORADO
+        // ============================================
+        let activityChart = null;
+
+        function initChart() {
+            const ctx = document.getElementById('activityChart').getContext('2d');
+            if (activityChart) { activityChart.destroy(); }
+
+            const gradient1 = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient1.addColorStop(0, 'rgba(240,184,41,0.25)');
+            gradient1.addColorStop(1, 'rgba(240,184,41,0.01)');
+
+            const gradient2 = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient2.addColorStop(0, 'rgba(0,212,255,0.2)');
+            gradient2.addColorStop(1, 'rgba(0,212,255,0.01)');
+
+            const gradient3 = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient3.addColorStop(0, 'rgba(0,255,136,0.2)');
+            gradient3.addColorStop(1, 'rgba(0,255,136,0.01)');
+
+            activityChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Cálculos',
+                        data: [4, 7, 9, 6, 11, 3, 2],
+                        borderColor: '#f0b829',
+                        backgroundColor: gradient1,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#f0b829',
+                        borderWidth: 2,
+                        pointBorderColor: 'rgba(240,184,41,0.3)',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#f0b829',
+                        pointShadowColor: 'rgba(240,184,41,0.3)',
+                        pointShadowBlur: 10
+                    }, {
+                        label: 'Consultas IA',
+                        data: [2, 4, 6, 5, 8, 1, 0],
+                        borderColor: '#00d4ff',
+                        backgroundColor: gradient2,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#00d4ff',
+                        borderWidth: 2,
+                        pointBorderColor: 'rgba(0,212,255,0.3)',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00d4ff',
+                        pointShadowColor: 'rgba(0,212,255,0.3)',
+                        pointShadowBlur: 10
+                    }, {
+                        label: 'Diseños',
+                        data: [1, 2, 3, 2, 4, 0, 0],
+                        borderColor: '#00ff88',
+                        backgroundColor: gradient3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#00ff88',
+                        borderWidth: 2,
+                        pointBorderColor: 'rgba(0,255,136,0.3)',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#00ff88',
+                        pointShadowColor: 'rgba(0,255,136,0.3)',
+                        pointShadowBlur: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Inter', size: 10 },
+                                color: 'rgba(255,255,255,0.5)',
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                boxWidth: 6,
+                                padding: 15
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: {
+                                font: { family: 'Inter', size: 10 },
+                                color: 'rgba(255,255,255,0.25)'
+                            }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: {
+                                font: { family: 'Inter', size: 10 },
+                                color: 'rgba(255,255,255,0.25)',
+                                stepSize: 2
+                            },
+                            beginAtZero: true
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // ACTIVIDAD EN TIEMPO REAL
+        // ============================================
+        function agregarActividad(tipo, titulo, descripcion, tiempo) {
+            const list = document.getElementById('activityList');
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+
+            const iconMap = {
+                'calculo': 'calculos',
+                'portafolio': 'portafolio',
+                'ia': 'ia',
+                'proyecto': 'proyecto',
+                'presa': 'presa',
+                'tuberia': 'tuberia',
+                'canal': 'canal'
+            };
+
+            const iconIcons = {
+                'calculo': 'fa-calculator',
+                'portafolio': 'fa-folder-open',
+                'ia': 'fa-robot',
+                'proyecto': 'fa-project-diagram',
+                'presa': 'fa-dam',
+                'tuberia': 'fa-pipe',
+                'canal': 'fa-ruler'
+            };
+
+            const iconClass = iconMap[tipo] || 'calculo';
+            const icon = iconIcons[tipo] || 'fa-circle';
+
+            item.innerHTML = `
+                <div class="activity-icon ${iconClass}">
+                    <i class="fas ${icon}"></i>
+                </div>
+                <div class="activity-content">
+                    <div class="activity-title">${titulo}</div>
+                    <div class="activity-desc">${descripcion}</div>
+                    <div class="activity-time"><i class="far fa-clock"></i> ${tiempo}</div>
+                </div>
+            `;
+
+            list.prepend(item);
+            while (list.children.length > 10) { list.removeChild(list.lastChild); }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Contadores
+            const calculos = document.getElementById('totalCalculos');
+            const portafolios = document.getElementById('totalPortafolios');
+            const ia = document.getElementById('totalIA');
+            const pdf = document.getElementById('totalPDF');
+
+            animateCounter(calculos, 47);
+            animateCounter(portafolios, 12);
+            animateCounter(ia, 28);
+            animateCounter(pdf, 15);
+
+            // Gráfico
+            initChart();
+
+            // Simular actividad
+            const actividades = [
+                { tipo: 'calculo', titulo: 'Cálculo de Caudal', descripcion: 'Q = 2.5 m³/s', tiempo: 'Ahora' },
+                { tipo: 'ia', titulo: 'Consulta IA', descripcion: '"Diseña tubería PVC"', tiempo: 'Hace 30s' },
+                { tipo: 'portafolio', titulo: 'Portafolio subido', descripcion: '"Informe Hidráulico"', tiempo: 'Hace 2 min' },
+                { tipo: 'tuberia', titulo: 'Tubería diseñada', descripcion: 'PVC 200mm ✅', tiempo: 'Hace 5 min' },
+                { tipo: 'canal', titulo: 'Canal diseñado', descripcion: 'Trapezoidal 0.85m', tiempo: 'Hace 10 min' },
+                { tipo: 'presa', titulo: 'Diseño de Presa', descripcion: 'FS = 2.45 ✅', tiempo: 'Hace 15 min' }
+            ];
+
+            let index = 0;
+            setInterval(() => {
+                const act = actividades[index % actividades.length];
+                agregarActividad(act.tipo, act.titulo, act.descripcion, act.tiempo);
+                index++;
+            }, 6000);
+
+            // Actualizar stats
+            setInterval(() => {
+                const newCalculos = parseInt(calculos.textContent) + Math.floor(Math.random() * 2);
+                animateCounter(calculos, newCalculos);
+            }, 25000);
+
+            // Atajos de teclado
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey) {
+                    const shortcuts = {
+                        '1': '{{ url_for("calculadora") }}#caudal',
+                        '2': '{{ url_for("calculadora") }}#perdidas',
+                        '3': '{{ url_for("tuberias") }}',
+                        '4': '{{ url_for("canales") }}',
+                        '5': '{{ url_for("rios") }}',
+                        '6': '{{ url_for("presas") }}',
+                        '7': '{{ url_for("hidrologia") }}',
+                        '8': '{{ url_for("red_agua") }}',
+                        '9': '{{ url_for("inundaciones") }}',
+                        '0': '{{ url_for("biblioteca") }}'
+                    };
+                    const url = shortcuts[e.key];
+                    if (url) {
+                        e.preventDefault();
+                        window.location.href = url;
+                    }
+                }
+            });
+
+            // Animación de barras de progreso
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+
+            console.log('🌟 TOCAS Dashboard cargado');
+            console.log('✨ Efectos dorados y sombras premium');
+            console.log('💡 Atajos: Ctrl+1 a Ctrl+0 para acceso rápido');
+        });
+
+        // ============================================
+        // LIMPIEZA
+        // ============================================
+        window.addEventListener('beforeunload', function() {
+            if (activityChart) { activityChart.destroy(); }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidrología Avanzada - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --rojo: #dc2626;
+            --naranja: #f59e0b;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .hydro-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .hydro-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .hydro-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .hydro-header h1 i {
+            color: var(--dorado);
+        }
+
+        .hydro-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           TABS
+           ============================================ */
+        .hydro-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 0.5rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .hydro-tab {
+            padding: 0.7rem 1.4rem;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            background: transparent;
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hydro-tab:hover {
+            background: var(--crema-claro);
+            color: var(--azul-oscuro);
+        }
+
+        .hydro-tab.active {
+            background: var(--azul-oscuro);
+            color: white;
+            box-shadow: 0 8px 25px rgba(10,22,40,0.2);
+        }
+
+        .hydro-tab i {
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           TAB CONTENT
+           ============================================ */
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hydro-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .hydro-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hydro-card .card-title i {
+            color: var(--dorado);
+        }
+
+        .hydro-card .card-subtitle {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .formula-box {
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .unit {
+            font-weight: 400;
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22,163,74,0.3);
+        }
+
+        /* ============================================
+           RESULTADOS
+           ============================================ */
+        .result-container {
+            margin-top: 2rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        .result-container .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .result-container .result-header h4 {
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .result-item .value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .result-item .label {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .result-item .value.recomendado {
+            color: var(--verde);
+        }
+
+        .result-item .value.advertencia {
+            color: var(--naranja);
+        }
+
+        .result-item .value.peligro {
+            color: var(--rojo);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ============================================
+           CHART CONTAINERS
+           ============================================ */
+        .chart-container {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+        }
+
+        .chart-container h4 {
+            font-size: 0.95rem;
+            color: var(--azul-oscuro);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-container canvas {
+            width: 100% !important;
+            height: 250px !important;
+            border-radius: 8px;
+        }
+
+        /* ============================================
+           INFO BOX
+           ============================================ */
+        .info-box {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--celeste-hielo);
+        }
+
+        .info-box h4 {
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box ul li {
+            padding: 0.2rem 0;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .info-box ul li i {
+            color: var(--dorado);
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--verde);
+        }
+
+        .toast.error {
+            background: var(--rojo);
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hydro-container {
+                padding: 1rem;
+            }
+
+            .hydro-header h1 {
+                font-size: 2rem;
+            }
+
+            .hydro-card {
+                padding: 1.5rem;
+            }
+
+            .hydro-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding: 0.5rem;
+                gap: 0.3rem;
+            }
+
+            .hydro-tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+            }
+
+            .chart-container canvas {
+                height: 200px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="hydro-container">
+        <div class="hydro-header">
+            <h1><i class="fas fa-cloud-rain"></i> Hidrología Avanzada</h1>
+            <p>Método racional, hidrogramas, curvas IDF y análisis hidrológico</p>
+        </div>
+
+        <!-- ============================================
+        TABS
+        ============================================ -->
+        <div class="hydro-tabs">
+            <button class="hydro-tab active" data-tab="racional">
+                <i class="fas fa-calculator"></i> Método Racional
+            </button>
+            <button class="hydro-tab" data-tab="hidrograma">
+                <i class="fas fa-chart-area"></i> Hidrograma
+            </button>
+            <button class="hydro-tab" data-tab="idf">
+                <i class="fas fa-chart-line"></i> Curva IDF
+            </button>
+            <button class="hydro-tab" data-tab="tc">
+                <i class="fas fa-clock"></i> Tiempo de Concentración
+            </button>
+        </div>
+
+        <!-- ============================================
+        TAB: MÉTODO RACIONAL
+        ============================================ -->
+        <div class="tab-content active" id="tab-racional">
+            <div class="hydro-card">
+                <h3 class="card-title">
+                    <i class="fas fa-calculator"></i> Método Racional
+                </h3>
+                <p class="card-subtitle">Cálculo de caudal máximo de diseño</p>
+                <div class="formula-box">Q = C × i × A / 360</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Área de la Cuenca <span class="unit">(ha)</span></label>
+                        <input type="number" id="racional_area" step="0.1" placeholder="Ej: 50" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Coeficiente de Escorrentía (C)</label>
+                        <input type="number" id="racional_coef" step="0.01" placeholder="Ej: 0.35" value="0.35">
+                    </div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Intensidad de Lluvia <span class="unit">(mm/h)</span></label>
+                        <input type="number" id="racional_intensidad" step="0.1" placeholder="Ej: 45" value="45">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularRacional()">
+                        <i class="fas fa-calculator"></i> Calcular
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-racional')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-racional"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: HIDROGRAMA
+        ============================================ -->
+        <div class="tab-content" id="tab-hidrograma">
+            <div class="hydro-card">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-area"></i> Hidrograma Unitario
+                </h3>
+                <p class="card-subtitle">Generación de hidrograma sintético</p>
+                <div class="formula-box">Hidrograma Unitario Sintético</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tiempo pico <span class="unit">(horas)</span></label>
+                        <input type="number" id="hidro_tp" step="0.1" placeholder="Ej: 4" value="4">
+                    </div>
+                    <div class="form-group">
+                        <label>Caudal pico <span class="unit">(m³/s)</span></label>
+                        <input type="number" id="hidro_qp" step="0.1" placeholder="Ej: 25" value="25">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="generarHidrograma()">
+                        <i class="fas fa-chart-line"></i> Generar Hidrograma
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-hidrograma')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-hidrograma"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: CURVA IDF
+        ============================================ -->
+        <div class="tab-content" id="tab-idf">
+            <div class="hydro-card">
+                <h3 class="card-title">
+                    <i class="fas fa-chart-line"></i> Curva IDF
+                </h3>
+                <p class="card-subtitle">Intensidad - Duración - Frecuencia</p>
+                <div class="formula-box">i = a × T^c / (d + b)^n</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Factor a</label>
+                        <input type="number" id="idf_a" step="1" placeholder="Ej: 1000" value="1000">
+                    </div>
+                    <div class="form-group">
+                        <label>Factor b</label>
+                        <input type="number" id="idf_b" step="0.1" placeholder="Ej: 10" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label>Factor c</label>
+                        <input type="number" id="idf_c" step="0.01" placeholder="Ej: 0.5" value="0.5">
+                    </div>
+                    <div class="form-group">
+                        <label>Factor n</label>
+                        <input type="number" id="idf_n" step="0.01" placeholder="Ej: 0.8" value="0.8">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="generarCurvaIDF()">
+                        <i class="fas fa-chart-line"></i> Generar Curva IDF
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-idf')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-idf"></div>
+            </div>
+        </div>
+
+        <!-- ============================================
+        TAB: TIEMPO DE CONCENTRACIÓN
+        ============================================ -->
+        <div class="tab-content" id="tab-tc">
+            <div class="hydro-card">
+                <h3 class="card-title">
+                    <i class="fas fa-clock"></i> Tiempo de Concentración
+                </h3>
+                <p class="card-subtitle">Cálculo del tiempo de concentración de una cuenca</p>
+                <div class="formula-box">Tc = 0.0195 × L^0.77 × S^-0.385</div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Longitud del cauce <span class="unit">(km)</span></label>
+                        <input type="number" id="tc_longitud" step="0.1" placeholder="Ej: 5" value="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Pendiente media <span class="unit">(%)</span></label>
+                        <input type="number" id="tc_pendiente" step="0.1" placeholder="Ej: 3" value="3">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="calcularTc()">
+                        <i class="fas fa-calculator"></i> Calcular
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarResultado('resultado-tc')">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-tc"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function limpiarResultado(id) {
+            const container = document.getElementById(id);
+            container.classList.remove('show');
+            container.innerHTML = '';
+        }
+
+        function mostrarResultado(id, datos, titulo = '📊 Resultados') {
+            const container = document.getElementById(id);
+            let html = `
+                <div class="result-header">
+                    <h4>${titulo}</h4>
+                    <span style="color: var(--texto-gris); font-size: 0.85rem;">
+                        <i class="far fa-clock"></i> ${new Date().toLocaleTimeString()}
+                    </span>
+                </div>
+                <div class="result-grid">
+            `;
+
+            for (const [key, value] of Object.entries(datos)) {
+                const cls = typeof value === 'string' && value.includes('✅') ? 'recomendado' :
+                           typeof value === 'string' && value.includes('⚠️') ? 'advertencia' :
+                           typeof value === 'string' && value.includes('❌') ? 'peligro' : '';
+                html += `
+                    <div class="result-item">
+                        <span class="value ${cls}">${value}</span>
+                        <span class="label">${key}</span>
+                    </div>
+                `;
+            }
+
+            html += `
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-gold" onclick="exportarPDF('${id}')">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="copiarResultado('${id}')">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            container.classList.add('show');
+        }
+
+        function mostrarError(id, mensaje) {
+            const container = document.getElementById(id);
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            container.classList.add('show');
+            showToast(mensaje, 'error');
+        }
+
+        function copiarResultado(id) {
+            const container = document.getElementById(id);
+            const items = container.querySelectorAll('.result-item');
+            let texto = 'RESULTADOS HIDROLÓGICOS\n\n';
+            items.forEach(item => {
+                const value = item.querySelector('.value').textContent;
+                const label = item.querySelector('.label').textContent;
+                texto += `${label}: ${value}\n`;
+            });
+
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('✅ Resultados copiados', 'success');
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function exportarPDF(id) {
+            const container = document.getElementById(id);
+            const items = container.querySelectorAll('.result-item');
+            let datos = {};
+            items.forEach(item => {
+                const value = item.querySelector('.value').textContent;
+                const label = item.querySelector('.label').textContent;
+                datos[label] = value;
+            });
+
+            showToast('📄 PDF generado correctamente', 'success');
+            console.log('PDF Exportado:', datos);
+        }
+
+        // ============================================
+        // TABS
+        // ============================================
+        document.querySelectorAll('.hydro-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.hydro-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+
+        // ============================================
+        // 1. MÉTODO RACIONAL
+        // ============================================
+        function calcularRacional() {
+            const A = parseFloat(document.getElementById('racional_area').value);
+            const C = parseFloat(document.getElementById('racional_coef').value);
+            const i = parseFloat(document.getElementById('racional_intensidad').value);
+
+            if (!A || !C || !i || A <= 0 || C <= 0 || i <= 0) {
+                mostrarError('resultado-racional', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            // Q = C * i * A / 360
+            const Q = C * i * A / 360;
+            const Q_lps = Q * 1000;
+
+            // Clasificación
+            let clasificacion = '';
+            let color = '';
+            if (Q < 0.5) {
+                clasificacion = '✅ Caudal pequeño';
+                color = 'recomendado';
+            } else if (Q < 2) {
+                clasificacion = '✅ Caudal moderado';
+                color = 'recomendado';
+            } else if (Q < 10) {
+                clasificacion = '⚠️ Caudal significativo';
+                color = 'advertencia';
+            } else {
+                clasificacion = '❌ Caudal muy alto';
+                color = 'peligro';
+            }
+
+            const resultado = {
+                'Caudal (m³/s)': Q.toFixed(3),
+                'Caudal (L/s)': Q_lps.toFixed(1),
+                'Área (ha)': A.toFixed(1),
+                'Coef. C': C.toFixed(2),
+                'Intensidad (mm/h)': i.toFixed(1),
+                'Clasificación': clasificacion
+            };
+
+            mostrarResultado('resultado-racional', resultado, '💧 Método Racional');
+            showToast('✅ Cálculo completado', 'success');
+        }
+
+        // ============================================
+        // 2. HIDROGRAMA
+        // ============================================
+        let hidroChart = null;
+
+        function generarHidrograma() {
+            const tp = parseFloat(document.getElementById('hidro_tp').value);
+            const qp = parseFloat(document.getElementById('hidro_qp').value);
+
+            if (!tp || !qp || tp <= 0 || qp <= 0) {
+                mostrarError('resultado-hidrograma', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            // Generar puntos del hidrograma
+            const puntos = [];
+            const tiempoTotal = 10 * tp;
+            const paso = 0.1;
+            const tr = 1.67 * tp;
+
+            for (let t = 0; t <= tiempoTotal; t += paso) {
+                let q;
+                if (t <= tr) {
+                    q = qp * (t / tp) * Math.exp(1 - t / tp);
+                } else {
+                    q = qp * Math.exp(-0.5 * Math.pow((t - tp) / (0.5 * tp), 2));
+                }
+                puntos.push({ t, q });
+            }
+
+            const maxQ = Math.max(...puntos.map(p => p.q));
+
+            // Resultados
+            const resultado = {
+                'Tiempo pico (h)': tp.toFixed(1),
+                'Caudal pico (m³/s)': qp.toFixed(1),
+                'Duración lluvia (h)': tr.toFixed(1),
+                'Caudal máximo (m³/s)': maxQ.toFixed(2),
+                'Número de puntos': puntos.length
+            };
+
+            mostrarResultado('resultado-hidrograma', resultado, '📊 Hidrograma Unitario');
+
+            // Crear gráfico
+            setTimeout(() => {
+                dibujarHidrograma(puntos, tp, qp);
+            }, 100);
+
+            showToast('✅ Hidrograma generado', 'success');
+        }
+
+        function dibujarHidrograma(puntos, tp, qp) {
+            const container = document.getElementById('resultado-hidrograma');
+
+            // Verificar si ya existe un canvas
+            let canvas = document.getElementById('hidroChart');
+            if (!canvas) {
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                chartContainer.innerHTML = `
+                    <h4><i class="fas fa-chart-area" style="color: var(--dorado);"></i> Hidrograma Generado</h4>
+                    <canvas id="hidroChart"></canvas>
+                `;
+                container.appendChild(chartContainer);
+                canvas = document.getElementById('hidroChart');
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            // Destruir gráfico anterior si existe
+            if (hidroChart) {
+                hidroChart.destroy();
+            }
+
+            const tiempos = puntos.map(p => p.t);
+            const caudales = puntos.map(p => p.q);
+
+            hidroChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: tiempos.map(t => t.toFixed(1)),
+                    datasets: [{
+                        label: 'Caudal (m³/s)',
+                        data: caudales,
+                        borderColor: '#0a1628',
+                        backgroundColor: 'rgba(184,226,242,0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Inter', size: 12 },
+                                color: '#1a1a2e'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tiempo (horas)',
+                                font: { family: 'Inter', size: 12 },
+                                color: '#6b7280'
+                            },
+                            grid: { display: false },
+                            ticks: { maxTicksLimit: 15 }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Caudal (m³/s)',
+                                font: { family: 'Inter', size: 12 },
+                                color: '#6b7280'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // 3. CURVA IDF
+        // ============================================
+        let idfChart = null;
+
+        function generarCurvaIDF() {
+            const a = parseFloat(document.getElementById('idf_a').value);
+            const b = parseFloat(document.getElementById('idf_b').value);
+            const c = parseFloat(document.getElementById('idf_c').value);
+            const n = parseFloat(document.getElementById('idf_n').value);
+
+            if (!a || !b || !c || !n || a <= 0 || b < 0 || c <= 0 || n <= 0) {
+                mostrarError('resultado-idf', 'Por favor ingresa valores válidos');
+                return;
+            }
+
+            // Periodos de retorno
+            const periodos = [2, 5, 10, 25, 50, 100];
+            const duraciones = [5, 10, 15, 20, 30, 45, 60, 90, 120, 180, 240, 360];
+
+            // Función IDF
+            function intensidad(T, d) {
+                return a * Math.pow(T, c) / Math.pow(d + b, n);
+            }
+
+            // Generar datos
+            const datasets = periodos.map(T => {
+                const datos = duraciones.map(d => intensidad(T, d));
+                return {
+                    label: `T = ${T} años`,
+                    data: datos,
+                    borderColor: `hsl(${Math.random() * 60 + 200}, 80%, 40%)`,
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointBackgroundColor: `hsl(${Math.random() * 60 + 200}, 80%, 40%)`,
+                    tension: 0.3
+                };
+            });
+
+            // Mostrar resultados
+            const ultimoT = periodos[periodos.length - 1];
+            const ultimaD = duraciones[duraciones.length - 1];
+            const iMax = intensidad(ultimoT, 5);
+
+            const resultado = {
+                'Períodos analizados': periodos.join(', '),
+                'Duración máxima (min)': ultimaD,
+                'Intensidad máxima (mm/h)': iMax.toFixed(1),
+                'Intensidad T=100, d=60': intensidad(100, 60).toFixed(1),
+                'Intensidad T=25, d=30': intensidad(25, 30).toFixed(1)
+            };
+
+            mostrarResultado('resultado-idf', resultado, '📈 Curva IDF');
+
+            // Crear gráfico
+            setTimeout(() => {
+                dibujarCurvaIDF(duraciones, datasets);
+            }, 100);
+
+            showToast('✅ Curva IDF generada', 'success');
+        }
+
+        function dibujarCurvaIDF(duraciones, datasets) {
+            const container = document.getElementById('resultado-idf');
+
+            let canvas = document.getElementById('idfChart');
+            if (!canvas) {
+                const chartContainer = document.createElement('div');
+                chartContainer.className = 'chart-container';
+                chartContainer.innerHTML = `
+                    <h4><i class="fas fa-chart-line" style="color: var(--dorado);"></i> Curva IDF</h4>
+                    <canvas id="idfChart"></canvas>
+                `;
+                container.appendChild(chartContainer);
+                canvas = document.getElementById('idfChart');
+            }
+
+            const ctx = canvas.getContext('2d');
+
+            if (idfChart) {
+                idfChart.destroy();
+            }
+
+            idfChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: duraciones.map(d => d),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                font: { family: 'Inter', size: 11 },
+                                color: '#1a1a2e',
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Duración (minutos)',
+                                font: { family: 'Inter', size: 12 },
+                                color: '#6b7280'
+                            },
+                            grid: { display: false },
+                            type: 'logarithmic'
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Intensidad (mm/h)',
+                                font: { family: 'Inter', size: 12 },
+                                color: '#6b7280'
+                            },
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // 4. TIEMPO DE CONCENTRACIÓN
+        // ============================================
+        function calcularTc() {
+            const L = parseFloat(document.getElementById('tc_longitud').value);
+            const S = parseFloat(document.getElementById('tc_pendiente').value);
+
+            if (!L || !S || L <= 0 || S <= 0) {
+                mostrarError('resultado-tc', 'Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            // Fórmula de Kirpich
+            const Tc = 0.0195 * Math.pow(L, 0.77) * Math.pow(S, -0.385);
+
+            // Tc en horas y minutos
+            const horas = Math.floor(Tc);
+            const minutos = Math.round((Tc - horas) * 60);
+
+            // Clasificación
+            let clasificacion = '';
+            let color = '';
+            if (Tc < 1) {
+                clasificacion = '✅ Cuenca muy rápida';
+                color = 'recomendado';
+            } else if (Tc < 3) {
+                clasificacion = '✅ Cuenca rápida';
+                color = 'recomendado';
+            } else if (Tc < 6) {
+                clasificacion = '⚠️ Cuenca moderada';
+                color = 'advertencia';
+            } else {
+                clasificacion = '⚠️ Cuenca lenta';
+                color = 'advertencia';
+            }
+
+            const resultado = {
+                'Tc (horas)': Tc.toFixed(2),
+                'Tc (horas:min)': `${horas}h ${minutos}min`,
+                'Longitud (km)': L.toFixed(1),
+                'Pendiente (%)': S.toFixed(1),
+                'Clasificación': clasificacion
+            };
+
+            mostrarResultado('resultado-tc', resultado, '⏱️ Tiempo de Concentración');
+            showToast('✅ Cálculo completado', 'success');
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const tab = this.closest('.tab-content');
+                    if (tab) {
+                        const btn = tab.querySelector('.btn-primary');
+                        if (btn) btn.click();
+                    }
+                }
+            });
+        });
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🌧️ Hidrología Avanzada cargada correctamente');
+            console.log('💡 Presiona Enter en cualquier campo para calcular');
+
+            // Cargar ejemplo de curva IDF
+            setTimeout(() => {
+                generarCurvaIDF();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

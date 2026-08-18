@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Presas - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --naranja: #f59e0b;
+            --naranja-claro: #fef3c7;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .dam-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dam-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .dam-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .dam-header h1 i {
+            color: var(--dorado);
+        }
+
+        .dam-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           MAIN GRID
+           ============================================ */
+        .dam-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* ============================================
+           INPUT CARD
+           ============================================ */
+        .dam-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .dam-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dam-card .card-title i {
+            color: var(--dorado);
+        }
+
+        .dam-card .card-subtitle {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .formula-box {
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .unit {
+            font-weight: 400;
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22,163,74,0.3);
+        }
+
+        .btn-danger {
+            background: var(--rojo);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           RESULTADOS
+           ============================================ */
+        .result-container {
+            margin-top: 2rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .result-container .result-header h4 {
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .result-container .result-header .badge-estado {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-estado.estable {
+            background: var(--verde-claro);
+            color: var(--verde);
+        }
+
+        .badge-estado.inestable {
+            background: var(--rojo-claro);
+            color: var(--rojo);
+        }
+
+        .badge-estado.alerta {
+            background: var(--naranja-claro);
+            color: var(--naranja);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .result-item .value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .result-item .value.estable {
+            color: var(--verde);
+        }
+
+        .result-item .value.inestable {
+            color: var(--rojo);
+        }
+
+        .result-item .value.alerta {
+            color: var(--naranja);
+        }
+
+        .result-item .label {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ============================================
+           VISUALIZACIÓN DE PRESA
+           ============================================ */
+        .visual-container {
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .visual-container canvas {
+            max-width: 100%;
+            max-height: 280px;
+            border-radius: 8px;
+        }
+
+        .visual-container .placeholder {
+            text-align: center;
+            color: var(--texto-gris);
+        }
+
+        .visual-container .placeholder i {
+            font-size: 4rem;
+            opacity: 0.2;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        /* ============================================
+           INFO BOX
+           ============================================ */
+        .info-box {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--celeste-hielo);
+        }
+
+        .info-box h4 {
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box ul li {
+            padding: 0.2rem 0;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .info-box ul li i {
+            color: var(--dorado);
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--verde);
+        }
+
+        .toast.error {
+            background: var(--rojo);
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+
+        .toast.warning {
+            background: var(--naranja);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .dam-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dam-container {
+                padding: 1rem;
+            }
+
+            .dam-header h1 {
+                font-size: 2rem;
+            }
+
+            .dam-card {
+                padding: 1.5rem;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+            }
+
+            .visual-container {
+                min-height: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="dam-container">
+        <div class="dam-header">
+            <h1><i class="fas fa-dam"></i> Diseño de Presas</h1>
+            <p>Cálculo de estabilidad, empuje hidrostático y factor de seguridad</p>
+        </div>
+
+        <div class="dam-grid">
+            <!-- ============================================
+            INPUT SECTION
+            ============================================ -->
+            <div class="dam-card">
+                <h3 class="card-title">
+                    <i class="fas fa-sliders-h"></i> Parámetros de Diseño
+                </h3>
+                <p class="card-subtitle">Ingresa los datos de tu presa</p>
+
+                <div class="formula-box">
+                    FS = M_estabilizador / M_vuelco
+                </div>
+
+                <div class="form-group">
+                    <label>Altura de la Presa <span class="unit">(m)</span></label>
+                    <input type="number" id="dam_altura" step="0.5" placeholder="Ej: 25" value="25">
+                </div>
+
+                <div class="form-group">
+                    <label>Ancho de Corona <span class="unit">(m)</span></label>
+                    <input type="number" id="dam_ancho" step="0.1" placeholder="Ej: 4" value="4">
+                </div>
+
+                <div class="form-group">
+                    <label>Ancho de Base <span class="unit">(m)</span></label>
+                    <input type="number" id="dam_base" step="0.5" placeholder="Ej: 15" value="15">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Material</label>
+                    <select id="dam_material">
+                        <option value="concreto">Concreto (γ=24 kN/m³)</option>
+                        <option value="mamposteria">Mampostería (γ=22 kN/m³)</option>
+                        <option value="tierra">Tierra (γ=18 kN/m³)</option>
+                        <option value="enrocado">Enrocado (γ=20 kN/m³)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Coeficiente de Fricción (μ)</label>
+                    <input type="number" id="dam_friccion" step="0.01" placeholder="Ej: 0.7" value="0.7">
+                    <small style="color: var(--texto-gris); font-size: 0.75rem;">
+                        💡 Concreto-roca: 0.7, Concreto-suelo: 0.5
+                    </small>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="disenarPresa()">
+                        <i class="fas fa-calculator"></i> Diseñar Presa
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="result-container" id="resultado-presa"></div>
+            </div>
+
+            <!-- ============================================
+            VISUAL SECTION
+            ============================================ -->
+            <div>
+                <div class="dam-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-area"></i> Visualización
+                    </h3>
+                    <p class="card-subtitle">Perfil de la presa diseñada</p>
+
+                    <div class="visual-container">
+                        <canvas id="damCanvas" width="500" height="300"></canvas>
+                    </div>
+
+                    <div class="result-actions" style="margin-top: 1rem;">
+                        <button class="btn btn-gold" onclick="exportarPDF()">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                        <button class="btn btn-success" onclick="copiarResultados()">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                INFO BOX - FACTORES DE SEGURIDAD
+                ============================================ -->
+                <div class="info-box" style="margin-top: 1.5rem;">
+                    <h4><i class="fas fa-shield-alt" style="color: var(--dorado);"></i> Factores de Seguridad</h4>
+                    <ul>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> <strong>FS ≥ 1.5</strong> - Estable</li>
+                        <li><i class="fas fa-exclamation-triangle" style="color: var(--naranja);"></i> <strong>1.2 ≤ FS &lt; 1.5</strong> - Alerta</li>
+                        <li><i class="fas fa-times" style="color: var(--rojo);"></i> <strong>FS &lt; 1.2</strong> - Inestable</li>
+                    </ul>
+                </div>
+
+                <!-- ============================================
+                INFO BOX - MATERIALES
+                ============================================ -->
+                <div class="info-box" style="margin-top: 0.8rem;">
+                    <h4><i class="fas fa-table" style="color: var(--celeste-hielo);"></i> Pesos Específicos</h4>
+                    <ul>
+                        <li><i class="fas fa-circle" style="color: #6b7280;"></i> Concreto: γ = 24 kN/m³</li>
+                        <li><i class="fas fa-circle" style="color: #8b6914;"></i> Mampostería: γ = 22 kN/m³</li>
+                        <li><i class="fas fa-circle" style="color: #92400e;"></i> Tierra: γ = 18 kN/m³</li>
+                        <li><i class="fas fa-circle" style="color: #b45309;"></i> Enrocado: γ = 20 kN/m³</li>
+                    </ul>
+                </div>
+
+                <!-- ============================================
+                INFO BOX - RECOMENDACIONES
+                ============================================ -->
+                <div class="info-box" style="margin-top: 0.8rem;">
+                    <h4><i class="fas fa-lightbulb" style="color: var(--dorado);"></i> Recomendaciones</h4>
+                    <ul>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Verificar subpresión en la base</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Incluir sistema de drenaje</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Considerar vertedero de demasías</li>
+                        <li><i class="fas fa-check" style="color: var(--verde);"></i> Monitoreo de asentamientos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let resultadoActual = null;
+        const GAMMA_AGUA = 9.81;
+
+        // Pesos específicos de materiales (kN/m³)
+        const PESOS = {
+            concreto: 24,
+            mamposteria: 22,
+            tierra: 18,
+            enrocado: 20
+        };
+
+        const NOMBRES_MATERIALES = {
+            concreto: 'Concreto',
+            mamposteria: 'Mampostería',
+            tierra: 'Tierra',
+            enrocado: 'Enrocado'
+        };
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // DISEÑO DE PRESA
+        // ============================================
+        function disenarPresa() {
+            const H = parseFloat(document.getElementById('dam_altura').value);
+            const b_corona = parseFloat(document.getElementById('dam_ancho').value);
+            const b_base = parseFloat(document.getElementById('dam_base').value);
+            const material = document.getElementById('dam_material').value;
+            const f = parseFloat(document.getElementById('dam_friccion').value);
+
+            // Validaciones
+            if (!H || !b_corona || !b_base || !f || H <= 0 || b_corona <= 0 || b_base <= 0 || f <= 0) {
+                mostrarError('Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            if (b_base <= b_corona) {
+                mostrarError('El ancho de base debe ser mayor que el ancho de corona');
+                return;
+            }
+
+            if (H > 100) {
+                mostrarError('La altura es muy grande. Por favor ingresa un valor menor a 100m');
+                return;
+            }
+
+            // Peso específico del material
+            const gamma = PESOS[material] || 22;
+            const nombreMaterial = NOMBRES_MATERIALES[material] || material;
+
+            // Cálculos
+            const H_max = H;
+
+            // 1. Empuje hidrostático (por metro de ancho)
+            const E = 0.5 * GAMMA_AGUA * H_max * H_max;
+
+            // 2. Peso de la presa (sección trapezoidal)
+            const A_presa = 0.5 * (b_corona + b_base) * H;
+            const W = A_presa * gamma;
+
+            // 3. Centro de gravedad (desde el talón)
+            const x_cg = (b_base * (2 * b_corona + b_base)) / (3 * (b_corona + b_base));
+
+            // 4. Momento de vuelco (por metro de ancho)
+            const M_vuelco = E * H_max / 3;
+
+            // 5. Momento estabilizador (por metro de ancho)
+            const M_estabilizador = W * x_cg;
+
+            // 6. Factor de seguridad al vuelco
+            const FS_vuelco = M_estabilizador / M_vuelco;
+
+            // 7. Factor de seguridad al deslizamiento
+            const FS_deslizamiento = (W * f) / E;
+
+            // 8. Estado de la presa
+            let estado = '';
+            let estadoClass = '';
+            let estadoColor = '';
+            let mensaje = '';
+
+            if (FS_vuelco >= 1.5 && FS_deslizamiento >= 1.5) {
+                estado = '✅ ESTABLE';
+                estadoClass = 'estable';
+                estadoColor = 'estable';
+                mensaje = 'La presa cumple con los factores de seguridad requeridos.';
+            } else if (FS_vuelco >= 1.2 && FS_deslizamiento >= 1.2) {
+                estado = '⚠️ ALERTA';
+                estadoClass = 'alerta';
+                estadoColor = 'alerta';
+                mensaje = 'La presa está en el límite. Se recomienda revisar el diseño.';
+            } else {
+                estado = '❌ INESTABLE';
+                estadoClass = 'inestable';
+                estadoColor = 'inestable';
+                mensaje = 'La presa NO cumple con los factores de seguridad mínimos.';
+            }
+
+            // 9. Resultados
+            const resultado = {
+                altura: H,
+                ancho_corona: b_corona,
+                ancho_base: b_base,
+                material: nombreMaterial,
+                gamma: gamma,
+                empuje: E,
+                peso: W,
+                x_cg: x_cg,
+                M_vuelco: M_vuelco,
+                M_estabilizador: M_estabilizador,
+                FS_vuelco: FS_vuelco,
+                FS_deslizamiento: FS_deslizamiento,
+                estado: estado,
+                estadoClass: estadoClass,
+                mensaje: mensaje
+            };
+
+            resultadoActual = resultado;
+
+            // Mostrar resultados
+            mostrarResultado(resultado);
+            dibujarPresa(H, b_base, b_corona);
+
+            // Mensaje
+            if (estadoClass === 'estable') {
+                showToast('✅ Presa diseñada correctamente', 'success');
+            } else if (estadoClass === 'alerta') {
+                showToast('⚠️ Presa en estado de alerta', 'warning');
+            } else {
+                showToast('❌ Presa inestable - Revisar diseño', 'error');
+            }
+        }
+
+        // ============================================
+        // MOSTRAR RESULTADOS
+        // ============================================
+        function mostrarResultado(resultado) {
+            const container = document.getElementById('resultado-presa');
+
+            let html = `
+                <div class="result-header">
+                    <h4>📊 Resultados del Diseño</h4>
+                    <span class="badge-estado ${resultado.estadoClass}">${resultado.estado}</span>
+                </div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="value">${resultado.altura.toFixed(1)}</span>
+                        <span class="label">Altura (m)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${resultado.ancho_base.toFixed(1)}</span>
+                        <span class="label">Base (m)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${resultado.empuje.toFixed(1)}</span>
+                        <span class="label">Empuje hidrostático (kN)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value">${resultado.peso.toFixed(1)}</span>
+                        <span class="label">Peso presa (kN)</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value ${resultado.estadoClass}">${resultado.FS_vuelco.toFixed(2)}</span>
+                        <span class="label">FS al Vuelco</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="value ${resultado.estadoClass}">${resultado.FS_deslizamiento.toFixed(2)}</span>
+                        <span class="label">FS al Deslizamiento</span>
+                    </div>
+                    <div class="result-item" style="grid-column: 1 / -1; background: ${resultado.estadoClass === 'estable' ? 'var(--verde-claro)' : resultado.estadoClass === 'alerta' ? 'var(--naranja-claro)' : 'var(--rojo-claro)'};">
+                        <span class="value" style="font-size: 1rem; color: ${resultado.estadoClass === 'estable' ? 'var(--verde)' : resultado.estadoClass === 'alerta' ? 'var(--naranja)' : 'var(--rojo)'};">
+                            ${resultado.mensaje}
+                        </span>
+                        <span class="label">Estado de la presa</span>
+                    </div>
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-gold" onclick="exportarPDF()">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="copiarResultados()">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            container.classList.add('show');
+        }
+
+        // ============================================
+        // DIBUJAR PRESA
+        // ============================================
+        function dibujarPresa(H, b_base, b_corona) {
+            const canvas = document.getElementById('damCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 50;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Escala
+            const maxDim = Math.max(H, b_base);
+            const scale = Math.min((width - 2 * padding) / (b_base * 1.2), (height - 2 * padding) / (H * 1.2));
+
+            // Centro
+            const cx = width / 2;
+            const baseY = height - padding;
+
+            // Coordenadas de la presa
+            const x1 = cx - b_base * scale / 2;
+            const x2 = cx + b_base * scale / 2;
+            const x3 = cx - b_corona * scale / 2;
+            const x4 = cx + b_corona * scale / 2;
+            const y1 = baseY;
+            const y2 = baseY - H * scale;
+
+            // ===== AGUA =====
+            const aguaY = baseY - H * scale * 0.85;
+            ctx.fillStyle = 'rgba(184,226,242,0.25)';
+            ctx.fillRect(padding, aguaY, width - 2 * padding, H * scale * 0.85);
+
+            // Línea de agua
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 4]);
+            ctx.beginPath();
+            ctx.moveTo(padding, aguaY);
+            ctx.lineTo(width - padding, aguaY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // ===== PRESA =====
+            // Sombra
+            ctx.shadowColor = 'rgba(0,0,0,0.1)';
+            ctx.shadowBlur = 20;
+            ctx.shadowOffsetY = 5;
+
+            // Cuerpo de la presa
+            const grad = ctx.createLinearGradient(x1, y1, x2, y1);
+            grad.addColorStop(0, '#6b7280');
+            grad.addColorStop(0.3, '#9ca3af');
+            grad.addColorStop(0.7, '#9ca3af');
+            grad.addColorStop(1, '#6b7280');
+
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x3, y2);
+            ctx.lineTo(x4, y2);
+            ctx.lineTo(x2, y1);
+            ctx.closePath();
+
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            ctx.shadowBlur = 0;
+
+            // Borde de la presa
+            ctx.strokeStyle = '#0a1628';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // ===== DETALLES =====
+            // Líneas de textura (simulación de juntas)
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 1;
+            const numJuntas = 6;
+            for (let i = 0; i <= numJuntas; i++) {
+                const t = i / numJuntas;
+                const x_izq = x1 + (x3 - x1) * t;
+                const x_der = x2 + (x4 - x2) * t;
+                const y = y1 - (y1 - y2) * t;
+
+                ctx.beginPath();
+                ctx.moveTo(x_izq, y);
+                ctx.lineTo(x_der, y);
+                ctx.stroke();
+            }
+
+            // ===== COTAS =====
+            ctx.fillStyle = '#0a1628';
+            ctx.font = '12px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+
+            // Altura
+            const labelX = cx + b_base * scale / 2 + 30;
+            ctx.fillText(`H = ${H.toFixed(1)} m`, labelX, (y1 + y2) / 2 + 5);
+
+            // Ancho de base
+            ctx.fillText(`B = ${b_base.toFixed(1)} m`, cx, y1 + 25);
+
+            // Ancho de corona
+            if (b_corona > 1) {
+                ctx.fillText(`b = ${b_corona.toFixed(1)} m`, cx, y2 - 15);
+            }
+
+            // ===== FLECHAS DE COTA =====
+            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+            ctx.lineWidth = 1;
+
+            // Línea de altura
+            ctx.beginPath();
+            ctx.moveTo(labelX - 10, y1);
+            ctx.lineTo(labelX - 10, y2);
+            ctx.stroke();
+
+            // Flechas de altura
+            ctx.beginPath();
+            ctx.moveTo(labelX - 7, y2 + 8);
+            ctx.lineTo(labelX - 10, y2);
+            ctx.lineTo(labelX - 13, y2 + 8);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(labelX - 7, y1 - 8);
+            ctx.lineTo(labelX - 10, y1);
+            ctx.lineTo(labelX - 13, y1 - 8);
+            ctx.stroke();
+
+            // ===== NOMBRE =====
+            ctx.fillStyle = 'rgba(0,0,0,0.4)';
+            ctx.font = '11px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Perfil de Presa', cx, padding - 10);
+        }
+
+        // ============================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================
+        function mostrarError(mensaje) {
+            const container = document.getElementById('resultado-presa');
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            container.classList.add('show');
+            showToast(mensaje, 'error');
+        }
+
+        function limpiarTodo() {
+            document.getElementById('resultado-presa').classList.remove('show');
+            document.getElementById('resultado-presa').innerHTML = '';
+            resultadoActual = null;
+
+            const canvas = document.getElementById('damCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Mostrar placeholder
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña una presa para ver la visualización', canvas.width / 2, canvas.height / 2);
+
+            showToast('🧹 Todo limpiado', 'info');
+        }
+
+        function copiarResultados() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para copiar', 'error');
+                return;
+            }
+
+            let texto = '=== DISEÑO DE PRESA ===\n\n';
+            texto += `Altura: ${resultadoActual.altura.toFixed(1)} m\n`;
+            texto += `Ancho de base: ${resultadoActual.ancho_base.toFixed(1)} m\n`;
+            texto += `Ancho de corona: ${resultadoActual.ancho_corona.toFixed(1)} m\n`;
+            texto += `Material: ${resultadoActual.material}\n`;
+            texto += `Peso específico: ${resultadoActual.gamma} kN/m³\n`;
+            texto += `Empuje hidrostático: ${resultadoActual.empuje.toFixed(1)} kN\n`;
+            texto += `Peso de la presa: ${resultadoActual.peso.toFixed(1)} kN\n`;
+            texto += `Momento estabilizador: ${resultadoActual.M_estabilizador.toFixed(1)} kN·m\n`;
+            texto += `Momento de vuelco: ${resultadoActual.M_vuelco.toFixed(1)} kN·m\n`;
+            texto += `\n--- FACTORES DE SEGURIDAD ---\n`;
+            texto += `FS al Vuelco: ${resultadoActual.FS_vuelco.toFixed(3)}\n`;
+            texto += `FS al Deslizamiento: ${resultadoActual.FS_deslizamiento.toFixed(3)}\n`;
+            texto += `\nEstado: ${resultadoActual.estado}`;
+
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('✅ Resultados copiados al portapapeles', 'success');
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function exportarPDF() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para exportar', 'error');
+                return;
+            }
+
+            // Simular exportación
+            const datos = {
+                tipo: 'Diseño de Presa',
+                resultados: resultadoActual,
+                fecha: new Date().toLocaleString()
+            };
+
+            console.log('📄 PDF Exportado:', datos);
+            showToast('📄 PDF generado: presa_diseno.pdf', 'success');
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    disenarPresa();
+                }
+            });
+        });
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Placeholder en canvas
+            const canvas = document.getElementById('damCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña una presa para ver la visualización', canvas.width / 2, canvas.height / 2);
+
+            // Cargar ejemplo
+            setTimeout(() => {
+                document.getElementById('dam_altura').value = '25';
+                document.getElementById('dam_ancho').value = '4';
+                document.getElementById('dam_base').value = '15';
+                document.getElementById('dam_material').value = 'concreto';
+                document.getElementById('dam_friccion').value = '0.7';
+                disenarPresa();
+            }, 500);
+
+            console.log('🏗️ Diseño de Presas cargado correctamente');
+            console.log('💡 Presiona Enter para diseñar');
+        });
+    </script>
+</body>
+</html>

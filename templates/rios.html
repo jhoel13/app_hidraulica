@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoreo de Ríos - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --naranja: #f59e0b;
+            --naranja-claro: #fef3c7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .river-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .river-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .river-header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+        }
+
+        .river-header h1 i {
+            color: var(--dorado);
+        }
+
+        .river-header p {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        /* ============================================
+           MAPA
+           ============================================ */
+        .map-container {
+            height: 450px;
+            border-radius: var(--borde-redondeado);
+            overflow: hidden;
+            box-shadow: var(--sombra);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(184,226,242,0.1);
+            position: relative;
+        }
+
+        .map-container #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            box-shadow: var(--sombra);
+            font-size: 0.85rem;
+            z-index: 1000;
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .map-overlay .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulseDot 1.5s ease-in-out infinite;
+        }
+
+        .map-overlay .status-dot.online {
+            background: var(--verde);
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* ============================================
+           ESTADÍSTICAS
+           ============================================ */
+        .river-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.2rem 1.5rem;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border-left: 4px solid var(--celeste-hielo);
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            display: block;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .stat-card .stat-trend {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+
+        .stat-card .stat-trend.up { color: var(--rojo); }
+        .stat-card .stat-trend.down { color: var(--verde); }
+        .stat-card .stat-trend.stable { color: var(--naranja); }
+
+        /* ============================================
+           CONTROLES
+           ============================================ */
+        .controls-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            align-items: center;
+        }
+
+        .controls-bar .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+
+        .controls-bar .btn i {
+            margin-right: 6px;
+        }
+
+        .controls-bar .status-text {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: var(--rojo);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           ESTACIONES
+           ============================================ */
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .station-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+            transition: var(--transition);
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        .station-card:nth-child(1) { animation-delay: 0.1s; }
+        .station-card:nth-child(2) { animation-delay: 0.2s; }
+        .station-card:nth-child(3) { animation-delay: 0.3s; }
+        .station-card:nth-child(4) { animation-delay: 0.4s; }
+        .station-card:nth-child(5) { animation-delay: 0.5s; }
+
+        .station-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .station-card .station-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .station-card .station-name {
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            font-size: 1.05rem;
+        }
+
+        .station-card .station-name i {
+            color: var(--dorado);
+            margin-right: 6px;
+        }
+
+        .station-card .station-status {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .station-card .station-status.bajo {
+            background: var(--verde-claro);
+            color: var(--verde);
+        }
+
+        .station-card .station-status.medio {
+            background: var(--naranja-claro);
+            color: var(--naranja);
+        }
+
+        .station-card .station-status.alto {
+            background: var(--rojo-claro);
+            color: var(--rojo);
+        }
+
+        .station-card .station-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            margin-top: 0.8rem;
+        }
+
+        .station-card .station-data .data-item {
+            background: var(--crema-claro);
+            padding: 0.6rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .station-card .station-data .data-item .data-value {
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            font-size: 1.1rem;
+        }
+
+        .station-card .station-data .data-item .data-label {
+            font-size: 0.7rem;
+            color: var(--texto-gris);
+        }
+
+        .station-card .station-footer {
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f0ebe3;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+        }
+
+        .station-card .station-footer .update-time i {
+            margin-right: 4px;
+        }
+
+        /* ============================================
+           LEYENDA
+           ============================================ */
+        .legend-bar {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0.8rem 1.5rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            margin-bottom: 2rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .legend-item .color-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .legend-item .color-dot.bajo { background: var(--verde); }
+        .legend-item .color-dot.medio { background: var(--naranja); }
+        .legend-item .color-dot.alto { background: var(--rojo); }
+        .legend-item .color-dot.estacion { background: #3b82f6; }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--verde);
+        }
+
+        .toast.error {
+            background: var(--rojo);
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+
+        .toast.warning {
+            background: var(--naranja);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .river-container {
+                padding: 1rem;
+            }
+
+            .river-header h1 {
+                font-size: 1.8rem;
+            }
+
+            .map-container {
+                height: 350px;
+            }
+
+            .map-overlay {
+                top: 0.5rem;
+                right: 0.5rem;
+                padding: 0.5rem 1rem;
+                font-size: 0.75rem;
+            }
+
+            .river-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.8rem;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.4rem;
+            }
+
+            .controls-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+            }
+
+            .controls-bar .status-text {
+                margin-left: 0;
+                text-align: center;
+            }
+
+            .stations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .legend-bar {
+                gap: 0.8rem;
+                padding: 0.6rem 1rem;
+                flex-wrap: wrap;
+            }
+
+            .legend-item {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .river-stats {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-card .stat-value {
+                font-size: 1.2rem;
+            }
+
+            .station-card .station-data {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+
+            .header-actions .btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="river-container">
+        <!-- Header -->
+        <div class="river-header">
+            <div>
+                <h1><i class="fas fa-river"></i> Monitoreo de Ríos</h1>
+                <p>Datos en tiempo real de los principales ríos de Cajamarca</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="actualizarDatos()">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+                <button class="btn btn-gold" onclick="exportarReporte()">
+                    <i class="fas fa-file-pdf"></i> Reporte
+                </button>
+            </div>
+        </div>
+
+        <!-- Leyenda -->
+        <div class="legend-bar">
+            <span class="legend-item">
+                <span class="color-dot bajo"></span>
+                Riesgo Bajo - Nivel Normal
+            </span>
+            <span class="legend-item">
+                <span class="color-dot medio"></span>
+                Riesgo Medio - Alerta
+            </span>
+            <span class="legend-item">
+                <span class="color-dot alto"></span>
+                Riesgo Alto - Peligro
+            </span>
+            <span class="legend-item">
+                <span class="color-dot estacion"></span>
+                Estación de Monitoreo
+            </span>
+        </div>
+
+        <!-- Mapa -->
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="map-overlay">
+                <span class="status-dot online"></span>
+                <span id="mapStatus">Datos en tiempo real</span>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="river-stats" id="riverStats">
+            <div class="stat-card">
+                <span class="stat-icon">💧</span>
+                <span class="stat-value" id="totalCaudal">0</span>
+                <span class="stat-label">Caudal Total (m³/s)</span>
+                <span class="stat-trend stable">● Estable</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">📏</span>
+                <span class="stat-value" id="promedioNivel">0</span>
+                <span class="stat-label">Nivel Promedio (m)</span>
+                <span class="stat-trend stable">● Estable</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">⚠️</span>
+                <span class="stat-value" id="riesgoAlto">0</span>
+                <span class="stat-label">Estaciones en Riesgo Alto</span>
+                <span class="stat-trend stable">● Monitoreo</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-icon">🟡</span>
+                <span class="stat-value" id="riesgoMedio">0</span>
+                <span class="stat-label">Estaciones en Riesgo Medio</span>
+                <span class="stat-trend stable">● Alerta</span>
+            </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="controls-bar">
+            <button class="btn btn-success" onclick="simularDatos()">
+                <i class="fas fa-chart-line"></i> Simular Datos
+            </button>
+            <button class="btn btn-outline" onclick="alternarSimulacion()" id="toggleSimulacion">
+                <i class="fas fa-play"></i> Iniciar Simulación
+            </button>
+            <button class="btn btn-outline" onclick="limpiarMapa()">
+                <i class="fas fa-eraser"></i> Limpiar Mapa
+            </button>
+            <span class="status-text" id="statusText">
+                <i class="fas fa-circle" style="color: var(--verde); font-size: 0.6rem;"></i>
+                Sistema activo
+            </span>
+        </div>
+
+        <!-- Estaciones -->
+        <div class="stations-grid" id="stationsGrid">
+            <!-- Las estaciones se cargan con JS -->
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let map = null;
+        let markers = [];
+        let simulationInterval = null;
+        let simulacionActiva = false;
+        let datosHistoricos = [];
+
+        // Datos de estaciones
+        const estaciones = [{
+            id: 1,
+            nombre: 'Río Cajamarca',
+            lat: -7.1633,
+            lng: -78.5000,
+            caudal: 12.5,
+            nivel: 2.3,
+            temp: 16.5,
+            lluvia: 0.2,
+            riesgo: 'bajo',
+            descripcion: 'Estación principal del río Cajamarca'
+        }, {
+            id: 2,
+            nombre: 'Río Chonta',
+            lat: -7.1500,
+            lng: -78.5200,
+            caudal: 8.7,
+            nivel: 1.8,
+            temp: 15.2,
+            lluvia: 5.1,
+            riesgo: 'medio',
+            descripcion: 'Estación del río Chonta'
+        }, {
+            id: 3,
+            nombre: 'Río Mashcón',
+            lat: -7.1800,
+            lng: -78.4800,
+            caudal: 15.3,
+            nivel: 2.8,
+            temp: 17.8,
+            lluvia: 0.5,
+            riesgo: 'bajo',
+            descripcion: 'Estación del río Mashcón'
+        }, {
+            id: 4,
+            nombre: 'Río San Juan',
+            lat: -7.1400,
+            lng: -78.4600,
+            caudal: 22.1,
+            nivel: 3.5,
+            temp: 18.2,
+            lluvia: 12.3,
+            riesgo: 'alto',
+            descripcion: 'Estación del río San Juan - Zona crítica'
+        }, {
+            id: 5,
+            nombre: 'Río Huambocancha',
+            lat: -7.2000,
+            lng: -78.5300,
+            caudal: 6.2,
+            nivel: 1.2,
+            temp: 14.8,
+            lluvia: 8.7,
+            riesgo: 'medio',
+            descripcion: 'Estación del río Huambocancha'
+        }];
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // MAPA
+        // ============================================
+        function inicializarMapa() {
+            if (map) {
+                map.invalidateSize();
+                return;
+            }
+
+            map = L.map('map').setView([-7.1633, -78.5000], 11);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(map);
+
+            cargarEstacionesMapa();
+        }
+
+        function cargarEstacionesMapa() {
+            // Limpiar marcadores anteriores
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+
+            estaciones.forEach(est => {
+                const color = est.riesgo === 'alto' ? '#dc2626' :
+                    est.riesgo === 'medio' ? '#f59e0b' : '#16a34a';
+
+                const iconHtml = `
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: 50%;
+                        background: ${color};
+                        border: 3px solid white;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 18px;
+                        color: white;
+                        transition: transform 0.3s ease;
+                    ">
+                        <i class="fas fa-water"></i>
+                    </div>
+                `;
+
+                const icon = L.divIcon({
+                    html: iconHtml,
+                    className: 'custom-marker',
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 40]
+                });
+
+                const marker = L.marker([est.lat, est.lng], { icon }).addTo(map);
+
+                const popupContent = `
+                    <div style="padding: 12px; min-width: 200px;">
+                        <h4 style="margin: 0 0 8px 0; color: #0a1628; font-size: 16px;">
+                            <i class="fas fa-water" style="color: var(--dorado);"></i>
+                            ${est.nombre}
+                        </h4>
+                        <div style="border-bottom: 1px solid #f0ebe3; margin-bottom: 8px;"></div>
+                        <p style="margin: 4px 0;">
+                            <strong>💧 Caudal:</strong> 
+                            <span style="color: var(--azul-oscuro); font-weight: 600;">${est.caudal.toFixed(1)} m³/s</span>
+                        </p>
+                        <p style="margin: 4px 0;">
+                            <strong>📏 Nivel:</strong> 
+                            <span style="color: var(--azul-oscuro); font-weight: 600;">${est.nivel.toFixed(2)} m</span>
+                        </p>
+                        <p style="margin: 4px 0;">
+                            <strong>🌡️ Temp:</strong> 
+                            <span style="color: var(--azul-oscuro); font-weight: 600;">${est.temp.toFixed(1)} °C</span>
+                        </p>
+                        <p style="margin: 4px 0;">
+                            <strong>🌧️ Lluvia:</strong> 
+                            <span style="color: var(--azul-oscuro); font-weight: 600;">${est.lluvia.toFixed(1)} mm/h</span>
+                        </p>
+                        <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #f0ebe3;">
+                            <span style="
+                                padding: 2px 10px;
+                                border-radius: 12px;
+                                font-size: 11px;
+                                font-weight: 600;
+                                background: ${color}22;
+                                color: ${color};
+                            ">
+                                ${est.riesgo.toUpperCase()}
+                            </span>
+                            <span style="font-size: 11px; color: #6b7280; margin-left: 8px;">
+                                ${est.descripcion || ''}
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+
+                // Evento hover
+                marker.on('mouseover', function() {
+                    this.openPopup();
+                });
+
+                markers.push(marker);
+            });
+
+            // Ajustar vista al área
+            const bounds = estaciones.map(e => [e.lat, e.lng]);
+            map.fitBounds(bounds, { padding: [50, 50] });
+        }
+
+        // ============================================
+        // ACTUALIZAR ESTADÍSTICAS
+        // ============================================
+        function actualizarEstadisticas() {
+            const totalCaudal = estaciones.reduce((sum, e) => sum + e.caudal, 0);
+            const promedioNivel = estaciones.reduce((sum, e) => sum + e.nivel, 0) / estaciones.length;
+            const riesgoAlto = estaciones.filter(e => e.riesgo === 'alto').length;
+            const riesgoMedio = estaciones.filter(e => e.riesgo === 'medio').length;
+
+            document.getElementById('totalCaudal').textContent = totalCaudal.toFixed(1);
+            document.getElementById('promedioNivel').textContent = promedioNivel.toFixed(2);
+            document.getElementById('riesgoAlto').textContent = riesgoAlto;
+            document.getElementById('riesgoMedio').textContent = riesgoMedio;
+
+            // Actualizar tendencias
+            actualizarTendencias();
+        }
+
+        function actualizarTendencias() {
+            // Simular tendencias basadas en cambios de datos
+            const stats = document.querySelectorAll('.stat-card .stat-trend');
+
+            // Caudal - comparar con historial
+            if (datosHistoricos.length > 0) {
+                const ultimo = datosHistoricos[datosHistoricos.length - 1];
+                const actual = estaciones.reduce((s, e) => s + e.caudal, 0);
+
+                if (actual > ultimo.totalCaudal * 1.05) {
+                    stats[0].textContent = '⬆ Subiendo';
+                    stats[0].className = 'stat-trend up';
+                } else if (actual < ultimo.totalCaudal * 0.95) {
+                    stats[0].textContent = '⬇ Bajando';
+                    stats[0].className = 'stat-trend down';
+                } else {
+                    stats[0].textContent = '● Estable';
+                    stats[0].className = 'stat-trend stable';
+                }
+            }
+        }
+
+        // ============================================
+        // ACTUALIZAR ESTACIONES
+        // ============================================
+        function actualizarEstaciones() {
+            const grid = document.getElementById('stationsGrid');
+            grid.innerHTML = '';
+
+            estaciones.forEach((est, index) => {
+                const statusText = est.riesgo === 'alto' ? '⚠️ Peligro' :
+                    est.riesgo === 'medio' ? '📊 Alerta' : '✅ Normal';
+                const statusClass = est.riesgo;
+
+                // Animación de entrada escalonada
+                const delay = index * 100;
+
+                const card = document.createElement('div');
+                card.className = 'station-card';
+                card.style.animationDelay = `${delay}ms`;
+
+                card.innerHTML = `
+                    <div class="station-header">
+                        <span class="station-name">
+                            <i class="fas fa-map-pin"></i>
+                            ${est.nombre}
+                        </span>
+                        <span class="station-status ${statusClass}">${statusText}</span>
+                    </div>
+                    <div class="station-data">
+                        <div class="data-item">
+                            <div class="data-value">${est.caudal.toFixed(1)}</div>
+                            <div class="data-label">Caudal (m³/s)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-value">${est.nivel.toFixed(2)}</div>
+                            <div class="data-label">Nivel (m)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-value">${est.temp.toFixed(1)}</div>
+                            <div class="data-label">Temperatura (°C)</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-value">${est.lluvia.toFixed(1)}</div>
+                            <div class="data-label">Lluvia (mm/h)</div>
+                        </div>
+                    </div>
+                    <div class="station-footer">
+                        <span class="update-time">
+                            <i class="far fa-clock"></i>
+                            ${new Date().toLocaleTimeString()}
+                        </span>
+                        <span style="
+                            padding: 2px 8px;
+                            border-radius: 10px;
+                            font-size: 10px;
+                            background: ${est.riesgo === 'alto' ? '#fee2e2' : est.riesgo === 'medio' ? '#fef3c7' : '#dcfce7'};
+                            color: ${est.riesgo === 'alto' ? '#dc2626' : est.riesgo === 'medio' ? '#f59e0b' : '#16a34a'};
+                        ">
+                            ${est.riesgo === 'alto' ? '⚠️ CRÍTICO' : est.riesgo === 'medio' ? '⚡ ALERTA' : '✅ OK'}
+                        </span>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // ============================================
+        // SIMULACIÓN DE DATOS
+        // ============================================
+        function simularDatos() {
+            // Guardar estado anterior para tendencias
+            const prevCaudal = estaciones.reduce((s, e) => s + e.caudal, 0);
+
+            estaciones.forEach(est => {
+                // Variación aleatoria realista
+                const variacionCaudal = (Math.random() - 0.5) * 2.5;
+                const variacionNivel = (Math.random() - 0.5) * 0.4;
+                const variacionTemp = (Math.random() - 0.5) * 1.5;
+                const variacionLluvia = (Math.random() - 0.5) * 4;
+
+                est.caudal = Math.max(0.3, est.caudal + variacionCaudal);
+                est.nivel = Math.max(0.2, est.nivel + variacionNivel);
+                est.temp = Math.max(10, Math.min(25, est.temp + variacionTemp));
+                est.lluvia = Math.max(0, est.lluvia + variacionLluvia);
+
+                // Determinar riesgo
+                if (est.nivel > 3.0 || est.lluvia > 15) {
+                    est.riesgo = 'alto';
+                } else if (est.nivel > 2.0 || est.lluvia > 8) {
+                    est.riesgo = 'medio';
+                } else {
+                    est.riesgo = 'bajo';
+                }
+            });
+
+            // Guardar historial
+            const caudalActual = estaciones.reduce((s, e) => s + e.caudal, 0);
+            datosHistoricos.push({
+                totalCaudal: caudalActual,
+                timestamp: new Date()
+            });
+            if (datosHistoricos.length > 20) {
+                datosHistoricos.shift();
+            }
+
+            // Actualizar todo
+            actualizarEstadisticas();
+            actualizarEstaciones();
+            cargarEstacionesMapa();
+
+            // Verificar alertas
+            const alertas = estaciones.filter(e => e.riesgo === 'alto');
+            if (alertas.length > 0) {
+                showToast(`⚠️ ${alertas.length} estación(es) en riesgo alto: ${alertas.map(e => e.nombre).join(', ')}`, 'warning');
+            } else {
+                showToast('✅ Datos actualizados correctamente', 'success');
+            }
+
+            document.getElementById('statusText').innerHTML = `
+                <i class="fas fa-circle" style="color: var(--verde); font-size: 0.6rem;"></i>
+                Última actualización: ${new Date().toLocaleTimeString()}
+            `;
+        }
+
+        function alternarSimulacion() {
+            const btn = document.getElementById('toggleSimulacion');
+
+            if (simulacionActiva) {
+                clearInterval(simulationInterval);
+                simulacionActiva = false;
+                btn.innerHTML = '<i class="fas fa-play"></i> Iniciar Simulación';
+                btn.className = 'btn btn-outline';
+                showToast('⏹️ Simulación detenida', 'info');
+            } else {
+                simulacionActiva = true;
+                btn.innerHTML = '<i class="fas fa-pause"></i> Detener Simulación';
+                btn.className = 'btn btn-danger';
+                simulationInterval = setInterval(simularDatos, 5000);
+                showToast('▶️ Simulación iniciada - Actualizando cada 5 segundos', 'info');
+                // Simular inmediatamente
+                simularDatos();
+            }
+        }
+
+        function actualizarDatos() {
+            simularDatos();
+        }
+
+        function limpiarMapa() {
+            markers.forEach(m => map.removeLayer(m));
+            markers = [];
+            showToast('🧹 Mapa limpiado', 'info');
+            setTimeout(cargarEstacionesMapa, 500);
+        }
+
+        // ============================================
+        // EXPORTAR REPORTE
+        // ============================================
+        function exportarReporte() {
+            const reporte = {
+                tipo: 'Monitoreo de Ríos',
+                fecha: new Date().toLocaleString(),
+                estaciones: estaciones.map(e => ({
+                    nombre: e.nombre,
+                    caudal: e.caudal.toFixed(2),
+                    nivel: e.nivel.toFixed(2),
+                    temperatura: e.temp.toFixed(1),
+                    lluvia: e.lluvia.toFixed(1),
+                    riesgo: e.riesgo
+                })),
+                totalCaudal: estaciones.reduce((s, e) => s + e.caudal, 0).toFixed(2),
+                promedioNivel: (estaciones.reduce((s, e) => s + e.nivel, 0) / estaciones.length).toFixed(2),
+                alertas: estaciones.filter(e => e.riesgo === 'alto').length
+            };
+
+            console.log('📄 Reporte generado:', reporte);
+            showToast('📄 Reporte generado: monitoreo_rios.pdf', 'success');
+
+            // Descargar como JSON (simulación)
+            const blob = new Blob([JSON.stringify(reporte, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `monitoreo_rios_${new Date().toISOString().slice(0,10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar mapa
+            inicializarMapa();
+
+            // Cargar datos iniciales
+            actualizarEstadisticas();
+            actualizarEstaciones();
+
+            // Simular datos iniciales
+            setTimeout(() => {
+                simularDatos();
+                showToast('🌊 Sistema de monitoreo iniciado', 'info');
+            }, 500);
+
+            console.log('🌊 Monitoreo de Ríos cargado correctamente');
+            console.log('📡 Estaciones activas:', estaciones.length);
+            console.log('💡 Presiona "Simular Datos" para actualizar');
+        });
+
+        // ============================================
+        // LIMPIEZA AL SALIR
+        // ============================================
+        window.addEventListener('beforeunload', function() {
+            if (simulationInterval) {
+                clearInterval(simulationInterval);
+            }
+        });
+    </script>
+</body>
+</html>

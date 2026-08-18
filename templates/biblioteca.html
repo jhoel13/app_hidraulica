@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca IA - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --azul-medio: #1a3a5c;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --verde-claro: #dcfce7;
+            --rojo: #dc2626;
+            --rojo-claro: #fee2e2;
+            --naranja: #f59e0b;
+            --morado: #8b5cf6;
+            --morado-claro: #ede9fe;
+            --sombra: 0 20px 60px rgba(0,0,0,0.08);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.12);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        .navbar-title span { color: var(--dorado); }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        .navbar a:hover { color: white; background: rgba(255,255,255,0.08); }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-back:hover { background: rgba(255,255,255,0.12); }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .library-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .library-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .library-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+        }
+        .library-header h1 i { color: var(--dorado); }
+        .library-header p {
+            color: var(--texto-gris);
+            font-size: 1.05rem;
+            margin-top: 0.3rem;
+        }
+        .library-header .badge-ia {
+            display: inline-block;
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+            padding: 0.2rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* ============================================
+           TOOLBAR
+           ============================================ */
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            align-items: center;
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .toolbar .btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.6rem 1rem 0.6rem 2.5rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: var(--crema-claro);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.15);
+            background: white;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--texto-gris);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.6rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary { background: var(--azul-oscuro); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(10,22,40,0.25); }
+
+        .btn-gold { background: var(--dorado); color: var(--azul-oscuro); }
+        .btn-gold:hover { background: var(--dorado-oscuro); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(240,184,41,0.3); }
+
+        .btn-outline { background: transparent; color: var(--azul-oscuro); border: 2px solid var(--azul-oscuro); }
+        .btn-outline:hover { background: var(--azul-oscuro); color: white; transform: translateY(-2px); }
+
+        .btn-success { background: var(--verde); color: white; }
+        .btn-success:hover { background: #15803d; transform: translateY(-2px); }
+
+        .btn-danger { background: var(--rojo); color: white; }
+        .btn-danger:hover { background: #b91c1c; transform: translateY(-2px); }
+
+        .btn-sm { padding: 0.3rem 0.8rem; font-size: 0.75rem; }
+        .btn-purple { background: var(--morado); color: white; }
+        .btn-purple:hover { background: #7c3aed; transform: translateY(-2px); }
+
+        /* ============================================
+           DROP ZONE
+           ============================================ */
+        .drop-zone {
+            border: 3px dashed #e5e0d8;
+            border-radius: var(--borde-redondeado);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: var(--crema-claro);
+            transition: var(--transition);
+            cursor: pointer;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--celeste-hielo);
+            background: rgba(184,226,242,0.05);
+        }
+
+        .drop-zone.dragover {
+            border-color: var(--dorado);
+            background: rgba(240,184,41,0.05);
+            transform: scale(1.01);
+        }
+
+        .drop-zone .drop-icon {
+            font-size: 4rem;
+            color: var(--texto-gris);
+            opacity: 0.3;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone h3 {
+            color: var(--azul-oscuro);
+            font-size: 1.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .drop-zone p {
+            color: var(--texto-gris);
+            font-size: 0.9rem;
+        }
+
+        .drop-zone .file-types {
+            font-size: 0.8rem;
+            color: var(--texto-gris);
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
+        .drop-zone .file-types span {
+            display: inline-block;
+            padding: 0.1rem 0.6rem;
+            background: white;
+            border-radius: 4px;
+            margin: 0.2rem;
+            font-weight: 500;
+        }
+
+        .drop-zone input[type="file"] {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           GRID DE DOCUMENTOS
+           ============================================ */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .doc-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            overflow: hidden;
+            transition: var(--transition);
+            border: 1px solid rgba(184,226,242,0.1);
+            animation: fadeInUp 0.4s ease forwards;
+            opacity: 0;
+        }
+
+        .doc-card:nth-child(1) { animation-delay: 0.05s; }
+        .doc-card:nth-child(2) { animation-delay: 0.1s; }
+        .doc-card:nth-child(3) { animation-delay: 0.15s; }
+        .doc-card:nth-child(4) { animation-delay: 0.2s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .doc-card:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--sombra-hover);
+        }
+
+        .doc-card .doc-header {
+            padding: 1rem 1.5rem;
+            background: var(--azul-oscuro);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doc-card .doc-header .doc-icon {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .doc-card .doc-header .doc-icon span {
+            font-size: 0.7rem;
+            font-weight: 400;
+            opacity: 0.6;
+        }
+
+        .doc-card .doc-body {
+            padding: 1.5rem;
+        }
+
+        .doc-card .doc-body h4 {
+            color: var(--azul-oscuro);
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .doc-card .doc-body p {
+            color: var(--texto-gris);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .doc-card .doc-body .doc-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.7rem;
+            color: var(--texto-gris);
+            margin-top: 0.8rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid #f0ebe3;
+            flex-wrap: wrap;
+        }
+
+        .doc-card .doc-body .doc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .doc-card .doc-actions {
+            padding: 0.8rem 1.5rem;
+            background: var(--crema-claro);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            border-top: 1px solid #f0ebe3;
+        }
+
+        .doc-card .doc-actions .btn {
+            padding: 0.3rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        /* ============================================
+           CHAT IA SECTION
+           ============================================ */
+        .chat-ia-section {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+            overflow: hidden;
+            margin-top: 2rem;
+        }
+
+        .chat-ia-section .chat-header {
+            padding: 1.2rem 1.5rem;
+            background: var(--azul-oscuro);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-ia-section .chat-header h3 {
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-ia-section .chat-header h3 i {
+            color: var(--dorado);
+        }
+
+        .chat-ia-section .chat-header .doc-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-ia-section .chat-header .doc-selector select {
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+        }
+
+        .chat-ia-section .chat-header .doc-selector select option {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .chat-messages {
+            height: 280px;
+            overflow-y: auto;
+            padding: 1.2rem 1.5rem;
+            background: var(--crema-claro);
+        }
+
+        .chat-messages::-webkit-scrollbar { width: 4px; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--celeste-hielo); border-radius: 10px; }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            max-width: 85%;
+            animation: messageIn 0.3s ease forwards;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(8px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .chat-message.user { margin-left: auto; }
+        .chat-message.assistant { margin-right: auto; }
+
+        .chat-message .bubble {
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            line-height: 1.6;
+            font-size: 0.9rem;
+        }
+
+        .chat-message.user .bubble {
+            background: var(--azul-oscuro);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.assistant .bubble {
+            background: white;
+            color: var(--texto-oscuro);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(184,226,242,0.15);
+        }
+
+        .chat-message .bubble .sender {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+            opacity: 0.6;
+        }
+
+        .chat-message.user .bubble .sender { color: var(--celeste-hielo); }
+        .chat-message.assistant .bubble .sender { color: var(--dorado); }
+
+        .chat-input-area {
+            display: flex;
+            gap: 0.8rem;
+            padding: 1rem 1.5rem;
+            background: white;
+            border-top: 1px solid #f0ebe3;
+        }
+
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            background: var(--crema-claro);
+        }
+
+        .chat-input-area input:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.15);
+            background: white;
+        }
+
+        .chat-input-area input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .chat-input-area input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 0.3rem 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--celeste-hielo);
+            border-radius: 50%;
+            animation: typingDot 1.4s infinite both;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingDot {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ============================================
+           EMPTY STATE
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: white;
+            border-radius: var(--borde-redondeado);
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--celeste-hielo);
+            opacity: 0.5;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            color: var(--azul-oscuro);
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--texto-gris);
+            max-width: 400px;
+            margin: 0 auto 1.5rem;
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 9999;
+            max-width: 400px;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--verde); }
+        .toast.error { background: var(--rojo); }
+        .toast.info { background: var(--azul-oscuro); }
+        .toast.warning { background: var(--naranja); }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 768px) {
+            .library-container { padding: 1rem; }
+            .library-header h1 { font-size: 1.8rem; }
+            .toolbar { flex-direction: column; padding: 1rem; }
+            .search-box { width: 100%; }
+            .documents-grid { grid-template-columns: 1fr; }
+            .chat-ia-section .chat-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+            .chat-ia-section .chat-header .doc-selector {
+                flex-direction: column;
+            }
+            .chat-messages { height: 200px; }
+            .chat-input-area { flex-direction: column; }
+            .navbar-title { font-size: 0.9rem; }
+            .navbar-logo { width: 35px; height: 35px; }
+            .drop-zone { padding: 2rem 1rem; }
+            .drop-zone .drop-icon { font-size: 3rem; }
+        }
+
+        @media (max-width: 480px) {
+            .doc-card .doc-actions {
+                flex-direction: column;
+            }
+            .doc-card .doc-actions .btn {
+                justify-content: center;
+                width: 100%;
+            }
+            .chat-message { max-width: 95%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="library-container">
+
+        <!-- Header -->
+        <div class="library-header">
+            <h1><i class="fas fa-book"></i> Biblioteca IA</h1>
+            <p>Sube tus documentos y la IA responderá preguntas sobre ellos</p>
+            <span class="badge-ia"><i class="fas fa-brain"></i> Inteligencia Artificial</span>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar documentos..." oninput="filtrarDocumentos()">
+            </div>
+            <button class="btn btn-gold" onclick="abrirSubida()">
+                <i class="fas fa-upload"></i> Subir Documento
+            </button>
+            <button class="btn btn-outline" onclick="ordenarDocumentos()">
+                <i class="fas fa-sort"></i> Ordenar
+            </button>
+            <span style="font-size: 0.75rem; color: var(--texto-gris);">
+                <span id="docCount">0</span> documentos
+            </span>
+        </div>
+
+        <!-- Drop Zone -->
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-cloud-upload-alt drop-icon"></i>
+            <h3>Arrastra y suelta tus documentos aquí</h3>
+            <p>o haz clic para seleccionar archivos</p>
+            <div class="file-types">
+                <span>📄 PDF</span>
+                <span>📝 DOC</span>
+                <span>📊 XLS</span>
+                <span>📋 TXT</span>
+            </div>
+            <input type="file" id="fileInput" multiple accept=".pdf,.doc,.docx,.txt,.xlsx,.xls">
+        </div>
+
+        <!-- Documents Grid -->
+        <div class="documents-grid" id="documentsGrid">
+            <!-- Los documentos se cargan dinámicamente -->
+        </div>
+
+        <!-- Empty State (se muestra cuando no hay documentos) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-book-open"></i>
+            <h3>No hay documentos en la biblioteca</h3>
+            <p>Sube tus documentos para que la IA pueda analizarlos y responder tus preguntas.</p>
+            <button class="btn btn-gold" onclick="abrirSubida()">
+                <i class="fas fa-upload"></i> Subir mi primer documento
+            </button>
+        </div>
+
+        <!-- Chat IA Section -->
+        <div class="chat-ia-section">
+            <div class="chat-header">
+                <h3><i class="fas fa-robot"></i> Consultar Documentos con IA</h3>
+                <div class="doc-selector">
+                    <span style="font-size: 0.8rem; opacity: 0.7;">Documento:</span>
+                    <select id="docSelector">
+                        <option value="">Seleccionar documento...</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message assistant">
+                    <div class="bubble">
+                        <div class="sender"><i class="fas fa-robot"></i> IA Bibliotecaria</div>
+                        <p>👋 ¡Hola! Sube un documento y podré responder preguntas sobre su contenido.</p>
+                        <p style="font-size: 0.85rem; color: var(--texto-gris); margin-top: 0.3rem;">
+                            💡 Ejemplo: "¿Qué dice sobre la ecuación de Manning?"
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Escribe tu pregunta sobre el documento..." 
+                       onkeypress="if(event.key==='Enter') enviarPreguntaIA()">
+                <button class="btn btn-purple" onclick="enviarPreguntaIA()">
+                    <i class="fas fa-paper-plane"></i> Preguntar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // DATOS DE EJEMPLO
+        // ============================================
+        let documentos = [
+            {
+                id: 1,
+                titulo: 'Manual de Hidráulica Básica',
+                descripcion: 'Manual completo de hidráulica que incluye conceptos fundamentales, ecuaciones y aplicaciones prácticas para ingeniería civil.',
+                tipo: 'pdf',
+                fecha: '2026-06-28',
+                tamaño: '3.2 MB',
+                paginas: 245,
+                autor: 'Dr. Juan Pérez',
+                categoria: 'manual',
+                contenido: 'La ecuación de Manning establece que Q = (1/n) * A * R^(2/3) * S^(1/2). El número de Reynolds se calcula como Re = (V * D) / ν...'
+            },
+            {
+                id: 2,
+                titulo: 'Ecuaciones Hidráulicas Fundamentales',
+                descripcion: 'Recopilación de las ecuaciones más importantes en hidráulica, incluyendo Bernoulli, Manning, Hazen-Williams y Darcy-Weisbach.',
+                tipo: 'pdf',
+                fecha: '2026-06-25',
+                tamaño: '1.8 MB',
+                paginas: 120,
+                autor: 'Ing. María González',
+                categoria: 'formulas',
+                contenido: 'La ecuación de Bernoulli establece la conservación de energía en fluidos: P/γ + V²/2g + z = constante...'
+            },
+            {
+                id: 3,
+                titulo: 'Diseño de Canales Abiertos',
+                descripcion: 'Guía práctica para el diseño de canales trapezoidales, rectangulares y circulares usando la ecuación de Manning.',
+                tipo: 'pdf',
+                fecha: '2026-06-20',
+                tamaño: '4.5 MB',
+                paginas: 189,
+                autor: 'Ing. Carlos Ruiz',
+                categoria: 'diseno',
+                contenido: 'Para el diseño de canales trapezoidales se recomienda una base de 0.85m y un tirante de 0.52m para un caudal de 0.5 m³/s...'
+            },
+            {
+                id: 4,
+                titulo: 'Sistemas de Bombeo',
+                descripcion: 'Análisis y diseño de sistemas de bombeo para agua potable, incluyendo curvas de bombas y selección de equipos.',
+                tipo: 'pdf',
+                fecha: '2026-06-15',
+                tamaño: '2.9 MB',
+                paginas: 156,
+                autor: 'Dr. Ana Martínez',
+                categoria: 'bombeo',
+                contenido: 'La potencia de una bomba se calcula como P = (Q * H * γ) / (η * 1000)...'
+            }
+        ];
+
+        let currentFilter = 'todos';
+        let currentSearch = '';
+        let selectedDocId = null;
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3500);
+        }
+
+        // ============================================
+        // DROP ZONE
+        // ============================================
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        dropZone.addEventListener('dragenter', function() {
+            this.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', function() {
+            this.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                procesarArchivos(files);
+            }
+        });
+
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                procesarArchivos(this.files);
+                this.value = '';
+            }
+        });
+
+        function procesarArchivos(files) {
+            for (let file of files) {
+                const extension = file.name.split('.').pop().toLowerCase();
+                if (!['pdf', 'doc', 'docx', 'txt', 'xls', 'xlsx'].includes(extension)) {
+                    showToast(`⚠️ Formato no soportado: ${file.name}`, 'warning');
+                    continue;
+                }
+
+                const nuevoDoc = {
+                    id: documentos.length + 1,
+                    titulo: file.name.replace(/\.[^/.]+$/, ''),
+                    descripcion: `Documento subido: ${file.name}`,
+                    tipo: extension === 'pdf' ? 'pdf' : 'documento',
+                    fecha: new Date().toISOString().slice(0, 10),
+                    tamaño: (file.size / 1024 / 1024).toFixed(1) + ' MB',
+                    paginas: Math.floor(Math.random() * 100) + 20,
+                    autor: 'Usuario',
+                    categoria: 'documento',
+                    contenido: `Contenido extraído de ${file.name}. Este documento contiene información relevante sobre hidráulica.`
+                };
+
+                documentos.unshift(nuevoDoc);
+                showToast(`✅ Documento "${nuevoDoc.titulo}" subido correctamente`, 'success');
+            }
+
+            renderizarDocumentos();
+            actualizarSelector();
+        }
+
+        // ============================================
+        // RENDERIZAR DOCUMENTOS
+        // ============================================
+        function renderizarDocumentos() {
+            const grid = document.getElementById('documentsGrid');
+            const empty = document.getElementById('emptyState');
+
+            let filtered = documentos;
+
+            // Filtrar por búsqueda
+            if (currentSearch) {
+                const search = currentSearch.toLowerCase();
+                filtered = filtered.filter(d =>
+                    d.titulo.toLowerCase().includes(search) ||
+                    d.descripcion.toLowerCase().includes(search) ||
+                    d.autor.toLowerCase().includes(search) ||
+                    d.categoria.toLowerCase().includes(search)
+                );
+            }
+
+            // Filtrar por tipo
+            if (currentFilter !== 'todos') {
+                filtered = filtered.filter(d => d.tipo === currentFilter);
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                empty.style.display = 'block';
+                document.getElementById('docCount').textContent = '0';
+                return;
+            }
+
+            empty.style.display = 'none';
+            document.getElementById('docCount').textContent = filtered.length;
+
+            grid.innerHTML = filtered.map((doc, index) => {
+                const iconMap = {
+                    'pdf': 'fa-file-pdf',
+                    'documento': 'fa-file-alt',
+                    'imagen': 'fa-file-image'
+                };
+
+                const colorMap = {
+                    'pdf': '#dc2626',
+                    'documento': '#3b82f6',
+                    'imagen': '#8b5cf6'
+                };
+
+                const icon = iconMap[doc.tipo] || 'fa-file';
+                const color = colorMap[doc.tipo] || '#6b7280';
+
+                return `
+                    <div class="doc-card" data-id="${doc.id}" style="animation-delay: ${(index * 0.05)}s">
+                        <div class="doc-header">
+                            <div class="doc-icon">
+                                <i class="fas ${icon}" style="color: ${color};"></i>
+                                <span>${doc.tipo.toUpperCase()}</span>
+                            </div>
+                            <span style="font-size: 0.7rem; opacity: 0.6;">
+                                ${formatDate(doc.fecha)}
+                            </span>
+                        </div>
+                        <div class="doc-body">
+                            <h4>${doc.titulo}</h4>
+                            <p>${doc.descripcion}</p>
+                            <div class="doc-meta">
+                                <span><i class="fas fa-user"></i> ${doc.autor}</span>
+                                <span><i class="fas fa-file"></i> ${doc.tamaño}</span>
+                                <span><i class="fas fa-tag"></i> ${doc.categoria}</span>
+                                <span><i class="fas fa-file-alt"></i> ${doc.paginas} págs</span>
+                            </div>
+                        </div>
+                        <div class="doc-actions">
+                            <button class="btn btn-primary btn-sm" onclick="seleccionarDocumento(${doc.id})">
+                                <i class="fas fa-robot"></i> Consultar IA
+                            </button>
+                            <button class="btn btn-success btn-sm" onclick="descargarDocumento(${doc.id})">
+                                <i class="fas fa-download"></i> Descargar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarDocumento(${doc.id})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ============================================
+        // FILTROS
+        // ============================================
+        function filtrarDocumentos() {
+            currentSearch = document.getElementById('searchInput').value.trim();
+            renderizarDocumentos();
+        }
+
+        function ordenarDocumentos() {
+            documentos.sort((a, b) => a.titulo.localeCompare(b.titulo));
+            renderizarDocumentos();
+            showToast('📚 Documentos ordenados alfabéticamente', 'info');
+        }
+
+        // ============================================
+        // SELECCIONAR DOCUMENTO
+        // ============================================
+        function seleccionarDocumento(id) {
+            const doc = documentos.find(d => d.id === id);
+            if (!doc) return;
+
+            selectedDocId = id;
+            const selector = document.getElementById('docSelector');
+            selector.value = id;
+
+            // Mostrar mensaje de confirmación
+            showToast(`📄 "${doc.titulo}" seleccionado para consultas IA`, 'success');
+
+            // Agregar mensaje al chat
+            agregarMensajeChat(
+                `📄 Documento seleccionado: <strong>${doc.titulo}</strong>\nPuedes hacer preguntas sobre su contenido.`,
+                'assistant'
+            );
+
+            document.getElementById('chatInput').placeholder = `Pregunta sobre "${doc.titulo}"...`;
+            document.getElementById('chatInput').focus();
+        }
+
+        // ============================================
+        // ACTUALIZAR SELECTOR
+        // ============================================
+        function actualizarSelector() {
+            const selector = document.getElementById('docSelector');
+            const currentVal = selector.value;
+
+            selector.innerHTML = `
+                <option value="">Seleccionar documento...</option>
+                ${documentos.map(d => `
+                    <option value="${d.id}" ${d.id == currentVal ? 'selected' : ''}>
+                        ${d.titulo} (${d.tipo})
+                    </option>
+                `).join('')}
+            `;
+
+            if (currentVal && documentos.some(d => d.id == currentVal)) {
+                selector.value = currentVal;
+            }
+        }
+
+        // ============================================
+        // CHAT IA
+        // ============================================
+        function enviarPreguntaIA() {
+            const input = document.getElementById('chatInput');
+            const pregunta = input.value.trim();
+            const docId = document.getElementById('docSelector').value;
+
+            if (!pregunta) {
+                showToast('Por favor escribe una pregunta', 'warning');
+                return;
+            }
+
+            if (!docId) {
+                showToast('Por favor selecciona un documento primero', 'warning');
+                return;
+            }
+
+            const doc = documentos.find(d => d.id == docId);
+            if (!doc) {
+                showToast('Documento no encontrado', 'error');
+                return;
+            }
+
+            // Agregar pregunta al chat
+            agregarMensajeChat(pregunta, 'user');
+            input.value = '';
+            input.disabled = true;
+
+            // Mostrar indicador de escritura
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'chat-message assistant';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="bubble">
+                    <div class="sender"><i class="fas fa-robot"></i> IA Bibliotecaria</div>
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                        <span style="font-size: 0.8rem; color: var(--texto-gris); margin-left: 0.5rem;">
+                            Analizando "${doc.titulo}"...
+                        </span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('chatMessages').appendChild(typingDiv);
+            scrollChat();
+
+            // Simular respuesta de IA
+            setTimeout(() => {
+                const typing = document.getElementById('typingIndicator');
+                if (typing) typing.remove();
+
+                const respuesta = generarRespuestaIA(pregunta, doc);
+                agregarMensajeChat(respuesta, 'assistant');
+
+                input.disabled = false;
+                input.focus();
+                scrollChat();
+            }, 1500 + Math.random() * 1000);
+        }
+
+        function generarRespuestaIA(pregunta, doc) {
+            const p = pregunta.toLowerCase();
+            let respuesta = '';
+
+            // Respuestas basadas en contenido del documento
+            if (p.includes('manning') || p.includes('canal')) {
+                respuesta = `
+                    <p>📐 <strong>Ecuación de Manning</strong></p>
+                    <p>La ecuación de Manning se expresa como:</p>
+                    <div style="background: var(--crema-claro); padding: 0.5rem 1rem; border-radius: 8px; font-family: monospace; margin: 0.5rem 0;">
+                        Q = (1/n) × A × R^(2/3) × S^(1/2)
+                    </div>
+                    <p>Donde:</p>
+                    <ul style="margin: 0.3rem 0; padding-left: 1.5rem;">
+                        <li><strong>Q</strong> = Caudal (m³/s)</li>
+                        <li><strong>n</strong> = Coeficiente de rugosidad</li>
+                        <li><strong>A</strong> = Área hidráulica (m²)</li>
+                        <li><strong>R</strong> = Radio hidráulico (m)</li>
+                        <li><strong>S</strong> = Pendiente (m/m)</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--texto-gris); margin-top: 0.3rem;">
+                        📖 Según "${doc.titulo}", para canales trapezoidales se recomienda un talud z=1.
+                    </p>
+                `;
+            } else if (p.includes('reynolds') || p.includes('flujo')) {
+                respuesta = `
+                    <p>🔬 <strong>Número de Reynolds</strong></p>
+                    <p>El número de Reynolds se calcula como:</p>
+                    <div style="background: var(--crema-claro); padding: 0.5rem 1rem; border-radius: 8px; font-family: monospace; margin: 0.5rem 0;">
+                        Re = (V × D) / ν
+                    </div>
+                    <p>Clasificación del flujo:</p>
+                    <ul style="margin: 0.3rem 0; padding-left: 1.5rem;">
+                        <li>🔵 <strong>Re &lt; 2000</strong> → Flujo Laminar</li>
+                        <li>🟡 <strong>2000 &lt; Re &lt; 4000</strong> → Transición</li>
+                        <li>🔴 <strong>Re &gt; 4000</strong> → Flujo Turbulento</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--texto-gris); margin-top: 0.3rem;">
+                        📖 ${doc.titulo} menciona que para tuberías de agua potable se recomienda Re &gt; 4000.
+                    </p>
+                `;
+            } else if (p.includes('bernoulli') || p.includes('energía')) {
+                respuesta = `
+                    <p>⚡ <strong>Ecuación de Bernoulli</strong></p>
+                    <p>La ecuación de Bernoulli establece la conservación de energía:</p>
+                    <div style="background: var(--crema-claro); padding: 0.5rem 1rem; border-radius: 8px; font-family: monospace; margin: 0.5rem 0;">
+                        P/γ + V²/2g + z = constante
+                    </div>
+                    <p>Donde:</p>
+                    <ul style="margin: 0.3rem 0; padding-left: 1.5rem;">
+                        <li><strong>P</strong> = Presión (Pa)</li>
+                        <li><strong>γ</strong> = Peso específico (N/m³)</li>
+                        <li><strong>V</strong> = Velocidad (m/s)</li>
+                        <li><strong>g</strong> = Gravedad (9.81 m/s²)</li>
+                        <li><strong>z</strong> = Altura (m)</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--texto-gris); margin-top: 0.3rem;">
+                        📖 ${doc.titulo} aplica Bernoulli para el diseño de sistemas de bombeo.
+                    </p>
+                `;
+            } else if (p.includes('hazen') || p.includes('williams')) {
+                respuesta = `
+                    <p>💧 <strong>Ecuación de Hazen-Williams</strong></p>
+                    <p>La ecuación de Hazen-Williams se usa para tuberías:</p>
+                    <div style="background: var(--crema-claro); padding: 0.5rem 1rem; border-radius: 8px; font-family: monospace; margin: 0.5rem 0;">
+                        V = 0.849 × C × R^(0.63) × S^(0.54)
+                    </div>
+                    <p>Donde:</p>
+                    <ul style="margin: 0.3rem 0; padding-left: 1.5rem;">
+                        <li><strong>V</strong> = Velocidad (m/s)</li>
+                        <li><strong>C</strong> = Coeficiente de Hazen-Williams</li>
+                        <li><strong>R</strong> = Radio hidráulico (m)</li>
+                        <li><strong>S</strong> = Pendiente de energía</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; color: var(--texto-gris); margin-top: 0.3rem;">
+                        📖 ${doc.titulo} recomienda C=140 para tuberías de PVC nuevas.
+                    </p>
+                `;
+            } else {
+                // Respuesta genérica
+                const secciones = [
+                    `Según "${doc.titulo}", el documento menciona conceptos fundamentales de hidráulica. ¿Te gustaría que profundice en algún tema específico?`,
+                    `📖 En "${doc.titulo}" se abordan temas como flujo en tuberías, canales abiertos y sistemas de bombeo.`,
+                    `📚 El documento "${doc.titulo}" contiene información valiosa sobre ingeniería hidráulica. ¿Qué tema te interesa explorar?`,
+                    `🔍 En "${doc.titulo}" se encuentra información detallada sobre los principios hidráulicos. ¿Puedo ayudarte con algún cálculo específico?`
+                ];
+                respuesta = `<p>${secciones[Math.floor(Math.random() * secciones.length)]}</p>`;
+            }
+
+            // Agregar referencia
+            respuesta += `
+                <p style="font-size: 0.75rem; color: var(--texto-gris); margin-top: 0.5rem; border-top: 1px solid #f0ebe3; padding-top: 0.5rem;">
+                    📖 Fuente: <strong>${doc.titulo}</strong> (${doc.autor}, ${doc.fecha})
+                </p>
+            `;
+
+            return respuesta;
+        }
+
+        function agregarMensajeChat(texto, tipo) {
+            const container = document.getElementById('chatMessages');
+            const div = document.createElement('div');
+            div.className = `chat-message ${tipo}`;
+
+            const sender = tipo === 'user' ? 'Tú' : 'IA Bibliotecaria';
+            const icon = tipo === 'user' ? 'fa-user' : 'fa-robot';
+
+            div.innerHTML = `
+                <div class="bubble">
+                    <div class="sender"><i class="fas ${icon}"></i> ${sender}</div>
+                    ${texto}
+                </div>
+            `;
+
+            container.appendChild(div);
+            scrollChat();
+        }
+
+        function scrollChat() {
+            const container = document.getElementById('chatMessages');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ============================================
+        // ACCIONES DE DOCUMENTOS
+        // ============================================
+        function descargarDocumento(id) {
+            const doc = documentos.find(d => d.id === id);
+            if (!doc) return;
+
+            // Simular descarga
+            const blob = new Blob(['Contenido del documento: ' + doc.titulo], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${doc.titulo}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast(`📥 Descargando "${doc.titulo}"`, 'success');
+        }
+
+        function eliminarDocumento(id) {
+            const doc = documentos.find(d => d.id === id);
+            if (!doc) return;
+
+            if (!confirm(`¿Estás seguro de eliminar "${doc.titulo}"?`)) return;
+
+            documentos = documentos.filter(d => d.id !== id);
+            renderizarDocumentos();
+            actualizarSelector();
+            showToast('🗑️ Documento eliminado', 'info');
+
+            if (selectedDocId == id) {
+                selectedDocId = null;
+                document.getElementById('docSelector').value = '';
+                document.getElementById('chatInput').placeholder = 'Selecciona un documento...';
+            }
+        }
+
+        function abrirSubida() {
+            document.getElementById('fileInput').click();
+        }
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const ahora = new Date();
+            const diff = Math.floor((ahora - date) / (1000 * 60 * 60 * 24));
+
+            if (diff === 0) return 'Hoy';
+            if (diff === 1) return 'Ayer';
+            if (diff < 7) return `Hace ${diff} días`;
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            renderizarDocumentos();
+            actualizarSelector();
+
+            // Evento para seleccionar documento desde el selector
+            document.getElementById('docSelector').addEventListener('change', function() {
+                if (this.value) {
+                    seleccionarDocumento(parseInt(this.value));
+                }
+            });
+
+            console.log('📚 Biblioteca IA cargada correctamente');
+            console.log(`📄 ${documentos.length} documentos disponibles`);
+            console.log('💡 Sube documentos y haz preguntas a la IA');
+        });
+    </script>
+</body>
+</html>

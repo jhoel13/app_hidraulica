@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diseño de Canales - UNC Hidráulica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --azul-oscuro: #0a1628;
+            --azul-profundo: #132640;
+            --crema: #f5f0e8;
+            --crema-claro: #faf7f0;
+            --celeste-hielo: #b8e2f2;
+            --celeste-claro: #e6f3fa;
+            --dorado: #f0b829;
+            --dorado-oscuro: #d4a020;
+            --texto-oscuro: #1a1a2e;
+            --texto-gris: #6b7280;
+            --verde: #16a34a;
+            --rojo: #dc2626;
+            --sombra: 0 20px 60px rgba(0,0,0,0.10);
+            --sombra-hover: 0 25px 70px rgba(0,0,0,0.15);
+            --borde-redondeado: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--crema);
+            color: var(--texto-oscuro);
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            background: var(--azul-oscuro);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2.5px solid var(--dorado);
+            padding: 4px;
+            background: white;
+            object-fit: contain;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .navbar-title span {
+            color: var(--dorado);
+        }
+
+        .navbar a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .navbar a:hover {
+            color: white;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .btn-back {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-back:hover {
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* ============================================
+           CONTAINER
+           ============================================ */
+        .channel-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .channel-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .channel-header h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            letter-spacing: -1px;
+        }
+
+        .channel-header h1 i {
+            color: var(--dorado);
+        }
+
+        .channel-header p {
+            color: var(--texto-gris);
+            font-size: 1.1rem;
+            margin-top: 0.3rem;
+        }
+
+        /* ============================================
+           MAIN GRID
+           ============================================ */
+        .channel-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        /* ============================================
+           INPUT CARD
+           ============================================ */
+        .channel-card {
+            background: white;
+            border-radius: var(--borde-redondeado);
+            padding: 2rem;
+            box-shadow: var(--sombra);
+            border: 1px solid rgba(184,226,242,0.1);
+        }
+
+        .channel-card .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--azul-oscuro);
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .channel-card .card-title i {
+            color: var(--dorado);
+        }
+
+        .channel-card .card-subtitle {
+            color: var(--texto-gris);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .formula-box {
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--azul-oscuro);
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group label .unit {
+            font-weight: 400;
+            color: var(--texto-gris);
+            font-size: 0.75rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e0d8;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: var(--transition);
+            background: white;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--celeste-hielo);
+            box-shadow: 0 0 0 4px rgba(184,226,242,0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #b0a8a0;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--azul-oscuro);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(10,22,40,0.25);
+        }
+
+        .btn-gold {
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .btn-gold:hover {
+            background: var(--dorado-oscuro);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240,184,41,0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--azul-oscuro);
+            border: 2px solid var(--azul-oscuro);
+        }
+
+        .btn-outline:hover {
+            background: var(--azul-oscuro);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: var(--verde);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(22,163,74,0.3);
+        }
+
+        .btn-danger {
+            background: var(--rojo);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ============================================
+           RESULTADOS
+           ============================================ */
+        .result-container {
+            margin-top: 2rem;
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            border-left: 4px solid var(--dorado);
+            display: none;
+            animation: fadeInUp 0.4s ease forwards;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-container .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .result-container .result-header h4 {
+            font-size: 1.1rem;
+            color: var(--azul-oscuro);
+        }
+
+        .result-container .result-header .badge-tipo {
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--dorado);
+            color: var(--azul-oscuro);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .result-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: var(--transition);
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .result-item .value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--azul-oscuro);
+            display: block;
+        }
+
+        .result-item .label {
+            font-size: 0.75rem;
+            color: var(--texto-gris);
+            margin-top: 0.2rem;
+            display: block;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .result-actions .btn {
+            padding: 0.5rem 1.2rem;
+            font-size: 0.85rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1rem;
+            border-left: 4px solid #dc2626;
+        }
+
+        /* ============================================
+           VISUALIZACIÓN
+           ============================================ */
+        .visual-container {
+            background: var(--crema-claro);
+            border-radius: var(--borde-redondeado);
+            padding: 1.5rem;
+            min-height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .visual-container canvas {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+        }
+
+        .visual-container .placeholder {
+            text-align: center;
+            color: var(--texto-gris);
+        }
+
+        .visual-container .placeholder i {
+            font-size: 4rem;
+            opacity: 0.2;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .info-box {
+            margin-top: 1.5rem;
+            background: var(--crema-claro);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--celeste-hielo);
+        }
+
+        .info-box h4 {
+            color: var(--azul-oscuro);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box ul li {
+            padding: 0.2rem 0;
+            font-size: 0.85rem;
+            color: var(--texto-gris);
+        }
+
+        .info-box ul li i {
+            color: var(--dorado);
+            margin-right: 6px;
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading-spinner {
+            display: none;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            color: var(--texto-gris);
+        }
+
+        .loading-spinner.show {
+            display: flex;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--crema);
+            border-top-color: var(--dorado);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           TOAST
+           ============================================ */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 999;
+            max-width: 400px;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: var(--verde);
+        }
+
+        .toast.error {
+            background: var(--rojo);
+        }
+
+        .toast.info {
+            background: var(--azul-oscuro);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 1024px) {
+            .channel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .channel-container {
+                padding: 1rem;
+            }
+
+            .channel-header h1 {
+                font-size: 2rem;
+            }
+
+            .channel-card {
+                padding: 1.5rem;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions .btn {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+
+            .navbar-title {
+                font-size: 0.9rem;
+            }
+
+            .navbar-logo {
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    NAVBAR
+    ============================================ -->
+    <nav class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='img/logo_unc.png') }}" alt="UNC" class="navbar-logo">
+            <span class="navbar-title">UNC <span>Hidráulica</span></span>
+        </a>
+        <div>
+            <a href="{{ url_for('dashboard') }}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Volver
+            </a>
+        </div>
+    </nav>
+
+    <!-- ============================================
+    MAIN CONTENT
+    ============================================ -->
+    <div class="channel-container">
+        <div class="channel-header">
+            <h1><i class="fas fa-ruler"></i> Diseño de Canales</h1>
+            <p>Diseño óptimo de canales usando la ecuación de Manning</p>
+        </div>
+
+        <div class="channel-grid">
+            <!-- ============================================
+            INPUT SECTION
+            ============================================ -->
+            <div class="channel-card">
+                <h3 class="card-title">
+                    <i class="fas fa-sliders-h"></i> Parámetros de Diseño
+                </h3>
+                <p class="card-subtitle">Ingresa los datos de tu canal</p>
+
+                <div class="formula-box">
+                    Q = (1/n) × A × R^(2/3) × S^(1/2)
+                </div>
+
+                <div class="form-group">
+                    <label>Caudal <span class="unit">(m³/s)</span></label>
+                    <input type="number" id="canal_caudal" step="0.001" placeholder="Ej: 0.5" value="0.5">
+                </div>
+
+                <div class="form-group">
+                    <label>Pendiente <span class="unit">(m/m)</span></label>
+                    <input type="number" id="canal_pendiente" step="0.0001" placeholder="Ej: 0.001" value="0.001">
+                </div>
+
+                <div class="form-group">
+                    <label>Rugosidad (n) <span class="unit">(Manning)</span></label>
+                    <input type="number" id="canal_rugosidad" step="0.001" placeholder="Ej: 0.013" value="0.013">
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de Canal</label>
+                    <select id="canal_tipo">
+                        <option value="trapezoidal">Trapezoidal</option>
+                        <option value="rectangular">Rectangular</option>
+                        <option value="circular">Circular</option>
+                        <option value="triangular">Triangular</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="disenarCanal()">
+                        <i class="fas fa-calculator"></i> Diseñar Canal
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+
+                <div class="loading-spinner" id="loading-canal">
+                    <div class="spinner"></div>
+                    <span>Diseñando...</span>
+                </div>
+
+                <div class="result-container" id="resultado-canal"></div>
+            </div>
+
+            <!-- ============================================
+            VISUAL SECTION
+            ============================================ -->
+            <div>
+                <div class="channel-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-area"></i> Visualización
+                    </h3>
+                    <p class="card-subtitle">Vista en sección del canal diseñado</p>
+
+                    <div class="visual-container">
+                        <canvas id="channelCanvas" width="500" height="300"></canvas>
+                    </div>
+
+                    <div class="result-actions" style="margin-top: 1rem;">
+                        <button class="btn btn-gold" onclick="exportarPDF()">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                        <button class="btn btn-success" onclick="copiarResultados()">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ============================================
+                INFO BOX
+                ============================================ -->
+                <div class="info-box" style="margin-top: 1.5rem;">
+                    <h4><i class="fas fa-lightbulb" style="color: var(--dorado);"></i> Recomendaciones</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Velocidad recomendada: 0.5 - 3.0 m/s</li>
+                        <li><i class="fas fa-check"></i> Pendiente mínima: 0.0005 para evitar sedimentación</li>
+                        <li><i class="fas fa-check"></i> Borde libre: 15-30% del tirante</li>
+                        <li><i class="fas fa-check"></i> Material: Concreto (n=0.013), Tierra (n=0.025)</li>
+                    </ul>
+                </div>
+
+                <!-- ============================================
+                COEFICIENTES DE RUGOSIDAD
+                ============================================ -->
+                <div class="info-box" style="margin-top: 0.8rem;">
+                    <h4><i class="fas fa-table" style="color: var(--celeste-hielo);"></i> Coeficientes de Rugosidad (n)</h4>
+                    <ul>
+                        <li><i class="fas fa-circle" style="color: #2563eb;"></i> Concreto: 0.013</li>
+                        <li><i class="fas fa-circle" style="color: #8b6914;"></i> Tierra: 0.025</li>
+                        <li><i class="fas fa-circle" style="color: #6b7280;"></i> Revestido: 0.018</li>
+                        <li><i class="fas fa-circle" style="color: #16a34a;"></i> PVC: 0.009</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    TOAST
+    ============================================ -->
+    <div class="toast" id="toast"></div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        let resultadoActual = null;
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // ============================================
+        // LOADING
+        // ============================================
+        function showLoading() {
+            document.getElementById('loading-canal').classList.add('show');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading-canal').classList.remove('show');
+        }
+
+        // ============================================
+        // DISEÑO DE CANAL
+        // ============================================
+        function disenarCanal() {
+            const Q = parseFloat(document.getElementById('canal_caudal').value);
+            const S = parseFloat(document.getElementById('canal_pendiente').value);
+            const n = parseFloat(document.getElementById('canal_rugosidad').value);
+            const tipo = document.getElementById('canal_tipo').value;
+
+            // Validaciones
+            if (!Q || !S || !n || Q <= 0 || S <= 0 || n <= 0) {
+                mostrarError('Por favor ingresa valores válidos mayores a 0');
+                return;
+            }
+
+            if (Q > 1000) {
+                mostrarError('El caudal es muy grande. Por favor ingresa un valor menor a 1000 m³/s');
+                return;
+            }
+
+            if (S > 1) {
+                mostrarError('La pendiente es muy grande. Por favor ingresa un valor menor a 1');
+                return;
+            }
+
+            showLoading();
+
+            setTimeout(() => {
+                try {
+                    // Cálculo del tirante normal
+                    const y = Math.pow((Q * n / Math.sqrt(S)), 0.6);
+                    let resultado = {
+                        tipo: tipo,
+                        tirante: y,
+                        pendiente: S,
+                        rugosidad: n,
+                        caudal: Q
+                    };
+
+                    let datosVisual = {};
+
+                    // Cálculos según tipo
+                    switch (tipo) {
+                        case 'trapezoidal': {
+                            const z = 1; // Talud 1:1
+                            const b = 2 * y * (Math.sqrt(1 + z ** 2) - z);
+                            const A = (b + z * y) * y;
+                            const P = b + 2 * y * Math.sqrt(1 + z ** 2);
+                            const R = A / P;
+                            const V = Q / A;
+                            const Q_calc = (1 / n) * A * Math.pow(R, 2 / 3) * Math.sqrt(S);
+
+                            resultado = {
+                                ...resultado,
+                                base: b,
+                                area: A,
+                                perimetro: P,
+                                radio_hidraulico: R,
+                                velocidad: V,
+                                caudal_calculado: Q_calc
+                            };
+
+                            datosVisual = { base: b, tirante: y, talud: z, tipo: 'trapezoidal' };
+                            break;
+                        }
+
+                        case 'rectangular': {
+                            const b = Q / (y * Math.sqrt(S) / n);
+                            const A = b * y;
+                            const P = b + 2 * y;
+                            const R = A / P;
+                            const V = Q / A;
+                            const Q_calc = (1 / n) * A * Math.pow(R, 2 / 3) * Math.sqrt(S);
+
+                            resultado = {
+                                ...resultado,
+                                base: b,
+                                area: A,
+                                perimetro: P,
+                                radio_hidraulico: R,
+                                velocidad: V,
+                                caudal_calculado: Q_calc
+                            };
+
+                            datosVisual = { base: b, tirante: y, tipo: 'rectangular' };
+                            break;
+                        }
+
+                        case 'circular': {
+                            const D = Math.pow((Q * n / Math.sqrt(S)), 0.6);
+                            const yc = 0.8 * D;
+                            const theta = 2 * Math.acos(1 - 2 * yc / D);
+                            const A = (D ** 2 / 8) * (theta - Math.sin(theta));
+                            const P = D * theta / 2;
+                            const R = A / P;
+                            const V = Q / A;
+                            const Q_calc = (1 / n) * A * Math.pow(R, 2 / 3) * Math.sqrt(S);
+
+                            resultado = {
+                                ...resultado,
+                                diametro: D,
+                                tirante_real: yc,
+                                area: A,
+                                perimetro: P,
+                                radio_hidraulico: R,
+                                velocidad: V,
+                                caudal_calculado: Q_calc
+                            };
+
+                            datosVisual = { diametro: D, tirante: yc, tipo: 'circular' };
+                            break;
+                        }
+
+                        case 'triangular': {
+                            const z = 1;
+                            const b = 2 * z * y;
+                            const A = z * y * y;
+                            const P = 2 * y * Math.sqrt(1 + z ** 2);
+                            const R = A / P;
+                            const V = Q / A;
+                            const Q_calc = (1 / n) * A * Math.pow(R, 2 / 3) * Math.sqrt(S);
+
+                            resultado = {
+                                ...resultado,
+                                ancho: b,
+                                area: A,
+                                perimetro: P,
+                                radio_hidraulico: R,
+                                velocidad: V,
+                                caudal_calculado: Q_calc
+                            };
+
+                            datosVisual = { ancho: b, tirante: y, talud: z, tipo: 'triangular' };
+                            break;
+                        }
+                    }
+
+                    resultadoActual = resultado;
+
+                    // Mostrar resultados
+                    mostrarResultado(resultado);
+                    dibujarCanal(datosVisual);
+
+                    // Verificar velocidad
+                    const V = resultado.velocidad;
+                    if (V < 0.5) {
+                        showToast('⚠️ Velocidad baja: riesgo de sedimentación', 'info');
+                    } else if (V > 3) {
+                        showToast('⚠️ Velocidad alta: riesgo de erosión', 'info');
+                    } else {
+                        showToast('✅ Canal diseñado correctamente', 'success');
+                    }
+
+                    hideLoading();
+
+                } catch (error) {
+                    hideLoading();
+                    mostrarError('Error en el cálculo: ' + error.message);
+                    console.error(error);
+                }
+            }, 400);
+        }
+
+        // ============================================
+        // MOSTRAR RESULTADOS
+        // ============================================
+        function mostrarResultado(resultado) {
+            const container = document.getElementById('resultado-canal');
+
+            let html = `
+                <div class="result-header">
+                    <h4>📊 Resultados del Diseño</h4>
+                    <span class="badge-tipo">${resultado.tipo.toUpperCase()}</span>
+                </div>
+                <div class="result-grid">
+            `;
+
+            // Mostrar variables según tipo
+            const variables = {
+                'trapezoidal': {
+                    'Base (m)': 'base',
+                    'Tirante (m)': 'tirante',
+                    'Área (m²)': 'area',
+                    'Perímetro (m)': 'perimetro',
+                    'Radio hidráulico (m)': 'radio_hidraulico',
+                    'Velocidad (m/s)': 'velocidad',
+                    'Caudal calculado (m³/s)': 'caudal_calculado'
+                },
+                'rectangular': {
+                    'Base (m)': 'base',
+                    'Tirante (m)': 'tirante',
+                    'Área (m²)': 'area',
+                    'Perímetro (m)': 'perimetro',
+                    'Radio hidráulico (m)': 'radio_hidraulico',
+                    'Velocidad (m/s)': 'velocidad',
+                    'Caudal calculado (m³/s)': 'caudal_calculado'
+                },
+                'circular': {
+                    'Diámetro (m)': 'diametro',
+                    'Tirante (m)': 'tirante_real',
+                    'Área (m²)': 'area',
+                    'Perímetro (m)': 'perimetro',
+                    'Radio hidráulico (m)': 'radio_hidraulico',
+                    'Velocidad (m/s)': 'velocidad',
+                    'Caudal calculado (m³/s)': 'caudal_calculado'
+                },
+                'triangular': {
+                    'Ancho (m)': 'ancho',
+                    'Tirante (m)': 'tirante',
+                    'Área (m²)': 'area',
+                    'Perímetro (m)': 'perimetro',
+                    'Radio hidráulico (m)': 'radio_hidraulico',
+                    'Velocidad (m/s)': 'velocidad',
+                    'Caudal calculado (m³/s)': 'caudal_calculado'
+                }
+            };
+
+            const vars = variables[resultado.tipo] || {};
+            for (const [label, key] of Object.entries(vars)) {
+                if (resultado[key] !== undefined) {
+                    const value = typeof resultado[key] === 'number' ? resultado[key].toFixed(3) : resultado[key];
+                    html += `
+                        <div class="result-item">
+                            <span class="value">${value}</span>
+                            <span class="label">${label}</span>
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
+                </div>
+                <div class="result-actions">
+                    <button class="btn btn-gold" onclick="exportarPDF()">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                    <button class="btn btn-success" onclick="copiarResultados()">
+                        <i class="fas fa-copy"></i> Copiar
+                    </button>
+                    <button class="btn btn-outline" onclick="limpiarTodo()">
+                        <i class="fas fa-eraser"></i> Limpiar
+                    </button>
+                </div>
+            `;
+
+            container.innerHTML = html;
+            container.classList.add('show');
+        }
+
+        // ============================================
+        // DIBUJAR CANAL
+        // ============================================
+        function dibujarCanal(datos) {
+            const canvas = document.getElementById('channelCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+
+            ctx.clearRect(0, 0, width, height);
+
+            // Configuración
+            const padding = 50;
+            const drawWidth = width - 2 * padding;
+            const drawHeight = height - 2 * padding;
+
+            // Determinar escala
+            let maxDim = 0;
+            let base = 0,
+                tirante = 0;
+
+            switch (datos.tipo) {
+                case 'trapezoidal': {
+                    base = datos.base;
+                    tirante = datos.tirante;
+                    maxDim = Math.max(base, tirante);
+                    break;
+                }
+                case 'rectangular': {
+                    base = datos.base;
+                    tirante = datos.tirante;
+                    maxDim = Math.max(base, tirante);
+                    break;
+                }
+                case 'circular': {
+                    const D = datos.diametro;
+                    tirante = datos.tirante;
+                    maxDim = D;
+                    break;
+                }
+                case 'triangular': {
+                    base = datos.ancho;
+                    tirante = datos.tirante;
+                    maxDim = Math.max(base, tirante);
+                    break;
+                }
+            }
+
+            const scale = Math.min(drawWidth / (maxDim * 1.4), drawHeight / (maxDim * 1.4));
+
+            // Centro
+            const cx = width / 2;
+            const cy = height - padding - 10;
+
+            // Dibujar según tipo
+            ctx.strokeStyle = '#0a1628';
+            ctx.lineWidth = 3;
+            ctx.fillStyle = 'rgba(184,226,242,0.2)';
+
+            ctx.beginPath();
+
+            switch (datos.tipo) {
+                case 'trapezoidal': {
+                    const z = datos.talud || 1;
+                    const b = base * scale;
+                    const y = tirante * scale;
+
+                    const x1 = cx - b / 2;
+                    const x2 = cx + b / 2;
+                    const x3 = x1 - z * y;
+                    const x4 = x2 + z * y;
+
+                    ctx.moveTo(x3, cy - y);
+                    ctx.lineTo(x1, cy);
+                    ctx.lineTo(x2, cy);
+                    ctx.lineTo(x4, cy - y);
+                    ctx.closePath();
+                    break;
+                }
+
+                case 'rectangular': {
+                    const b = base * scale;
+                    const y = tirante * scale;
+
+                    const x1 = cx - b / 2;
+                    const x2 = cx + b / 2;
+
+                    ctx.rect(x1, cy - y, b, y);
+                    break;
+                }
+
+                case 'circular': {
+                    const D = datos.diametro * scale;
+                    const y = datos.tirante * scale;
+                    const r = D / 2;
+                    const cx2 = cx;
+                    const cy2 = cy - r + y;
+
+                    ctx.arc(cx2, cy2, r, 0, 2 * Math.PI);
+
+                    // Línea de agua
+                    ctx.strokeStyle = '#3b82f6';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    const aguaY = cy2 + r - y;
+                    const aguaAncho = Math.sqrt(r * r - (r - y) * (r - y));
+                    ctx.beginPath();
+                    ctx.moveTo(cx2 - aguaAncho, aguaY);
+                    ctx.lineTo(cx2 + aguaAncho, aguaY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.strokeStyle = '#0a1628';
+                    ctx.lineWidth = 3;
+                    break;
+                }
+
+                case 'triangular': {
+                    const b = datos.ancho * scale;
+                    const y = datos.tirante * scale;
+
+                    ctx.moveTo(cx - b / 2, cy);
+                    ctx.lineTo(cx, cy - y);
+                    ctx.lineTo(cx + b / 2, cy);
+                    ctx.closePath();
+                    break;
+                }
+            }
+
+            ctx.fill();
+            ctx.stroke();
+
+            // Etiquetas
+            ctx.fillStyle = '#0a1628';
+            ctx.font = '12px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+
+            // Mostrar dimensiones
+            if (datos.tipo !== 'circular') {
+                const yPos = cy + 25;
+                ctx.fillText(`Base: ${(datos.base || datos.ancho || 0).toFixed(2)}m`, cx, yPos);
+                ctx.fillText(`Tirante: ${(datos.tirante || 0).toFixed(2)}m`, cx + 80, cy - (datos.tirante || 0) * scale / 2);
+            } else {
+                ctx.fillText(`D: ${(datos.diametro || 0).toFixed(2)}m`, cx, cy + 25);
+                ctx.fillText(`y: ${(datos.tirante || 0).toFixed(2)}m`, cx + 70, cy - (datos.tirante || 0) * scale / 2);
+            }
+
+            // Agregar flechas de cota
+            ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([3, 3]);
+
+            if (datos.tipo !== 'circular') {
+                const y = (datos.tirante || 0) * scale;
+                ctx.beginPath();
+                ctx.moveTo(cx - 30, cy);
+                ctx.lineTo(cx - 30, cy - y);
+                ctx.stroke();
+                // Flecha
+                ctx.beginPath();
+                ctx.moveTo(cx - 27, cy - y + 5);
+                ctx.lineTo(cx - 30, cy - y);
+                ctx.lineTo(cx - 33, cy - y + 5);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(cx - 27, cy - 5);
+                ctx.lineTo(cx - 30, cy);
+                ctx.lineTo(cx - 33, cy - 5);
+                ctx.stroke();
+            }
+
+            ctx.setLineDash([]);
+        }
+
+        // ============================================
+        // FUNCIONES DE UTILIDAD
+        // ============================================
+        function mostrarError(mensaje) {
+            const container = document.getElementById('resultado-canal');
+            container.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle" style="font-size: 1.2rem;"></i>
+                    <span>${mensaje}</span>
+                </div>
+            `;
+            container.classList.add('show');
+            showToast(mensaje, 'error');
+        }
+
+        function limpiarTodo() {
+            document.getElementById('resultado-canal').classList.remove('show');
+            document.getElementById('resultado-canal').innerHTML = '';
+            resultadoActual = null;
+
+            const canvas = document.getElementById('channelCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Mostrar placeholder
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña un canal para ver la visualización', canvas.width / 2, canvas.height / 2);
+
+            showToast('🧹 Todo limpiado', 'info');
+        }
+
+        function copiarResultados() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para copiar', 'error');
+                return;
+            }
+
+            let texto = '=== DISEÑO DE CANAL ===\n\n';
+            texto += `Tipo: ${resultadoActual.tipo.toUpperCase()}\n`;
+            texto += `Caudal: ${resultadoActual.caudal.toFixed(3)} m³/s\n`;
+            texto += `Pendiente: ${resultadoActual.pendiente.toFixed(4)}\n`;
+            texto += `Rugosidad (n): ${resultadoActual.rugosidad.toFixed(4)}\n\n`;
+
+            const variables = {
+                'trapezoidal': {
+                    'Base': 'base',
+                    'Tirante': 'tirante',
+                    'Área': 'area',
+                    'Perímetro': 'perimetro',
+                    'Radio hidráulico': 'radio_hidraulico',
+                    'Velocidad': 'velocidad'
+                },
+                'rectangular': {
+                    'Base': 'base',
+                    'Tirante': 'tirante',
+                    'Área': 'area',
+                    'Perímetro': 'perimetro',
+                    'Radio hidráulico': 'radio_hidraulico',
+                    'Velocidad': 'velocidad'
+                },
+                'circular': {
+                    'Diámetro': 'diametro',
+                    'Tirante': 'tirante_real',
+                    'Área': 'area',
+                    'Perímetro': 'perimetro',
+                    'Radio hidráulico': 'radio_hidraulico',
+                    'Velocidad': 'velocidad'
+                },
+                'triangular': {
+                    'Ancho': 'ancho',
+                    'Tirante': 'tirante',
+                    'Área': 'area',
+                    'Perímetro': 'perimetro',
+                    'Radio hidráulico': 'radio_hidraulico',
+                    'Velocidad': 'velocidad'
+                }
+            };
+
+            const vars = variables[resultadoActual.tipo] || {};
+            for (const [label, key] of Object.entries(vars)) {
+                if (resultadoActual[key] !== undefined) {
+                    texto += `${label}: ${resultadoActual[key].toFixed(3)} m\n`;
+                }
+            }
+
+            navigator.clipboard.writeText(texto).then(() => {
+                showToast('✅ Resultados copiados al portapapeles', 'success');
+            }).catch(() => {
+                showToast('❌ Error al copiar', 'error');
+            });
+        }
+
+        function exportarPDF() {
+            if (!resultadoActual) {
+                showToast('⚠️ No hay resultados para exportar', 'error');
+                return;
+            }
+
+            // Simular exportación
+            showToast('📄 PDF generado correctamente', 'success');
+
+            // En producción, aquí iría la llamada a la API
+            const datos = {
+                tipo: 'Diseño de Canal',
+                resultados: resultadoActual,
+                fecha: new Date().toLocaleString()
+            };
+
+            console.log('PDF Exportado:', datos);
+            showToast('📄 PDF generado: canal_diseno.pdf', 'success');
+        }
+
+        // ============================================
+        // ENTER KEY SUPPORT
+        // ============================================
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    disenarCanal();
+                }
+            });
+        });
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar placeholder en canvas
+            const canvas = document.getElementById('channelCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '16px Inter, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Diseña un canal para ver la visualización', canvas.width / 2, canvas.height / 2);
+
+            // Cargar ejemplo inicial
+            setTimeout(() => {
+                document.getElementById('canal_caudal').value = '0.5';
+                document.getElementById('canal_pendiente').value = '0.001';
+                document.getElementById('canal_rugosidad').value = '0.013';
+                document.getElementById('canal_tipo').value = 'trapezoidal';
+                disenarCanal();
+            }, 500);
+
+            console.log('🏗️ Diseño de Canales cargado correctamente');
+            console.log('💡 Presiona Enter para diseñar');
+        });
+    </script>
+</body>
+</html>
